@@ -475,10 +475,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-/exercise.wwwapi/appsettings.json
-/exercise.wwwapi/appsettings.Development.json
  */**/bin/Debug   
 */**/bin/Release   
 */**/obj/Debug   
 */**/obj/Release   
-exercise.wwwapi/Migrations
+exercise.wwwapi.auth/Migrations
+exercise.wwwapi.auth/appsettings.json

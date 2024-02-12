@@ -1,0 +1,6 @@
+@exercise.wwwapi.auth_HostAddress = http://localhost:5018
+
+GET {{exercise.wwwapi.auth_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
