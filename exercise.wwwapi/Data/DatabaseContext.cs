@@ -36,6 +36,8 @@ namespace exercise.wwwapi.Data
             var adminUser = new Users
             {
                 UserName = "admin@admin.com",
+                NormalizedUserName = "ADMIN@ADMIN.COM",
+                NormalizedEmail = "ADMIN@ADMIN.COM",
                 Email = "admin@admin.com",
                 Role = UserRole.Admin // Assuming UserRole enum has Admin as 0
             };
