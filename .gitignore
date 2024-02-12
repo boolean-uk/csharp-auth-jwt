@@ -481,3 +481,4 @@ $RECYCLE.BIN/
 */**/obj/Release   
 exercise.wwwapi.auth/Migrations
 exercise.wwwapi.auth/appsettings.json
+exercise.wwwapi.auth/appsettings.Development.json
