@@ -17,5 +17,7 @@ namespace exercise.wwwapi.auth.Models
         public DateTime CreatedAt { get; set; }
         [Column("last_updated")]
         public DateTime LastUpdated { get; set; }
+
+        // Should add a realation to user in id or something else
     }
 }
