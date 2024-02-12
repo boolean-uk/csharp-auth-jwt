@@ -9,5 +9,7 @@ namespace auth.exercise.Repository
         Task<Product> AddProduct(ProductPostPayload postPayload);
         Task<Product> UpdateProduct(ProductPutPayload productPutPayload, int id);
         Task<Product> DeleteProduct(int id);
+
+        public ApplicationUser? GetUser(string email);
     }
 }

@@ -64,5 +64,10 @@ namespace auth.exercise.Repository
             await _context.SaveChangesAsync();
             return product;
         }
+
+        public ApplicationUser? GetUser(string email)
+        {
+            return _context.Users.FirstOrDefault(u => u.Email == email);
+        }
     }
 }

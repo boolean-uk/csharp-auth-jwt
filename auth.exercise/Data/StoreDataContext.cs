@@ -1,27 +1,23 @@
 using Microsoft.EntityFrameworkCore;
 using auth.exercise.Model;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace auth.exercise.Data
 {
-    public class StoreDataContext : DbContext
+    public class StoreDataContext : IdentityUserContext<ApplicationUser>
     {
-        private string _connectionString;
+       
         public StoreDataContext(DbContextOptions<StoreDataContext> options) : base(options)
         {
-            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            _connectionString = configuration.GetValue<string>("ConnectionStrings:DefaultConnectionString")!;
-            this.Database.EnsureCreated();
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql(_connectionString);
+           
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Product>().HasKey(p => p.Id);    
+           
+            base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Product>().HasKey(p => p.Id);    
 
             //Seed Data
             modelBuilder.Entity<Product>().HasData(
