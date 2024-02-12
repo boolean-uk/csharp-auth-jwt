@@ -1,6 +1,7 @@
 ﻿using exercise.wwwapi.Model;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace exercise.wwwapi.Endpoints
 {
@@ -18,14 +19,14 @@ namespace exercise.wwwapi.Endpoints
             root.MapDelete("/{id}", DeleteBlogPost);
         }
 
-        public static async Task<IResult> GetAllPosts(IRepository repo)
+        public static async Task<IResult> GetAllPosts(IRepository repo )
         {
             var res = await repo.GetBlogPosts();
             return TypedResults.Ok(res);
         }
 
         [Authorize()]
-        public static async Task<IResult> CreateBlogPost(IRepository repo, BlogPostPayload payload)
+        public static async Task<IResult> CreateBlogPost(IRepository repo, BlogPostPayload payload, ClaimsPrincipal user)
         {
             var data = new BlogPost() { Body = payload.body, Title = payload.title };
             var createdBlogPost = await repo.CreateBlog(data);
