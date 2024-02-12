@@ -1,0 +1,6 @@
+@exercise.minimalapi_HostAddress = http://localhost:5294
+
+GET {{exercise.minimalapi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
