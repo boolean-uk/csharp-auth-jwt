@@ -482,3 +482,5 @@ $RECYCLE.BIN/
 */**/obj/Debug   
 */**/obj/Release   
 exercise.wwwapi/Migrations
+csharp-auth-jwt/appsettings.json
+csharp-auth-jwt/appsettings.Development.json
