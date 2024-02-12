@@ -13,7 +13,7 @@ namespace exercise.wwwapi.auth.Data
             this.Database.EnsureCreated();
         }
 
-        public override void OnModelCreating(ModelBuilder modelBuilder) {
+        protected override void OnModelCreating(ModelBuilder modelBuilder) {
 
 
 
