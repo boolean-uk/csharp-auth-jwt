@@ -482,3 +482,6 @@ $RECYCLE.BIN/
 */**/obj/Debug   
 */**/obj/Release   
 exercise.wwwapi/Migrations
+
+/BlogApplication/appsettings.json
+/BlogApplication/appsettings.Development.json
