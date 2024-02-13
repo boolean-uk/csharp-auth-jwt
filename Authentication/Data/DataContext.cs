@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Authentication.Model;
+using Authentication.Enums;
 
 namespace Authentication.Data
 {
@@ -16,12 +17,6 @@ namespace Authentication.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<BlogPost>().HasData(
-                new BlogPost { Id = 1, Title = "News", Description = "The current news", Author = "Jane Pettersson" },
-                new BlogPost { Id = 2, Title = "Cleaner supplies", Description = "Supplies to clean with", Author = "Petter Johnsson" },
-                new BlogPost { Id = 3, Title = "Toys", Description = "Things to play with", Author = "Claire Sarah" }
-            );
         }
-
     }
 }

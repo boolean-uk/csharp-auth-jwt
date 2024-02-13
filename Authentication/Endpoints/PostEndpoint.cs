@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Authentication.Helpers;
 using Authentication.Model;
 using Authentication.Repository;
+using Authentication.DTO;
 
 namespace Authentication.Endpoints
 {
-    public record BlogPostPayload(string Title, string Description, string Author);
-    public record BlogPostUpdatePayload(string? Title, string? Description, string? Author);
+    public record BlogPostPayload(string Text);
+    public record BlogPostUpdatePayload(string? Text);
 
     public static class BlogPostEndpoint
     {
@@ -30,30 +31,49 @@ namespace Authentication.Endpoints
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize()]
-        public static IResult CreatePost(IRepository repo, BlogPostPayload newTaskData)
+        public static IResult CreatePost(IRepository repo, BlogPostPayload newPostData, ClaimsPrincipal user)
         {
-            if (newTaskData.Title == null) return TypedResults.BadRequest("Title is required.");
-            if (newTaskData.Description == null) return TypedResults.BadRequest("Description is required.");
-            if (newTaskData.Author == null) return TypedResults.BadRequest("Author is required.");
+            if (newPostData.Text == null)
+                return TypedResults.BadRequest("Text is required.");
 
-            var post = repo.CreatePost(newTaskData.Title, newTaskData.Description, newTaskData.Author);
-            return TypedResults.Created($"/tasks{post.Id}", post);
+            var userId = user.GetUserId();
+            if (userId == null)
+                return Results.Unauthorized();
+
+            var post = repo.CreatePost(newPostData.Text, userId);
+            var postResponse = new PostResponseDto(post.Id, post.Text);
+            return TypedResults.Created($"/tasks{postResponse.id} {postResponse.text}", postResponse);
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize()]
-        public static IResult UpdatePost(IRepository repo, BlogPostUpdatePayload updatePayload, int id)
+        public static IResult UpdatePost(IRepository repo, BlogPostUpdatePayload updatePayload, int id, ClaimsPrincipal user)
         {
-            if (updatePayload.Title == null) return TypedResults.BadRequest("Title is required.");
-            if (updatePayload.Description == null) return TypedResults.BadRequest("Description is required.");
-            if (updatePayload.Author == null) return TypedResults.BadRequest("Author is required.");
-
-            var post = repo.UpdatePost(id, updatePayload.Title, updatePayload.Description, updatePayload.Author);
+            //Checking parameters
+            var post = repo.GetPost(id);
             if (post == null)
-                return TypedResults.BadRequest("Post not found");
+                return TypedResults.BadRequest("Id out of scope");
 
-            return TypedResults.Created($"/tasks{post.Id}", post);
+            if (updatePayload.Text == null)
+                return TypedResults.BadRequest("Text is required.");
+
+            //Checking user identifications
+            var userId = user.GetUserId();
+            if (userId == null)
+                return Results.Unauthorized();
+
+            //var userRole = user.UserRole();
+            //if (userRole == null)
+            //    return Results.Unauthorized();
+
+            if (userId != post.AuthorId)
+                return Results.Unauthorized();
+
+            //Updates the post
+            post = repo.UpdatePost(post, updatePayload.Text);
+            var postResponse = new PostResponseDto(post.Id, post.Text);
+            return TypedResults.Created($"/tasks{postResponse.id} {postResponse.text}", postResponse);
         }
     }
 }

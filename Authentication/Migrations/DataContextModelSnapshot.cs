@@ -98,47 +98,19 @@ namespace Authentication.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Author")
+                    b.Property<string>("AuthorId")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("author");
+                        .HasColumnName("author_id");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("title");
+                        .HasColumnName("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("blog_posts");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Author = "Jane Pettersson",
-                            Description = "The current news",
-                            Title = "News"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Author = "Petter Johnsson",
-                            Description = "Supplies to clean with",
-                            Title = "Cleaner supplies"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Author = "Claire Sarah",
-                            Description = "Things to play with",
-                            Title = "Toys"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>

@@ -27,7 +27,7 @@ namespace Authentication.Endpoints
             if (registerPayload.Password == null) return TypedResults.BadRequest("Password is required.");
 
             //Creates the user
-            var result = await userManager.CreateAsync(new ApplicationUser { UserName = registerPayload.UserName, Email = registerPayload.Email, Role = UserRole.User },registerPayload.Password!);
+            var result = await userManager.CreateAsync(new ApplicationUser { UserName = registerPayload.UserName, Email = registerPayload.Email, Role = UserRole.User }, registerPayload.Password!);
             if (result.Succeeded)
                 return TypedResults.Created($"/auth/", new { username = registerPayload.UserName, email = registerPayload.Email, role = UserRole.User });
 
@@ -40,21 +40,16 @@ namespace Authentication.Endpoints
         {
             //Parameter checks
             if (loginPayload.UserName == null) return TypedResults.BadRequest("Username is required.");
-            if (loginPayload.Email == null) return TypedResults.BadRequest("Email is required.");
             if (loginPayload.Password == null) return TypedResults.BadRequest("Password is required.");
 
             //Trying to find the user
             var user = await userManager.FindByNameAsync(loginPayload.UserName);
             if (user == null)
-                return TypedResults.BadRequest("Invalid username, email or password.");
-
-            var email = await userManager.FindByEmailAsync(loginPayload.Email!);
-            if (email == null)
-                return TypedResults.BadRequest("Invalid username, email or password.");
+                return TypedResults.BadRequest("Invalid username or password.");
 
             var isPasswordValid = await userManager.CheckPasswordAsync(user, loginPayload.Password);
             if (!isPasswordValid)
-                return TypedResults.BadRequest("Invalid username, email or password.");
+                return TypedResults.BadRequest("Invalid username or password.");
 
             //Creates token and outputs it
             var accessToken = tokenService.CreateToken(user);

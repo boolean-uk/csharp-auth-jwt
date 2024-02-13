@@ -4,12 +4,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace Authentication.Migrations
 {
     /// <inheritdoc />
-    public partial class CreatingTables : Migration
+    public partial class CreationOfTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,9 +44,8 @@ namespace Authentication.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    title = table.Column<string>(type: "text", nullable: false),
-                    description = table.Column<string>(type: "text", nullable: false),
-                    author = table.Column<string>(type: "text", nullable: false)
+                    text = table.Column<string>(type: "text", nullable: false),
+                    author_id = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,16 +111,6 @@ namespace Authentication.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "blog_posts",
-                columns: new[] { "id", "author", "description", "title" },
-                values: new object[,]
-                {
-                    { 1, "Jane Pettersson", "The current news", "News" },
-                    { 2, "Petter Johnsson", "Supplies to clean with", "Cleaner supplies" },
-                    { 3, "Claire Sarah", "Things to play with", "Toys" }
                 });
 
             migrationBuilder.CreateIndex(

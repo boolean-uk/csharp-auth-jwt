@@ -11,15 +11,23 @@ namespace Authentication.Helpers
             return claim?.Value;
         }
 
-        // public static string? UserId(this IIdentity identity)
-        // {
-        //   if (identity != null && identity.IsAuthenticated)
-        //   {
-        //     // return Guid.Parse(((ClaimsIdentity)identity).Claims.Where(x => x.Type == "NameIdentifier").FirstOrDefault()!.Value);
-        //     return ((ClaimsIdentity)identity).Claims.Where(x => x.Type == "NameIdentifier").FirstOrDefault()!.Value;
-        //   }
-        //   return null;
-        // }
-    }
+        public static string GetUserId(this ClaimsPrincipal user)
+        {
+            IEnumerable<Claim> nameIdentifierClaims = user.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier);
 
+            if (nameIdentifierClaims.Count() >= 2)
+            {
+                return nameIdentifierClaims.ElementAt(1).Value;
+            }
+
+            Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
+            return claim?.Value;
+        }
+
+        public static string? UserRole(this ClaimsPrincipal user)
+        {
+            Claim? claim = user.FindFirst(ClaimTypes.Role);
+            return claim?.Value;
+        }
+    }
 }

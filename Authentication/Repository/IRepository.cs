@@ -6,7 +6,9 @@ namespace Authentication.Repository
     {
         public List<BlogPost> GetAllPosts();
         public BlogPost? GetPost(int id);
-        public BlogPost CreatePost(string title, string description, string author);
-        public BlogPost? UpdatePost(int id, string? title, string? description, string? author);
+        public BlogPost CreatePost(string text, string authorId);
+        public BlogPost UpdatePost(BlogPost post, string text);
+
+        public ApplicationUser? GetUser(string email);
     }
 }

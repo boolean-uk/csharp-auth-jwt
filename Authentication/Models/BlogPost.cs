@@ -8,13 +8,10 @@ namespace Authentication.Model
         [Column("id")]
         public int Id { get; set; }
 
-        [Column("title")]
-        public string Title { get; set; }
+        [Column("text")]
+        public string Text { get; set; }
 
-        [Column("description")]
-        public string Description { get; set; }
-
-        [Column("author")]
-        public string Author { get; set; }
+        [Column("author_id")]
+        public string AuthorId { get; set; }
     }
 }

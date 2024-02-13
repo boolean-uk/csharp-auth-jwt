@@ -23,30 +23,29 @@ namespace Authentication.Repository
             return dataContext.Posts.FirstOrDefault(p => p.Id == id);
         }
 
-        public BlogPost CreatePost(string title, string description, string author)
+        public BlogPost CreatePost(string text, string authorId)
         {
             int id = 0;
-            if (dataContext.Posts.Count()  > 0)
-                id = dataContext.Posts.Last().Id;
+            if (dataContext.Posts.Count() > 0)
+                id = dataContext.Posts.ToList().Last().Id;
             id++;
 
-            var post = new BlogPost() { Id = id, Title = title, Description = description, Author = author };
+            var post = new BlogPost() { Id = id, Text = text, AuthorId = authorId };
             dataContext.Add(post);
             dataContext.SaveChanges();
             return post;
         }
 
-        public BlogPost? UpdatePost(int id, string? title, string? description, string? author)
+        public BlogPost UpdatePost(BlogPost post, string text)
         {
-            BlogPost? post = dataContext.Posts.FirstOrDefault(p => p.Id == id);
-            if (post == null)
-                return null;
-
-            post.Title = title;
-            post.Description = description;
-            post.Author = author;
+            post.Text = text;
             dataContext.SaveChanges();
             return post;
+        }
+
+        public ApplicationUser? GetUser(string email)
+        {
+            return dataContext.Users.FirstOrDefault(u => u.Email == email);
         }
     }
 }
