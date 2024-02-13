@@ -16,6 +16,11 @@ namespace exercise.wwwapi.auth.Endpoints
             userGroup.MapDelete("/", DeleteOwnAccount);
         }
 
+        /// <summary>
+        /// Gets the currently authorized users information (Need to be authorized)
+        /// </summary>
+        /// <param name="context"></param> https://learn.microsoft.com/en-us/dotnet/api/system.web.httpcontext?view=netframework-4.8.1
+        /// <returns></returns> 200 ok if successfull, else 404
         [Authorize(Roles = "Admin, Moderator, User")]
         private static IResult GetUserInformation(HttpContext context)
         {
@@ -24,9 +29,16 @@ namespace exercise.wwwapi.auth.Endpoints
             {
                 return TypedResults.NotFound();
             }
-            return TypedResults.Ok(new UserDTO(user));
+            return TypedResults.Ok(user);
         }
 
+        /// <summary>
+        /// only a logged in admin who has access to this function can delete any user.
+        /// </summary>
+        /// <param name="context"></param> https://learn.microsoft.com/en-us/dotnet/api/system.web.httpcontext?view=netframework-4.8.1
+        /// <param name="userManager"></param> is the class from Identity that is used to access the users table that was generated
+        /// <param name="userId"></param> the user identifyer that we want o remove from the db
+        /// <returns></returns> 200 ok if user exeisted and got removed, 401 if not admin, 403 if userId is wrong
         [Authorize(Roles = "Admin")]
         public static IResult DeleteUser(HttpContext context, UserManager<ApplicationUser> userManager, string userId)
         {
@@ -58,6 +70,12 @@ namespace exercise.wwwapi.auth.Endpoints
 
         }
 
+        /// <summary>
+        /// Only a logged in user can delete their "account" voluntarily
+        /// </summary>
+        /// <param name="context"></param> https://learn.microsoft.com/en-us/dotnet/api/system.web.httpcontext?view=netframework-4.8.1
+        /// <param name="userManager"></param> is the class from Identity that is used to access the users table that was generated
+        /// <returns></returns> 403 if not logged in, 404 if the user for some reason does not exist, 200 ok if user got removed successfully 
         [Authorize(Roles = "User")]
         public static IResult DeleteOwnAccount(HttpContext context, UserManager<ApplicationUser> userManager)
         {

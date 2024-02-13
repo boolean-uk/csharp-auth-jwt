@@ -16,7 +16,13 @@ namespace exercise.wwwapi.auth.Endpoints
             blogGroup.MapPost("/", CreateBlog);
         }
 
-
+        /// <summary>
+        /// A AUTHERIZED user, admin or moderator can create a blog
+        /// </summary>
+        /// <param name="blogRepository"></param> class that access the db ad add the blof to the blogs table
+        /// <param name="payload"></param> the data we need to create a blog
+        /// <param name="context"></param> https://learn.microsoft.com/en-us/dotnet/api/system.web.httpcontext?view=netframework-4.8.1
+        /// <returns></returns> 201 if the blog is created, else 400 badrequest 
         [Authorize(Roles = "Admin, Moderator, User")]
         public static async Task<IResult> CreateBlog(IBlogRepository blogRepository, BlogPostPayload payload, HttpContext context)
         {

@@ -18,6 +18,11 @@ namespace exercise.wwwapi.auth.Services
             _logger = logger;
         }
 
+        /// <summary>
+        /// Creates a JWT token
+        /// </summary>
+        /// <param name="user"></param> the currently logged in user
+        /// <returns></returns> JWT token
         public string CreateToken(ApplicationUser user)
         {
             var expiration = DateTime.UtcNow.AddMinutes(ExpirationMinutes);
@@ -37,6 +42,11 @@ namespace exercise.wwwapi.auth.Services
             new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("JwtTokenSettings")["ValidIssuer"],
             new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("JwtTokenSettings")["ValidAudience"], claims, expires: expiration, signingCredentials: credentials);
 
+        /// <summary>
+        ///  different pieces of information that we add inside a JWT token, behaves like a map
+        /// </summary>
+        /// <param name="user"></param> currently logged in user
+        /// <returns></returns> list of claims
         private List<Claim> CreateClaims(ApplicationUser user)
         {
             var jwtSub = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("JwtTokenSettings")["JwtRegisteredClaimNamesSub"];

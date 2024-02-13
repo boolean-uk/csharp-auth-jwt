@@ -13,7 +13,14 @@ namespace exercise.wwwapi.auth.Repositories
             _db = db;
         }
 
-
+        /// <summary>
+        /// Creates the blog
+        /// </summary>
+        /// <param name="user_id"></param> logged in users id
+        /// <param name="author"></param> logged in users username
+        /// <param name="title"></param> title of the blog
+        /// <param name="description"></param> description of the blog
+        /// <returns></returns> a blog
         public async Task<Blog> createBlog(string user_id, string author, string title, string description)
         {
             var result = new Blog() { AuthorId = user_id, AuthorName = author, Title = title, Description = description, CreatedAt = DateTime.UtcNow, LastUpdated = DateTime.UtcNow };
@@ -21,7 +28,6 @@ namespace exercise.wwwapi.auth.Repositories
             await _db.SaveChangesAsync();
 
             return result;
-            throw new NotImplementedException();
         }
     }
 }
