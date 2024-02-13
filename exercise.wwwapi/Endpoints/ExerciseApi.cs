@@ -4,6 +4,7 @@ using exercise.wwwapi.Models;
 using static exercise.wwwapi.DTOs.DTOs;
 using static exercise.wwwapi.DTOs.payloads;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace exercise.wwwapi.Endpoints
 {
@@ -16,9 +17,13 @@ namespace exercise.wwwapi.Endpoints
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [Authorize()] //you can not call get all posts unless logged in
-        public static async Task<IResult> GetPosts(IRepository repository)
+        [Authorize(Roles = "Admin" )] //you can not call get all posts unless logged in, here you need to be an admin to retrieve all tasks,
+                                      //if (empty) then you only need to logged in but all roles can retrieve
+        public static async Task<IResult> GetPosts(IRepository repository, ClaimsPrincipal user)
         {
+            var userID = user.UserId;
+            if(userID == null) { return Results.Unauthorized(); }
+
             var posts = await repository.GetPostsAsync();
             var postDto = new List<PostResponseDTO>();
             foreach (Blogpost post in posts)
