@@ -30,6 +30,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         options.Password.RequireDigit = false;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
+        options.Password.RequiredLength = 4;
     })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DataContext>();

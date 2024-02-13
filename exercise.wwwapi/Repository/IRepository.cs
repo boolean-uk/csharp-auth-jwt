@@ -1,4 +1,5 @@
 ﻿using exercise.wwwapi.Model;
+using System.Security.Claims;
 
 namespace exercise.wwwapi.Repository
 {

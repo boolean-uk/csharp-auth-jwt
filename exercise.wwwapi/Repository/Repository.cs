@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using exercise.wwwapi.Data;
 using exercise.wwwapi.Model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.wwwapi.Repository
@@ -39,15 +40,15 @@ namespace exercise.wwwapi.Repository
 
         public async Task<List<BlogPost>> GetBlogPosts()
         {
-            return await db.BlogPosts.ToListAsync();
+            return await db.BlogPosts.Include(b => b.User).ToListAsync();
         }
 
         public async Task<BlogPost> UpdateBlogPost(int id, BlogPost data)
         {
-            var blogPost = await db.BlogPosts.FindAsync(id);
+            BlogPost? blogPost = await db.BlogPosts.Include(b => b.User).FirstOrDefaultAsync(b => b.Id == id);
             if (blogPost == null)
-            {
-                throw new KeyNotFoundException("Blog post not found");
+            {throw new KeyNotFoundException("Blog post not found");
+                
             }
 
             blogPost.Title = data.Title;
@@ -56,6 +57,11 @@ namespace exercise.wwwapi.Repository
 
             await db.SaveChangesAsync();
             return blogPost;
+        }
+
+        public async Task<List<ApplicationUser>> GetUsers()
+        {
+            return await db.Users.ToListAsync();
         }
     }
 }
