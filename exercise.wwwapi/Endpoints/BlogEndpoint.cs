@@ -23,19 +23,12 @@ namespace exercise.wwwapi.Endpoints
 
             return TypedResults.Ok(result);
         }
-        [Authorize()]
+        [Authorize(Roles = "Admin")]
         public static async Task<IResult> GetBlogposts(IRepository repository, ClaimsPrincipal user)
         {
-            string? roleType = user.UserRole();
-            if (roleType == "Admin")
-            {
-                var result = await repository.GetPosts();
-                return TypedResults.Ok(result);
-            }
-            else
-            {
-                return TypedResults.Forbid();
-            }
+            var result = await repository.GetPosts();
+            return TypedResults.Ok(result);
+
         }
     }
 }
