@@ -1,5 +1,7 @@
 ﻿using exercise.wwwapi.auth.DTOs;
+using exercise.wwwapi.auth.Models;
 using exercise.wwwapi.auth.Repositories;
+using Microsoft.AspNetCore.Identity;
 using System.Web.Http;
 
 namespace exercise.wwwapi.auth.Endpoints
@@ -26,11 +28,34 @@ namespace exercise.wwwapi.auth.Endpoints
         }
 
         [Authorize(Roles = "Admin")]
-        public static IResult DeleteUser(HttpContext context)
+        public static IResult DeleteUser(HttpContext context, UserManager<ApplicationUser> userManager, string userId)
         {
-            
+            var currentUser = context.User;
+            if (!currentUser.IsInRole("Admin"))
+            {
+                return TypedResults.Unauthorized();
+            }
 
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return TypedResults.BadRequest("User Id is required");
+            }
+
+            var deletingUser = userManager.FindByIdAsync(userId).Result;
+            if (deletingUser == null)
+            {
+                return TypedResults.NotFound($"User with id {userId} not found");
+            }
+
+            var result = userManager.DeleteAsync(deletingUser).Result;
+            if (result.Succeeded)
+            {
+                return TypedResults.Ok($"User with id {userId} has been deleted from the database");
+            } else
+            {
+                return TypedResults.BadRequest($"Error deelteing user with id {userId}, ");
+            }
+
         }
     }
 }

@@ -5,8 +5,6 @@ namespace exercise.wwwapi.auth.DTOs
 {
     public class BlogDTO
     {
-        private Blog result;
-
         public string AuthorName { get; set; }
         public string Title { get; set; }     
         public string Description { get; set; }
@@ -20,7 +18,5 @@ namespace exercise.wwwapi.auth.DTOs
             CreatedAt = blog.CreatedAt;
             LastUpdated = blog.LastUpdated;
         }
-
-       
     }
 }
