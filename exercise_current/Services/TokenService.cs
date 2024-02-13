@@ -61,7 +61,7 @@ namespace exercise.wwwapi.Services
         {
             //Use systems secret when creating tokens
             var symmetricSecurityKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("JwtTokenSettings")["SymmetricSecurityKey"];
-            //Choose algorithm and secret
+            //Choose algorithm and secret (Red and blue part of JWT)
             return new SigningCredentials( new SymmetricSecurityKey( Encoding.UTF8.GetBytes(symmetricSecurityKey)), SecurityAlgorithms.HmacSha256);
         }
     }

@@ -1,4 +1,5 @@
-﻿using exercise.wwwapi.Models;
+﻿using exercise.wwwapi.Helpers;
+using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,8 +22,13 @@ namespace exercise.wwwapi.Endpoints
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize()]
-        public static async Task<IResult> GetAllPosts(IRepository repository)
+        public static async Task<IResult> GetAllPosts(IRepository repository, ClaimsPrincipal user)
         {
+            var userId = user.UserId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
             var posts = await repository.GetAllPosts();
             return TypedResults.Ok(posts);
         }
