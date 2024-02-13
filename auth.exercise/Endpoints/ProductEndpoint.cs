@@ -1,6 +1,8 @@
 using auth.exercise.Repository;
-using auth.exercise.Data;
 using auth.exercise.Model;
+using Microsoft.AspNetCore.Mvc;
+using auth.exercise.Enums;
+using Microsoft.AspNetCore.Authorization;
 
 namespace auth.exercise.Endpoints
 {
@@ -15,6 +17,9 @@ namespace auth.exercise.Endpoints
             store.MapDelete("/{id}", DeleteProduct);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        //Authorize only for Admin
+        [Authorize(Roles = nameof(Roles.Admin))]
         public static async Task<IResult> GetAllProducts(IProductRepository productRepository)
         {
             var products = await productRepository.GetAllProducts();

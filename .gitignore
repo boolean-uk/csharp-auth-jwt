@@ -476,7 +476,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 /auth.exercise/appsettings.json
-/auth.exercise/appsettings.Development.json
  */**/bin/Debug   
 */**/bin/Release   
 */**/obj/Debug   
