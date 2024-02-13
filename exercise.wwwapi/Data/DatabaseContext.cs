@@ -15,9 +15,9 @@ namespace exercise.wwwapi.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<BlogPost>().HasData(
-                new BlogPost {Id = 1, AuthorId = "Percy Jackson", Text = "Look I didn't want to be a halfblood"},
-                new BlogPost { Id = 2, AuthorId = "Annabeth Chase", Text = "You drool in your sleep" },
-                new BlogPost { Id = 3, AuthorId = "Nico di Angelo", Text = "With great power, comes a great need to take a nap. Wake me up later" }
+                new BlogPost {Id = 1, Author = "Percy Jackson", Text = "Look I didn't want to be a halfblood"},
+                new BlogPost { Id = 2, Author = "Annabeth Chase", Text = "You drool in your sleep" },
+                new BlogPost { Id = 3, Author = "Nico di Angelo", Text = "With great power, comes a great need to take a nap. Wake me up later" }
 
 
                 );

@@ -8,7 +8,7 @@ namespace exercise.wwwapi.Models
         [Column("id")]
         public int Id { get; set; }
         [Column("author_id")]
-        public string AuthorId { get; set; }
+        public string Author { get; set; }
         [Column("text")]
         public string Text { get; set; }
         

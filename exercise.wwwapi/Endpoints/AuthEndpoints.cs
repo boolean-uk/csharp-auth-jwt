@@ -2,6 +2,7 @@
 using exercise.wwwapi.Enums;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
+using exercise.wwwapi.Services;
 using Microsoft.AspNetCore.Identity;
 using System.IO.Pipes;
 
@@ -18,20 +19,40 @@ namespace exercise.wwwapi.Endpoints
 
         public static async Task<IResult> Register(UserManager<ApplicationUser> userManager, RegisterDTO payload)
         {
-            if (payload.userName is null) return TypedResults.BadRequest("Username is required");
+            if (payload.username is null) return TypedResults.BadRequest("Username is required");
             if (payload.email is null) return TypedResults.BadRequest("Email is required");
             if (payload.password is null) return TypedResults.BadRequest("Password is required");
-            var result = await userManager.CreateAsync(new ApplicationUser { UserName = payload.userName, Email = payload.email, Role = UserRole.User }, payload.password!);
+            var result = await userManager.CreateAsync(new ApplicationUser { UserName = payload.username, Email = payload.email, Role = UserRole.User }, payload.password!);
             if (result.Succeeded)
             {
-                return TypedResults.Created("/auth/", result);
+                return TypedResults.Created("/auth/", new RegisterResponseDTO(payload.username, payload.email, UserRole.User));
             }
 
             return TypedResults.BadRequest(result.Errors);
         }
-        public static IResult Login(IBlogRepository repository)
+        public static async Task<IResult> Login(LoginDTO payload, UserManager<ApplicationUser> userManager, IBlogRepository repository, TokenService tokenService)
         {
-            return TypedResults.Ok();
+            //check payload
+            if (payload.username == null) return TypedResults.BadRequest("Username is required");
+            if (payload.password == null) return TypedResults.BadRequest("Password is required");
+
+            //load user from database
+            var user = await userManager.FindByNameAsync(payload.username);
+            if (user is null)
+            {
+                return TypedResults.BadRequest("Invalid username or password");
+            }
+            //check password matches
+            bool isPasswordValid = await userManager.CheckPasswordAsync(user, payload.password);
+            if (!isPasswordValid)
+            {
+                return TypedResults.BadRequest("Invalid username or password");
+            }
+            //create a token
+            var token = tokenService.CreateToken(user);
+
+            //return the response
+            return TypedResults.Ok(new LoginResponseDTO(token, user.UserName, user.Role));
         }
     }
 }

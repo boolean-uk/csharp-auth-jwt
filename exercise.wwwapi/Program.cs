@@ -2,10 +2,12 @@ using exercise.wwwapi.Data;
 using exercise.wwwapi.Endpoints;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
+using exercise.wwwapi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,13 +17,41 @@ var builder = WebApplication.CreateBuilder(args);
 // builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(option =>
+{
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    }) ;
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { 
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[]{}
+        }
+    }) ;
+});
+
+
 builder.Services.AddDbContext<DatabaseContext>(
     opt =>
     {
         opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionString"));
     });
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
+builder.Services.AddScoped<TokenService, TokenService>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
