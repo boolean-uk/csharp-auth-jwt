@@ -16,7 +16,12 @@ namespace exercise.wwwapi.auth.Endpoints
         }
 
 
-
+        /// <summary>
+        /// Register a user that is not logged in or authenticated
+        /// </summary>
+        /// <param name="userManager"></param>  is the class from Identity that is used to access the users table that was generated
+        /// <param name="payload"></param> is the data we want the user to provide
+        /// <returns></returns> 201 if created, 400 if payload is missing or bad
         public static async Task<IResult> Register(UserManager<ApplicationUser> userManager, RegisterPayload payload)
         {
             if (payload.Email == null) return TypedResults.BadRequest("Email is required!");
@@ -43,6 +48,13 @@ namespace exercise.wwwapi.auth.Endpoints
             
         }
 
+        /// <summary>
+        /// Makes so a user that is registered can authenticate itself 
+        /// </summary>
+        /// <param name="payload"></param> the data we want the user to provide
+        /// <param name="userManager"></param> is the class from Identity that is used to access the users table that was generated
+        /// <param name="tokenService"></param> is the TokenServer class that creates a JWT token easily
+        /// <returns></returns> 200 if the payload is ok and the user is in the database, 400
         public static async Task<IResult> Login(LoginPayload payload, UserManager<ApplicationUser> userManager, TokenService tokenService)
         {
             if (payload.Email == null || payload.Email == "") return TypedResults.BadRequest("Email is required!");
@@ -57,10 +69,6 @@ namespace exercise.wwwapi.auth.Endpoints
             var token = tokenService.CreateToken(user);
 
             return TypedResults.Ok(new LoginResPayload(token, user.Email, user.Role));
-            
-            
-            
-            throw new NotImplementedException();
         }
     }
 }

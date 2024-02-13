@@ -33,31 +33,8 @@ namespace exercise.wwwapi.auth.Data
             };
             admin.PasswordHash = passwordHasher.HashPassword(admin, "admin123");
             modelBuilder.Entity<ApplicationUser>().HasData(admin);
-            /*
-            modelBuilder.Entity<ApplicationUser>().HasData(
-               new ApplicationUser
-               {
-                   UserMadeUserName = "JojoDoe",
-                   Email = "john.doe@example.com",
-                   Role = UserRole.Admin
-               },
-               new ApplicationUser
-               {
-                   UserMadeUserName = "SmithyJane",
-                   Email = "jane.smith@example.com",
-                   Role = UserRole.Moderator
-               },
-               new ApplicationUser
-               {
-                   UserMadeUserName = "Flugan",
-                   Email = "alice.johnson@example.com",
-                   Role = UserRole.User
-               }
-           );*/
+           
         }
-
-
-
 
         public DbSet<Blog> Blogs { get; set; }
 
