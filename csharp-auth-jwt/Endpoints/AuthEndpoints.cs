@@ -1,6 +1,7 @@
 ﻿using csharp_auth_jwt.Model;
 using csharp_auth_jwt.Model.Dto;
 using csharp_auth_jwt.Model.Enum;
+using csharp_auth_jwt.Services;
 using Microsoft.AspNetCore.Identity;
 
 namespace csharp_auth_jwt.Endpoints
