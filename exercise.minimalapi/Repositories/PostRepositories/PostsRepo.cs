@@ -19,7 +19,7 @@ namespace exercise.minimalapi.Repositories
 
         public async Task<Post> Add(string text, string authorId)
         {
-            var newPost = await _db.AddAsync(new Post { Text = text, AuthorId = authorId});
+            var newPost = await _db.BlogPosts.AddAsync(new Post { Text = text, AuthorId = authorId });
             await _db.SaveChangesAsync();
             return newPost.Entity;
         }
@@ -33,7 +33,7 @@ namespace exercise.minimalapi.Repositories
 
         public async Task<ICollection<Post>> GetPostsByUserId(string authorId)
         {
-            return await _db.BlogPosts.Where( p => p.AuthorId.Equals(authorId)).ToArrayAsync();
+            return await _db.BlogPosts.Where(p => p.AuthorId.Equals(authorId)).ToArrayAsync();
         }
     }
 }

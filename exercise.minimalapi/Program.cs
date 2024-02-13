@@ -1,18 +1,16 @@
 
 using exercise.minimalapi.Data;
 using exercise.minimalapi.Endpoints;
-using System.Text;
-using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication;
-using exercise.minimalapi.Repositories;
 using exercise.minimalapi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using exercise.minimalapi.Repositories;
 using exercise.minimalapi.Repositories.AuthRepo;
 using exercise.minimalapi.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace exercise.minimalapi
 {
@@ -57,14 +55,15 @@ namespace exercise.minimalapi
             builder.Services.AddDbContext<BlogContext>(
             opt =>
             {
-                opt.UseNpgsql(builder.Configuration.GetConnectionString("PostGresConnectionString"));
+                opt.UseNpgsql(builder.Configuration.GetConnectionString("ElephantConnectionString"));
             });
 
             builder.Services.AddScoped<IAuthRepo, AuthRepo>();
             builder.Services.AddScoped<IPostsRepo, PostsRepo>();
+            //builder.Services.AddScoped<IAdminRepo, AdminRepo>();
             builder.Services.AddScoped<TokenService, TokenService>();
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>( options =>
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
 
@@ -120,6 +119,7 @@ namespace exercise.minimalapi
 
             app.ConfigurePostsEndpoints();
             app.ConfigureAuthEndpoints();
+            //app.ConfigureAdminEndpoints();
 
             app.Run();
         }
