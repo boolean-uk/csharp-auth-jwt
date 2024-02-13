@@ -12,6 +12,8 @@ namespace exercise.wwwapi.auth.Endpoints
         {
             var userGroup = app.MapGroup("/users");
             userGroup.MapGet("/", GetUserInformation);
+            userGroup.MapDelete("/admin", DeleteUser);
+            userGroup.MapDelete("/", DeleteOwnAccount);
         }
 
         [Authorize(Roles = "Admin, Moderator, User")]
@@ -22,8 +24,6 @@ namespace exercise.wwwapi.auth.Endpoints
             {
                 return TypedResults.NotFound();
             }
-
-            var tmp = context.User.GetUserName();
             return TypedResults.Ok(new UserDTO(user));
         }
 
@@ -56,6 +56,29 @@ namespace exercise.wwwapi.auth.Endpoints
                 return TypedResults.BadRequest($"Error deelteing user with id {userId}, ");
             }
 
+        }
+
+        [Authorize(Roles = "User")]
+        public static IResult DeleteOwnAccount(HttpContext context, UserManager<ApplicationUser> userManager)
+        {
+            var user = context.User.GetUserId();
+            if (user == null)
+            {
+                return TypedResults.BadRequest();
+            }
+            var result = userManager.FindByIdAsync(user).Result;
+            if (result == null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var res = userManager.DeleteAsync(result).Result;
+
+            if (res.Succeeded)
+            {
+                return TypedResults.Ok($"You are no longer with us");
+            }
+            throw new NotImplementedException();
         }
     }
 }

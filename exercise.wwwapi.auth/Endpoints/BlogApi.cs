@@ -38,9 +38,6 @@ namespace exercise.wwwapi.auth.Endpoints
             {
                 return TypedResults.Created($"/blog ",new BlogDTO(result));
             }
-
-
-            throw new NotImplementedException();
         }
 
         [Authorize(Roles = "Admin, Moderator, User")]
