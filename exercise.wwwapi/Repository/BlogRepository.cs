@@ -30,9 +30,10 @@ namespace exercise.wwwapi.Repository
             return post;
         }
 
-        public Task<ICollection<BlogPost>> GetOwnPosts(string author_id)
+        public async Task<ICollection<BlogPost>> GetOwnPosts(string author_id)
         {
-            throw new NotImplementedException();
+            List<BlogPost> results = await _db.Posts.Where(x => x.Author == author_id).ToListAsync();
+            return results;
         }
 
         public async Task<BlogPost?> GetPostById(int id)
