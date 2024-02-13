@@ -14,7 +14,6 @@ namespace exercise.wwwapi.auth.Endpoints
         {
             var blogGroup = app.MapGroup("/blog");
             blogGroup.MapPost("/", CreateBlog);
-            blogGroup.MapPost("/dff", UpdateBlog);
         }
 
 
@@ -40,11 +39,6 @@ namespace exercise.wwwapi.auth.Endpoints
             }
         }
 
-        [Authorize(Roles = "Admin, Moderator, User")]
-        public static async Task<IResult> UpdateBlog()
-        {
-
-            throw new NotImplementedException();
-        }
+        
     }
 }

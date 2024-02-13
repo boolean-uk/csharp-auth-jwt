@@ -42,6 +42,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddScoped<TokenService, TokenService>();
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
+
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionString"));
