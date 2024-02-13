@@ -40,9 +40,9 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
 builder.Services.AddScoped<TokenService, TokenService>();
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
-
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionString"));
@@ -63,9 +63,9 @@ var validIssuer = builder.Configuration.GetValue<string>
 var validAudience = builder.Configuration.GetValue<string>
 ("JwtTokenSettings:ValidAudience");
 
-var symmetricSecurityKey =
-builder.Configuration.GetValue<string>
+var symmetricSecurityKey = builder.Configuration.GetValue<string>
 ("JwtTokenSettings:SymmetricSecurityKey");
+
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
 {
