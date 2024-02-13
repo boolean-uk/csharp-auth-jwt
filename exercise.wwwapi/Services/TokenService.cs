@@ -12,7 +12,7 @@ namespace exercise.wwwapi.Services
     public class TokenService
     {
         
-        private const int ExpirationMinutes = 2;
+        private const int ExpirationMinutes = 20;
         private readonly ILogger<TokenService> _logger;
         public TokenService(ILogger<TokenService> logger)
         {

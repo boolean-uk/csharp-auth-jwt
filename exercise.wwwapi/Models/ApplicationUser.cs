@@ -14,5 +14,4 @@ namespace exercise.wwwapi.Models
         [Column("role")]
         public UserRole Role { get; set; }
     }
-    
 }

@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Security.Cryptography;
+using exercise.wwwapi.Enums;
+using exercise.wwwapi.Helpers;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -24,8 +26,16 @@ namespace exercise.wwwapi.Endpoints
         [Authorize()]
         public static async Task<IResult> GetBlogposts(IRepository repository, ClaimsPrincipal user)
         {
-            var result = await repository.GetPosts();
-            return TypedResults.Ok(result);
+            string? roleType = user.UserRole();
+            if (roleType == "Admin")
+            {
+                var result = await repository.GetPosts();
+                return TypedResults.Ok(result);
+            }
+            else
+            {
+                return TypedResults.Forbid();
+            }
         }
     }
 }
