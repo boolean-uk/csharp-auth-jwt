@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿
+using System.ComponentModel.DataAnnotations.Schema;
 using exercise.wwwapi.auth.Enums;
 using Microsoft.AspNetCore.Identity;
 
@@ -11,5 +12,8 @@ namespace exercise.wwwapi.auth.Models
         public string UserMadeUserName { get; set; }
         [Column("role")]
         public UserRole Role { get; set; }
+
+        // should add a relation to blog in ICollection
+        public ICollection<Blog> BlogPosts { get; set; }
     }
 }

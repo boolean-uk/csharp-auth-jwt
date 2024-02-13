@@ -2,7 +2,6 @@
 using exercise.wwwapi.auth.Enums;
 using Microsoft.AspNetCore.Identity;
 using static exercise.wwwapi.auth.Payloads.AuthPayloads;
-using exercise.wwwapi.auth.Payloads;
 using exercise.wwwapi.auth.Services;
 
 namespace exercise.wwwapi.auth.Endpoints

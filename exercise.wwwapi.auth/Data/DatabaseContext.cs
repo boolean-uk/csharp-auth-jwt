@@ -29,7 +29,7 @@ namespace exercise.wwwapi.auth.Data
                {
                    UserMadeUserName = "SmithyJane",
                    Email = "jane.smith@example.com",
-                   Role = UserRole.Modirator
+                   Role = UserRole.Moderator
                },
                new ApplicationUser
                {
@@ -39,6 +39,11 @@ namespace exercise.wwwapi.auth.Data
                }
            );
         }
+
+
+
+
+        public DbSet<Blog> Blogs { get; set; }
 
 
     }
