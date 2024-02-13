@@ -2,12 +2,15 @@ using csharp_auth_jwt.Data;
 using csharp_auth_jwt.Endpoints;
 using csharp_auth_jwt.Model;
 using csharp_auth_jwt.Repository;
+using csharp_auth_jwt.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +49,7 @@ builder.Services.AddScoped<IBlogPostRepository , BlogPostRepository>();
 builder.Services.AddScoped<TokenService>();
 
 builder.Services
-    .AddIdentity<BlogUser , IdentityRole>(options =>
+    .AddIdentityCore<BlogUser>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
         options.User.RequireUniqueEmail = true;
@@ -56,7 +59,11 @@ builder.Services
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
     })
-    .AddRoles<IdentityRole>();
+    .AddRoles<IdentityRole>()
+    .AddUserStore<UserStore<BlogUser , IdentityRole , BlogPostContext>>()
+    .AddRoleStore<RoleStore<IdentityRole , BlogPostContext>>()
+    .AddDefaultTokenProviders();
+
 
 var validIssuer = builder.Configuration.GetValue<string>("JwtTokenSettings:ValidIssuer");
 var validAudience = builder.Configuration.GetValue<string>("JwtTokenSettings:ValidAudience");
