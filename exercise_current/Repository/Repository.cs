@@ -16,15 +16,15 @@ namespace exercise.wwwapi.Repository
 
         public async Task<IEnumerable<Posts>> GetAllPosts()
         {
-            return await _db.Posts.Include(a => a.Author).ToListAsync();
+            return await _db.Posts.ToListAsync(); //.Include(a => a.Author)
         }
         
         public async Task<Posts?> GetPost(int id)
         {
-            return _db.Posts.Include(a => a.Author).SingleOrDefault(a => a.Id == id);
+            return _db.Posts.SingleOrDefault(a => a.Id == id); //.Include(a => a.Author)
         }
 
-        public async Task<Posts> CreatePost(string Text, int AuthorId)
+        public async Task<Posts> CreatePost(string Text, string AuthorId)
         {
             //Create Post to return
             Posts post = new Posts();
@@ -37,7 +37,7 @@ namespace exercise.wwwapi.Repository
             return post;
         }
         
-        public async Task<Posts?> UpdatePost(int id, string Text, int AuthorId)
+        public async Task<Posts?> UpdatePost(int id, string Text, string AuthorId)
         {
             //Load Post to return
             Posts post = await GetPost(id);
@@ -51,10 +51,6 @@ namespace exercise.wwwapi.Repository
             //Save database and return
             _db.SaveChanges();
             return post;
-        }
-        public async Task<User?> GetUser(int id)
-        {
-            return _db.Users.FirstOrDefault(u => u.Id == id);
         }
     }
 }

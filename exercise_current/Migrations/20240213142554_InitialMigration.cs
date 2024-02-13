@@ -12,15 +12,12 @@ namespace exercise.wwwapi.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Type",
-                table: "user");
-
             migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
                     role = table.Column<int>(type: "integer", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -103,6 +100,26 @@ namespace exercise.wwwapi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "posts",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    text = table.Column<string>(type: "text", nullable: false),
+                    author_id = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_posts", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_posts_AspNetUsers_author_id",
+                        column: x => x.author_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
                 table: "AspNetUserClaims",
@@ -123,6 +140,11 @@ namespace exercise.wwwapi.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_posts_author_id",
+                table: "posts",
+                column: "author_id");
         }
 
         /// <inheritdoc />
@@ -138,21 +160,10 @@ namespace exercise.wwwapi.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "posts");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.AddColumn<int>(
-                name: "Type",
-                table: "user",
-                type: "integer",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.UpdateData(
-                table: "user",
-                keyColumn: "id",
-                keyValue: 1,
-                column: "Type",
-                value: 0);
         }
     }
 }

@@ -12,7 +12,7 @@ using exercise.wwwapi.Data;
 namespace exercise.wwwapi.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240213071953_InitialMigration")]
+    [Migration("20240213142554_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -116,6 +116,11 @@ namespace exercise.wwwapi.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -133,6 +138,10 @@ namespace exercise.wwwapi.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("integer")
+                        .HasColumnName("role");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -142,9 +151,6 @@ namespace exercise.wwwapi.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
-
-                    b.Property<int>("role")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -167,8 +173,9 @@ namespace exercise.wwwapi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("integer")
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("text")
                         .HasColumnName("author_id");
 
                     b.Property<string>("Text")
@@ -181,40 +188,6 @@ namespace exercise.wwwapi.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("posts");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AuthorId = 1,
-                            Text = "This is a post"
-                        });
-                });
-
-            modelBuilder.Entity("exercise.wwwapi.Models.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("user");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Victor"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -246,7 +219,7 @@ namespace exercise.wwwapi.Migrations
 
             modelBuilder.Entity("exercise.wwwapi.Models.Posts", b =>
                 {
-                    b.HasOne("exercise.wwwapi.Models.User", "Author")
+                    b.HasOne("exercise.wwwapi.Models.ApplicationUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)

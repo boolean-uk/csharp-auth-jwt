@@ -20,7 +20,11 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async static Task<IResult> Login(LoginDTO payload, UserManager<ApplicationUser> userManager, IRepository repository, TokenService tokenService)
         {
-            //Check payload contains email and password
+            //Check payload contains name, email and password
+            if (payload.Name == null)
+            {
+                return TypedResults.BadRequest("You must enter a name");
+            }
             if (payload.Email == null)
             {
                 return TypedResults.BadRequest("You must enter an email address");
@@ -42,7 +46,7 @@ namespace exercise.wwwapi.Endpoints
                 return TypedResults.BadRequest("Invalid email or password");
             }
             var token = tokenService.CreateToken(user);
-            return TypedResults.Ok(new AuthResponseDTO(token, user.Email, user.Role));
+            return TypedResults.Ok(new AuthResponseDTO(payload.Name, token, user.Email, user.Role));
         }
 
         public async static Task<IResult> Register(RegisterDTO payload, UserManager<ApplicationUser> userManager)
@@ -60,6 +64,7 @@ namespace exercise.wwwapi.Endpoints
             var user = await userManager.CreateAsync(
                 new ApplicationUser
                 {
+                    Name = payload.Name,
                     UserName = payload.Email,
                     Email = payload.Email,
                     Role = UserRole.User
@@ -69,7 +74,7 @@ namespace exercise.wwwapi.Endpoints
             //Check user was created
             if (user.Succeeded)
             {
-                return TypedResults.Created($"/auth/", new RegisterResponseDTO(payload.Email, UserRole.User));
+                return TypedResults.Created($"/auth/", new RegisterResponseDTO(payload.Name, payload.Email, UserRole.User));
             }
             return TypedResults.BadRequest(user.Errors);
         }

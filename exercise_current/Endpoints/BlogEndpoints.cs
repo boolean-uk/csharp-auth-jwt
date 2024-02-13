@@ -18,7 +18,6 @@ namespace exercise.wwwapi.Endpoints
             blogGroup.MapGet("/posts", GetAllPosts);
             blogGroup.MapPost("/posts{id}", CreatePost);
             blogGroup.MapPut("/posts{id}", UpdatePost);
-            blogGroup.MapGet("/users{id}", GetUser);
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize()]
@@ -33,13 +32,15 @@ namespace exercise.wwwapi.Endpoints
             return TypedResults.Ok(posts);
         }
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public static async Task<IResult> CreatePost(IRepository repository, PostPostPayload payload)
+        [Authorize()]
+        public static async Task<IResult> CreatePost(IRepository repository, PostPostPayload payload, ClaimsPrincipal user)
         {
-            if(payload.AuthorId <= 0 || payload.Text == null)
+            if(payload.Text == null)
             {
                 return TypedResults.BadRequest("You must fill all fields");
             }
-            var post = await repository.CreatePost(payload.Text, payload.AuthorId);
+            var userId = user.UserId();
+            var post = await repository.CreatePost(payload.Text, userId);
             if (post == null)
             {
                 return TypedResults.NotFound($"Could not create post");
@@ -47,28 +48,20 @@ namespace exercise.wwwapi.Endpoints
             return TypedResults.Created($"/posts{post.Id}", post);
         }
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public static async Task<IResult> UpdatePost(IRepository repository, int id, PutPostPayload payload)
+        [Authorize()]
+        public static async Task<IResult> UpdatePost(IRepository repository, int id, PutPostPayload payload, ClaimsPrincipal user)
         {
-            if (payload.AuthorId <= 0 || payload.Text == null)
+            if (payload.Text == null)
             {
                 return TypedResults.BadRequest("You must fill all fields");
             }
-            var post = await repository.UpdatePost(id, payload.Text, payload.AuthorId);
+            var userId = user.UserId();
+            var post = await repository.UpdatePost(id, payload.Text, userId);
             if (post == null)
             {
                 return TypedResults.NotFound($"No post with id: {id} found");
             }
             return TypedResults.Created($"/posts{post.Id}", post);
-        }
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public static async Task<IResult> GetUser(IRepository repository, int id)
-        {
-            var user = await repository.GetUser(id);
-            if (user == null)
-            {
-                return TypedResults.NotFound($"No such user found");
-            }
-            return TypedResults.Ok(user);
         }
     }
 }

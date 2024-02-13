@@ -7,6 +7,8 @@ namespace exercise.wwwapi.Models
     [Table("app_user")]
     public class ApplicationUser : IdentityUser
     {
+        [Column("name")]
+        public string Name { get; set; }
         [Column("role")]
         public UserRole Role { get; set; }
     }

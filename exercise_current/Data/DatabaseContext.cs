@@ -21,15 +21,6 @@ namespace exercise.wwwapi.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Posts>().HasKey(x => x.Id);
-            modelBuilder.Entity<User>().HasKey(x => x.Id);
-
-            modelBuilder.Entity<Posts>().HasData(
-                new Posts { Id = 1, AuthorId = 1, Text = "This is a post"}
-            );
-
-            modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Name = "Victor" }
-            );
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -37,7 +28,6 @@ namespace exercise.wwwapi.Data
             optionsBuilder.LogTo(message => Debug.WriteLine(message)); //see the sql EF using in the console
             
         }
-        public DbSet<User> Users { get; set; }
         public DbSet<Posts> Posts { get; set; }
     }
 }
