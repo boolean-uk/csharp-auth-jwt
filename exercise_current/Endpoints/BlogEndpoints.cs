@@ -21,7 +21,7 @@ namespace exercise.wwwapi.Endpoints
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize()]
-        public static async Task<IResult> GetAllPosts(IRepository repository, ClaimsPrincipal user)
+        public static async Task<IResult> GetAllPosts(IRepository repository)
         {
             var posts = await repository.GetAllPosts();
             return TypedResults.Ok(posts);
