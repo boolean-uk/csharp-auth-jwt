@@ -11,6 +11,7 @@ using Authentication.Model;
 using Authentication.Endpoints;
 using Authentication.Repository;
 using Authentication.Services;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 

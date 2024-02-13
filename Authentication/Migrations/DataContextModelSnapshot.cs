@@ -87,6 +87,25 @@ namespace Authentication.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "2d75b2d2-93f6-42f3-9f6d-6186ff7c3608",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "7bc24c36-de0c-4aa7-aecf-1b4fbcd5059c",
+                            Email = "klara@gmail.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "KLARA@GMAIL.COM",
+                            NormalizedUserName = "KLARA",
+                            PasswordHash = "AQAAAAIAAYagAAAAEN1nRBm1gQ2ghKKRcYNiNLDxxp8OVYi1RLri9gOh65qzSm4Ekv6Yw01XJvOu/GCsKg==",
+                            PhoneNumberConfirmed = false,
+                            Role = 0,
+                            SecurityStamp = "881b4a13-1936-4ab5-9af5-f086a9cf7ded",
+                            TwoFactorEnabled = false,
+                            UserName = "klara"
+                        });
                 });
 
             modelBuilder.Entity("Authentication.Model.BlogPost", b =>

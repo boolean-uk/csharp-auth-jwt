@@ -113,6 +113,11 @@ namespace Authentication.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "Role", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "2d75b2d2-93f6-42f3-9f6d-6186ff7c3608", 0, "7bc24c36-de0c-4aa7-aecf-1b4fbcd5059c", "klara@gmail.com", false, false, null, "KLARA@GMAIL.COM", "KLARA", "AQAAAAIAAYagAAAAEN1nRBm1gQ2ghKKRcYNiNLDxxp8OVYi1RLri9gOh65qzSm4Ekv6Yw01XJvOu/GCsKg==", null, false, 0, "881b4a13-1936-4ab5-9af5-f086a9cf7ded", false, "klara" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
                 table: "AspNetUserClaims",
