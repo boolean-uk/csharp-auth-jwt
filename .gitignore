@@ -477,8 +477,11 @@ $RECYCLE.BIN/
 *.lnk
 /exercise.wwwapi/appsettings.json
 /exercise.wwwapi/appsettings.Development.json
+/WebApplication1/appsettings.Development.json
+/WebApplication1/appsettings.json
  */**/bin/Debug   
 */**/bin/Release   
 */**/obj/Debug   
 */**/obj/Release   
 exercise.wwwapi/Migrations
+/WebApplication1/Migrations
