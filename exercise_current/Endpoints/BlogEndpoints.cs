@@ -1,10 +1,12 @@
 ﻿using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 
-namespace exercise.wwwapi.Controllers
+namespace exercise.wwwapi.Endpoints
 {
     public static class BlogEndpoints
     {
@@ -18,7 +20,8 @@ namespace exercise.wwwapi.Controllers
             blogGroup.MapGet("/users{id}", GetUser);
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public static async Task<IResult> GetAllPosts(IRepository repository)
+        [Authorize()]
+        public static async Task<IResult> GetAllPosts(IRepository repository, ClaimsPrincipal user)
         {
             var posts = await repository.GetAllPosts();
             return TypedResults.Ok(posts);

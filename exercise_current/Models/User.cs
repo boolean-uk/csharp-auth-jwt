@@ -2,11 +2,6 @@
 
 namespace exercise.wwwapi.Models
 {
-    public enum Type
-    {
-        User,
-        Admin
-    }
     [Table("user")]
     public class User
     {
@@ -15,6 +10,5 @@ namespace exercise.wwwapi.Models
         public int Id { get; set; }
         [Column("name")]
         public string Name { get; set; }
-        public Type Type { get; set; }
     }
 }

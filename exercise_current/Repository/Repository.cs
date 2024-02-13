@@ -54,7 +54,7 @@ namespace exercise.wwwapi.Repository
         }
         public async Task<User?> GetUser(int id)
         {
-            return _db.Users.SingleOrDefault(u => u.Id == id);
+            return _db.Users.FirstOrDefault(u => u.Id == id);
         }
     }
 }
