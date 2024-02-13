@@ -9,6 +9,6 @@ namespace Authentication.Repository
         public BlogPost CreatePost(string text, string authorId);
         public BlogPost UpdatePost(BlogPost post, string text);
 
-        public ApplicationUser? GetUser(string email);
+        public ApplicationUser? GetUser(string id);
     }
 }

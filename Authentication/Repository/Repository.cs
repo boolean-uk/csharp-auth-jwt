@@ -43,9 +43,9 @@ namespace Authentication.Repository
             return post;
         }
 
-        public ApplicationUser? GetUser(string email)
+        public ApplicationUser? GetUser(string id)
         {
-            return dataContext.Users.FirstOrDefault(u => u.Email == email);
+            return dataContext.Users.FirstOrDefault(u => u.Id == id);
         }
     }
 }

@@ -5,6 +5,7 @@ using Authentication.Helpers;
 using Authentication.Model;
 using Authentication.Repository;
 using Authentication.DTO;
+using Authentication.Enums;
 
 namespace Authentication.Endpoints
 {
@@ -63,11 +64,11 @@ namespace Authentication.Endpoints
             if (userId == null)
                 return Results.Unauthorized();
 
-            //var userRole = user.UserRole();
-            //if (userRole == null)
-            //    return Results.Unauthorized();
+            var repoUser = repo.GetUser(userId);
+            if (repoUser == null)
+                return Results.Unauthorized();
 
-            if (userId != post.AuthorId)
+            if (userId != post.AuthorId && repoUser.Role != UserRole.Administrator)
                 return Results.Unauthorized();
 
             //Updates the post
