@@ -16,12 +16,12 @@ namespace exercise.wwwapi.Repository
 
         public async Task<IEnumerable<Posts>> GetAllPosts()
         {
-            return await _db.Posts.ToListAsync(); //.Include(a => a.Author)
+            return await _db.Posts.ToListAsync();
         }
         
         public async Task<Posts?> GetPost(int id)
         {
-            return _db.Posts.SingleOrDefault(a => a.Id == id); //.Include(a => a.Author)
+            return _db.Posts.SingleOrDefault(a => a.Id == id);
         }
 
         public async Task<Posts> CreatePost(string Text, string AuthorId)

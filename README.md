@@ -30,7 +30,7 @@ You will need to:
 You should complete all of the above plus:  
   
 - Add an endpoint which returns data from your database and ensure the endpoint method is decorated with the `[Authorize]` to secure it  
-- If you wish to explore roles e.g. `[Authorize(Role="Administrator")]` then feel free  
+- If you wish to explore roles e.g. `[Authorize(Role="Administrator")]` then feel free to do so  
 
 
 
