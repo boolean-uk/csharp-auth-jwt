@@ -11,7 +11,8 @@ namespace exercise.wwwapi.DataModels
         [Column("title")]
         public string Text { get; set; }
 
-        [Column("authorId")]
+        [Column("author_id")]
+        [ForeignKey(nameof(ApplicationUser))]
         public string AuthorId { get; set; }
     }
 }

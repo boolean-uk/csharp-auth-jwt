@@ -1,4 +1,4 @@
-﻿namespace exercise.wwwapi.DataModels
+﻿namespace exercise.wwwapi.DataModels.Response
 {
     public class BlogPostOutput
     {

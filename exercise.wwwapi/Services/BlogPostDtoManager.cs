@@ -1,4 +1,6 @@
 ﻿using exercise.wwwapi.DataModels;
+using exercise.wwwapi.DataModels.Requests;
+using exercise.wwwapi.DataModels.Response;
 
 namespace exercise.wwwapi.Services
 {
