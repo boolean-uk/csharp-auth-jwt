@@ -47,7 +47,7 @@ namespace exercise.wwwapi.Endpoints
                 return TypedResults.BadRequest("Invalid input: blog text required");
             }
 
-            var entity = new BlogPost { Text = blogPost.Text, AuthorId = user.Identity.Name };
+            var entity = new BlogPost { Text = blogPost.Text, AuthorId = user.UserId() };
             var result = await repository.Add(entity);
 
             return TypedResults.Created($"/{result.Id}", new { result.Id, result.Text, result.AuthorId });
@@ -66,7 +66,7 @@ namespace exercise.wwwapi.Endpoints
                 return TypedResults.NotFound($"Blog post with id {id} was not found");
             }
 
-            if (!user.IsInRole("Admin") && user.Identity.Name != entity.AuthorId)
+            if (!user.IsInRole("Admin") && user.UserId() != entity.AuthorId)
             {
                 return TypedResults.Unauthorized();
             }

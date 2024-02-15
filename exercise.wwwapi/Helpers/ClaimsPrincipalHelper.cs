@@ -6,9 +6,12 @@ namespace exercise.wwwapi.Helpers
     {
         public static string? UserId(this ClaimsPrincipal user)
         {
-            Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
-            return claim?.Value;
+            return user.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .Skip(1)
+                .Select(c => c.Value)
+                .FirstOrDefault();
         }
+
         public static string? Email(this ClaimsPrincipal user)
         {
             Claim? claim = user.FindFirst(ClaimTypes.Email);
