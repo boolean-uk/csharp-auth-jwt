@@ -24,6 +24,7 @@ namespace exercise.wwwapi.Endpoints
             BlogGroup.MapGet("MyEntries/", GetAllEntriesForCurrentUser);
         }
 
+        [Authorize(Roles = "User")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> GetPosts(IRepository<Entry> repo) 
