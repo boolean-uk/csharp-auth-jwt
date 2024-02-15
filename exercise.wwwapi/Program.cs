@@ -34,5 +34,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.MapIdentityApi<IdentityUser>();
 
 app.Run();
