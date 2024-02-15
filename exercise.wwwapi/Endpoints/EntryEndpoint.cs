@@ -157,7 +157,9 @@ namespace exercise.wwwapi.Endpoints
 
             entry = await repo.Delete(entry);
 
-            return TypedResults.Ok(entry);
+            EntryDTO entryOut = new EntryDTO(entry, entry.Author);
+            Payload<EntryDTO> payload = new Payload<EntryDTO>(entryOut);
+            return TypedResults.Ok(payload);
         }
 
         [Authorize(Roles = "User")]
