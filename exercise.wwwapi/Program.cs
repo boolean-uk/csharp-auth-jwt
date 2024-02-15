@@ -127,7 +127,7 @@ app.UseStatusCodePages();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.ConfigureProductEndpoint();
+app.ConfigureBlogEndpoint();
 
 app.MapControllers();
 app.Run();

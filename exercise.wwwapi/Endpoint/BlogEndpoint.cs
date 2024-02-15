@@ -15,9 +15,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace exercise.wwwapi.Endpoint
 {
-    public static class ProductEndpoint
+    public static class BlogEndpoint
     {
-        public static void ConfigureProductEndpoint(this WebApplication app)
+        public static void ConfigureBlogEndpoint(this WebApplication app)
         {
             var blog = app.MapGroup("/blogposts");
             blog.MapGet("/", GetAll);
