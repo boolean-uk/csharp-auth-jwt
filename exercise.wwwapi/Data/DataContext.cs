@@ -13,6 +13,7 @@ namespace exercise.wwwapi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Include information about the author of a entry with every entry retrieved
             modelBuilder.Entity<Entry>().Navigation(e => e.Author).AutoInclude();
             base.OnModelCreating(modelBuilder);
         }

@@ -30,6 +30,7 @@ namespace exercise.wwwapi.Repository
         }
 
         /// <inheritdoc/>
+        /// <remarks>Made with help from GPT3.5</remarks>
         public async Task<IEnumerable<ApplicationUser>> GetAllWithFieldValue(string field, string value)
         {
             ParameterExpression parameter = Expression.Parameter(typeof(ApplicationUser), "e");

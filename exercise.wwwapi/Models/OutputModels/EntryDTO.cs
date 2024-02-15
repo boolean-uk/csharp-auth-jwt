@@ -2,6 +2,11 @@
 
 namespace exercise.wwwapi.Models.OutputModels
 {
+    /// <summary>
+    /// Data transfer object for transfering information about a entry out.
+    /// </summary>
+    /// <param name="entry"> The entry to be provided</param>
+    /// <param name="user"> The user that wrote the entry, should be included within Entry.Author </param>
     public class EntryDTO(Entry entry, ApplicationUser user) 
     {
         public int Id { get; set; } = entry.Id;

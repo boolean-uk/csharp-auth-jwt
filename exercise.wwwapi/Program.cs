@@ -127,7 +127,8 @@ app.UseStatusCodePages();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Add endpoints
 app.ConfigureBlogEndpoint();
-
 app.MapControllers();
+
 app.Run();

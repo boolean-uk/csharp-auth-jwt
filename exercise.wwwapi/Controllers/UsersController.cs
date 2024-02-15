@@ -45,7 +45,7 @@ namespace exercise.wwwapi.Controllers
                 request.Password = "";
                 return CreatedAtAction(nameof(Register), new { email = request.Email, role = Role.User }, request);
             }
-
+            /// Errors detected, gathering and returning.
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(error.Code, error.Description);
