@@ -5,7 +5,9 @@ using exercise.wwwapi.Models.OutputModels;
 using exercise.wwwapi.Models.PureModels;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
 using System.Security.Claims;
 
 namespace exercise.wwwapi.Endpoints
@@ -22,9 +24,10 @@ namespace exercise.wwwapi.Endpoints
             BlogGroup.MapPut("{id}", UpdatePost);
             BlogGroup.MapDelete("{id}", DeletePost);
             BlogGroup.MapGet("MyEntries/", GetAllEntriesForCurrentUser);
+            BlogGroup.MapGet("UserEntries/{email}", GetAllEntriesForProvided);
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Administrator")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> GetPosts(IRepository<Entry> repo) 
@@ -41,7 +44,7 @@ namespace exercise.wwwapi.Endpoints
             return TypedResults.Ok(payload);
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Administrator")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> GetPost(IRepository<Entry> repo, int id) 
@@ -57,7 +60,7 @@ namespace exercise.wwwapi.Endpoints
             return TypedResults.Ok(payload);
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Administrator")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         private static async Task<IResult> CreatePost(IRepository<Entry> repo, HttpContext httpContext, EntryPost entryPost) 
@@ -89,15 +92,27 @@ namespace exercise.wwwapi.Endpoints
             return TypedResults.Created($"/{entry.Id}", payload);
         }
 
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "User, Administrator")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> UpdatePost(IRepository<Entry> repo, int id, EntryPut entryPost) 
+        private static async Task<IResult> UpdatePost(IRepository<Entry> repo, UserRepository userRepo, HttpContext httpContext, int id, EntryPut entryPost) 
         {
+            string? userClaimedId = httpContext.User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .Skip(1) // First is schema id
+                .Select(c => c.Value)
+                .FirstOrDefault(); // Null if not found
+
             Entry? dbEntry = await repo.Get(id);
             if (dbEntry == null)
             {
                 return TypedResults.NotFound($"Could not find the entry with provided ID ({id}), no changes performed to database data.");
+            }
+
+            bool UserIsAdmin = await userRepo.UserIsAdmin(userClaimedId);
+            if ((dbEntry.AuthorId != userClaimedId) && !(UserIsAdmin))
+            {
+                return TypedResults.Unauthorized();
             }
 
             Entry inputEntry = new Entry()
@@ -107,27 +122,39 @@ namespace exercise.wwwapi.Endpoints
                 Content = entryPost.Text ?? dbEntry.Content,
                 CreatedAt = dbEntry.CreatedAt,
                 UpdatedAt = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc),
-                // AuthorId = entryPost.AuthorId.ToString() ?? dbEntry.AuthorId
-        };
+                AuthorId = dbEntry.AuthorId,
+            };
 
             Entry entry = await repo.Update(id, inputEntry);
 
             EntryDTO entryOut = new EntryDTO(entry);
             Payload<EntryDTO> payload = new Payload<EntryDTO>(entryOut);
             return TypedResults.Created($"/{entry.Id}", payload);
-
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Administrator")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> DeletePost(IRepository<Entry> repo, int id) 
+        private static async Task<IResult> DeletePost(IRepository<Entry> repo, UserRepository userRepo, HttpContext httpContext, int id) 
         {
-            Entry? entry = await repo.Delete(id);
+            string? posterId = httpContext.User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .Skip(1) // First is schema id
+                .Select(c => c.Value)
+                .FirstOrDefault(); // Null if not found
+
+            Entry? entry = await repo.Get(id);
             if (entry == null) 
             {
                 return TypedResults.NotFound($"Could not find any entry with the provided ID ({id}).");
             }
+
+            if ((entry.AuthorId != posterId) && !(await userRepo.UserIsAdmin(posterId))) 
+            {
+                return TypedResults.Unauthorized();
+            }
+
+            entry = await repo.Delete(entry);
 
             return TypedResults.Ok(entry);
         }
@@ -147,6 +174,37 @@ namespace exercise.wwwapi.Endpoints
             {
                 return TypedResults.BadRequest("Error retriving ID of submitting user.");
             }
+
+            IEnumerable<Entry> userEntries = await repo.GetAllWithFieldValue("AuthorId", posterId);
+            IEnumerable<EntryDTO> entriesOut = userEntries.Select(s => new EntryDTO(s));
+
+            Payload<IEnumerable<EntryDTO>> payload = new Payload<IEnumerable<EntryDTO>>(entriesOut);
+            return TypedResults.Ok(payload);
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private static async Task<IResult> GetAllEntriesForProvided(IRepository<Entry> repo, UserRepository userRepo, HttpContext httpContext, string email)
+        {
+            string? posterId = httpContext.User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .Skip(1) // First is schema id
+                .Select(c => c.Value)
+                .FirstOrDefault(); // Null if not found
+
+            if (posterId == null)
+            {
+                return TypedResults.BadRequest("Error retriving ID of submitting user.");
+            }
+
+            if (!(await userRepo.UserIsAdmin(posterId))) 
+            {
+                return TypedResults.Unauthorized();
+            }
+
+            IEnumerable<ApplicationUser> users = await userRepo.GetAllWithFieldValue("Email", email);
+            ApplicationUser user = users.FirstOrDefault();
 
             IEnumerable<Entry> userEntries = await repo.GetAllWithFieldValue("AuthorId", posterId);
             IEnumerable<EntryDTO> entriesOut = userEntries.Select(s => new EntryDTO(s));
