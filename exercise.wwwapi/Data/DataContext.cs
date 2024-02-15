@@ -14,12 +14,6 @@ namespace exercise.wwwapi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-
-            Seeder seed = new Seeder();
-
-            modelBuilder.Entity<ApplicationUser>().HasData(seed.Users);
-
             base.OnModelCreating(modelBuilder);
         }
 
