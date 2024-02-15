@@ -44,5 +44,6 @@
         /// <returns>The entity removed</returns>
         Task<T> Delete(T entity);
 
+        Task<IEnumerable<T>> GetAllWithFieldValue(string field, string value);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using exercise.wwwapi.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace exercise.wwwapi.Repository
 {
@@ -60,6 +62,19 @@ namespace exercise.wwwapi.Repository
             _table_T.Remove(entity);
             await _db.SaveChangesAsync();
             return entity;
+        }
+
+        /// <inheritdoc/>
+        /// <remarks>Made with GPT3.5</remarks>
+        public async Task<IEnumerable<T>> GetAllWithFieldValue(string field, string value) 
+        {
+            ParameterExpression parameter = Expression.Parameter(typeof(T), "e");
+            MemberExpression property = Expression.Property(parameter, field);
+            var constant = Expression.Constant(Convert.ChangeType(value, property.Type));
+            var equalExpression = Expression.Equal(property, constant);
+            var lambda = Expression.Lambda<Func<T, bool>>(equalExpression, parameter);
+
+            return await _table_T.Where(lambda).ToListAsync();
         }
     }
 }
