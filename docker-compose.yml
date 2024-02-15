@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  exercise.wwwapi:
+    image: ${DOCKER_REGISTRY-}exercisewwwapi 
+    container_name: exercise.wwwapi
+    build:
+      context: .
+      dockerfile: exercise.wwwapi/Dockerfile
+    ports:
+      - "6000:6000"
+      - "6001:6001"
