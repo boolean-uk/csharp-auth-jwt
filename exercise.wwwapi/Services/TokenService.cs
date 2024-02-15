@@ -8,7 +8,8 @@ namespace exercise.wwwapi.Services
 {
     public class TokenService
     {
-        private const int ExpirationMinutes = 120;
+        // How long each JWT token will be usable before a new login/regeneration is required.
+        private const int ExpirationMinutes = 45;
         private readonly ILogger<TokenService> _logger;
         public TokenService(ILogger<TokenService> logger)
         {
@@ -31,6 +32,13 @@ namespace exercise.wwwapi.Services
             return tokenHandler.WriteToken(token);
         }
 
+        /// <summary>
+        /// Generate the JWT token
+        /// </summary>
+        /// <param name="claims">List of the users claims</param>
+        /// <param name="credentials">Signing credentials</param>
+        /// <param name="expiration">Expiration time for the generated token</param>
+        /// <returns>A configured <see cref="System.IdentityModel.Tokens.Jwt.JwtSecurityToken"/> object.</returns>
         private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials,
             DateTime expiration) =>
             new(
@@ -41,6 +49,11 @@ namespace exercise.wwwapi.Services
                 signingCredentials: credentials
             );
 
+        /// <summary>
+        /// Geneate the claim fields for the provided user.
+        /// </summary>
+        /// <param name="user">The user accessing the api</param>
+        /// <returns>List of Claims</returns>
         private List<Claim> CreateClaims(ApplicationUser user)
         {
             var jwtSub = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("JwtTokenSettings")["JwtRegisteredClaimNamesSub"];
@@ -67,6 +80,10 @@ namespace exercise.wwwapi.Services
             }
         }
 
+        /// <summary>
+        /// Generate credentials based on the provided (symmetric) security key.
+        /// </summary>
+        /// <returns>A configured <see cref="Microsoft.IdentityModel.Tokens.SigningCredentials"/> object.</returns>
         private SigningCredentials CreateSigningCredentials()
         {
             var symmetricSecurityKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("JwtTokenSettings")["SymmetricSecurityKey"];
