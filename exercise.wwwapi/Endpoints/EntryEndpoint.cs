@@ -38,7 +38,7 @@ namespace exercise.wwwapi.Endpoints
                 return TypedResults.NotFound($"No entries could be found in the database.");
             }
 
-            IEnumerable<EntryDTO> entriesOut = entries.Select(s => new EntryDTO(s));
+            IEnumerable<EntryDTO> entriesOut = entries.Select(s => new EntryDTO(s, s.Author));
 
             Payload<IEnumerable<EntryDTO>> payload = new Payload<IEnumerable<EntryDTO>>(entriesOut);
             return TypedResults.Ok(payload);
@@ -55,7 +55,7 @@ namespace exercise.wwwapi.Endpoints
                 return TypedResults.NotFound($"No entry with provided ID ({id}) found.");
             }
 
-            EntryDTO entryOut = new EntryDTO(entry);
+            EntryDTO entryOut = new EntryDTO(entry, entry.Author);
             Payload<EntryDTO> payload = new Payload<EntryDTO>(entryOut);
             return TypedResults.Ok(payload);
         }
@@ -63,7 +63,7 @@ namespace exercise.wwwapi.Endpoints
         [Authorize(Roles = "User, Administrator")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> CreatePost(IRepository<Entry> repo, HttpContext httpContext, EntryPost entryPost) 
+        private static async Task<IResult> CreatePost(IRepository<Entry> repo, UserRepository userRepo, HttpContext httpContext, EntryPost entryPost) 
         {
             string? posterId = httpContext.User.Claims
                 .Where(c => c.Type == ClaimTypes.NameIdentifier)
@@ -86,8 +86,9 @@ namespace exercise.wwwapi.Endpoints
             };
 
             Entry entry = await repo.Insert(inputEntry);
+            ApplicationUser user = await userRepo.Get(entry.AuthorId);
 
-            EntryDTO entryOut = new EntryDTO(entry);
+            EntryDTO entryOut = new EntryDTO(entry, user);
             Payload<EntryDTO> payload = new Payload<EntryDTO>(entryOut);
             return TypedResults.Created($"/{entry.Id}", payload);
         }
@@ -127,7 +128,7 @@ namespace exercise.wwwapi.Endpoints
 
             Entry entry = await repo.Update(id, inputEntry);
 
-            EntryDTO entryOut = new EntryDTO(entry);
+            EntryDTO entryOut = new EntryDTO(entry, dbEntry.Author);
             Payload<EntryDTO> payload = new Payload<EntryDTO>(entryOut);
             return TypedResults.Created($"/{entry.Id}", payload);
         }
@@ -176,7 +177,7 @@ namespace exercise.wwwapi.Endpoints
             }
 
             IEnumerable<Entry> userEntries = await repo.GetAllWithFieldValue("AuthorId", posterId);
-            IEnumerable<EntryDTO> entriesOut = userEntries.Select(s => new EntryDTO(s));
+            IEnumerable<EntryDTO> entriesOut = userEntries.Select(s => new EntryDTO(s, s.Author));
 
             Payload<IEnumerable<EntryDTO>> payload = new Payload<IEnumerable<EntryDTO>>(entriesOut);
             return TypedResults.Ok(payload);
@@ -207,7 +208,7 @@ namespace exercise.wwwapi.Endpoints
             ApplicationUser user = users.FirstOrDefault();
 
             IEnumerable<Entry> userEntries = await repo.GetAllWithFieldValue("AuthorId", user.Id);
-            IEnumerable<EntryDTO> entriesOut = userEntries.Select(s => new EntryDTO(s));
+            IEnumerable<EntryDTO> entriesOut = userEntries.Select(s => new EntryDTO(s, s.Author));
 
             Payload<IEnumerable<EntryDTO>> payload = new Payload<IEnumerable<EntryDTO>>(entriesOut);
             return TypedResults.Ok(payload);

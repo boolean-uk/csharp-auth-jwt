@@ -13,6 +13,7 @@ namespace exercise.wwwapi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Entry>().Navigation(e => e.Author).AutoInclude();
             base.OnModelCreating(modelBuilder);
         }
 
