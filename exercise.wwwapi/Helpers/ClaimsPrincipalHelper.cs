@@ -6,10 +6,11 @@ namespace workshop.webapi
 {
     public static class ClaimsPrincipalHelper
     {
-        public static string? UserId(this ClaimsPrincipal user)
+        public static string UserId(this ClaimsPrincipal user)
         {
-            Claim? claim = user.FindFirst(ClaimTypes.NameIdentifier);
-            return claim?.Value;
+            IEnumerable<Claim> claims = user.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier);
+            return claims.Count() >= 2 ? claims.ElementAt(1).Value : null;
+
         }
         public static string? Email(this ClaimsPrincipal user)
         {
