@@ -206,7 +206,7 @@ namespace exercise.wwwapi.Endpoints
             IEnumerable<ApplicationUser> users = await userRepo.GetAllWithFieldValue("Email", email);
             ApplicationUser user = users.FirstOrDefault();
 
-            IEnumerable<Entry> userEntries = await repo.GetAllWithFieldValue("AuthorId", posterId);
+            IEnumerable<Entry> userEntries = await repo.GetAllWithFieldValue("AuthorId", user.Id);
             IEnumerable<EntryDTO> entriesOut = userEntries.Select(s => new EntryDTO(s));
 
             Payload<IEnumerable<EntryDTO>> payload = new Payload<IEnumerable<EntryDTO>>(entriesOut);

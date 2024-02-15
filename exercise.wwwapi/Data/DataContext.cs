@@ -1,5 +1,4 @@
-﻿using exercise.wwwapi.Data.Seed;
-using exercise.wwwapi.Models.PureModels;
+﻿using exercise.wwwapi.Models.PureModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
