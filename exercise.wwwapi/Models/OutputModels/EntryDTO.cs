@@ -8,7 +8,7 @@ namespace exercise.wwwapi.Models.OutputModels
 
         public string Title { get; set; } = entry.Title;
 
-        public string Description { get; set; } = entry.PostText;
+        public string Description { get; set; } = entry.Content;
 
         public string LastUpdated { get; set; } = entry.UpdatedAt.ToString("yyyy-MM-dd hh:mm:ss");
     }
