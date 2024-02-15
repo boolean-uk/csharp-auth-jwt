@@ -1,9 +1,10 @@
 ﻿using exercise.Data.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityUserContext<User>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -17,9 +18,12 @@ namespace exercise.Data
                 .HasMany(u => u.Posts)
                 .WithOne(p => p.User)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Post>()
+                .Navigation(p => p.User)
+                .AutoInclude();
         }
 
         public DbSet<Post> Posts { get; set; }
-        public DbSet<User> Users { get; set; }
     }
 }

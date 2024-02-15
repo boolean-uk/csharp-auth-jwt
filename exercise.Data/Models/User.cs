@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using exercise.Data.Enums;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace exercise.Data.Models
@@ -8,5 +9,7 @@ namespace exercise.Data.Models
     {
         [Column("posts")]
         public List<Post> Posts { get; set; }
+        [Column("role")]
+        public Role Role { get; set; }
     }
 }
