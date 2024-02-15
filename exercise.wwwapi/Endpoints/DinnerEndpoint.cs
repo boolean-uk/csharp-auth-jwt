@@ -32,7 +32,7 @@ namespace exercise.wwwapi.Endpoints
         {
 
             ServiceReponse<OutDinnerDTO> response = new ServiceReponse<OutDinnerDTO>();
-
+            
             try
             {
                 // source: 
@@ -41,7 +41,7 @@ namespace exercise.wwwapi.Endpoints
                 response.data = mapper.Map<OutDinnerDTO>(source);
                 response.status = "Valid";
 
-                return response != null ? TypedResults.Ok(new { DateTime = DateTime.Now, User = user.Email(), response }) :
+                return response != null ? TypedResults.Ok(new { DateTime = DateTime.Now, User = user.Email(), response }) :     //THIS WORK!
                     TypedResults.BadRequest($"Dinner wasn't deleted");
             }
 
@@ -55,17 +55,18 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         public static async Task<IResult> GetDinners(IRepository<Dinner> repository, IMapper mapper)
         {
-            ServiceReponse<OutDinnerDTO> response = new ServiceReponse<OutDinnerDTO>();
+            ServiceReponse<List<OutDinnerDTO>> response = new ServiceReponse<List<OutDinnerDTO>>();
 
             //Source:
             var source = await repository.GetAll();
 
             //Trannsferring:
             List<OutDinnerDTO> results = source.Select(mapper.Map<OutDinnerDTO>).ToList();
-            response.data = mapper.Map<OutDinnerDTO>(source);
+
+            response.data = results;
             response.status = "Valid";
 
-            return TypedResults.Ok(results);
+            return TypedResults.Ok(response);
         }
 
 
@@ -73,7 +74,7 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public static async Task<IResult> AddDinner(IRepository<Dinner> repository, IMapper mapper, InDinnerDTO newDinner)
+        public static async Task<IResult> AddDinner(IRepository<Dinner> repository, IMapper mapper, InDinnerDTO newDinner, ClaimsPrincipal user)
         {
 
             ServiceReponse<OutDinnerDTO> response = new ServiceReponse<OutDinnerDTO>();
@@ -87,6 +88,7 @@ namespace exercise.wwwapi.Endpoints
             try
             {
                 Dinner dinner = mapper.Map<Dinner>(newDinner);
+                dinner.UserId = user.UserId();
 
                 // source: 
                 var source = await repository.Insert(dinner);
@@ -94,7 +96,7 @@ namespace exercise.wwwapi.Endpoints
                 response.data = mapper.Map<OutDinnerDTO>(source);
                 response.status = "Valid";
 
-                return TypedResults.Created(nameof(AddDinner), new { source.Id, response });
+                return TypedResults.Created(nameof(AddDinner), new { source.Id, response });    //THIS WORK!
             }
 
             catch (Exception ex)
@@ -123,6 +125,7 @@ namespace exercise.wwwapi.Endpoints
             try
             {
                 Dinner dinner = mapper.Map<Dinner>(newDinner);
+                dinner.Id = id;
                 // source: 
                 var source = await repository.Update(dinner, id);
                 //Transferring:

@@ -12,6 +12,7 @@ namespace exercise.wwwapi.Controllers
         //KANTHEE: This is an oldway: using controller!! 
         //But this is a way to setup User ccontroller "endpoint", register and login.
 
+        //[ApiVersion( "1.0" )]
         [ApiController]
         [Route("/api/[controller]")]
         public class UsersController : ControllerBase

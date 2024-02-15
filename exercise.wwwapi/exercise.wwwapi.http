@@ -1,6 +1,88 @@
-@exercise.wwwapi_HostAddress = http://localhost:5005
+@workshop.webapi_HostAddress = https://localhost:7037
+@host = https://localhost:7136
 
-GET {{exercise.wwwapi_HostAddress}}/weatherforecast/
+
+@token1= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwUVdFUlRZVUlPYXNkZmdoamtscXFxcXFxcXFxcXFxIiwianRpIjoiODE1NDU3ZmQtNTFlYS00YWRiLWI3ZWItMWEwNWQ5ZGU2NzMzIiwiaWF0IjoiMTcwNzk5ODk0NiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiYjM3NmI1MTgtMWIyNi00YTlmLWI0MzgtZDgwY2ZjOGE0OGM2IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkthbnRoZWUxQEhvdG1haWwuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZW1haWxhZGRyZXNzIjoiS2FudGhlZTFASG90bWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTcwODAwMjU0NiwiaXNzIjoiWW91ckNvbXBhbnlTZXJ2ZXIiLCJhdWQiOiJZb3VyUHJvZHVjdEF1ZGllbmNlIn0.WiLpQLnl8kDf-P7-Y2ExtHdhYTrXnLh5euBzxtE9lZ8
+@adminbearer = {{token1}}
+
+@token2 = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwUVdFUlRZVUlPYXNkZmdoamtscXFxcXFxcXFxcXFxIiwianRpIjoiNmFkMTljODYtMDA0ZC00N2JjLWE3MDYtNTdmMzg4Yjg2OWExIiwiaWF0IjoiMTcwNzk5Mzg4NiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiMmFkZDk2NjQtOGRmYS00YTk3LWJjM2ItYTIyYjJjNWVmOTFiIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IklkYUBob3RtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6IklkYUBob3RtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3MDc5OTc0ODYsImlzcyI6IllvdXJDb21wYW55U2VydmVyIiwiYXVkIjoiWW91clByb2R1Y3RBdWRpZW5jZSJ9.P4o1sMqBTLkxCATSUv0K13uS6AlXtAZ8SsLdBM2xOsw
+@userbearer = {{token2}}
+
+
+### POST Register an Admin
+POST {{host}}/api/users/register
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+  "email": "Kanthee1@Hotmail.com",
+  "username": "Keyyy1",
+  "password": "qwerty",
+  "role": "Admin"
+}
+
+
+### POST Register a standard User
+POST {{host}}/api/users/register
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+  "email": "Ida@hotmail.com",
+  "username": "qwerty",
+  "password": "qwerty",
+  "role": "User"
+}
+
+
+### POST Login  Admin User
+POST {{host}}/api/users/login
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+  "email": "Kanthee1@Hotmail.com",
+  "password": "qwerty"
+}
+
+
+### GET all foods
+GET {{host}}/dinner/
 Accept: application/json
+###
+
+
+
+### POST (add) dinner
+POST {{host}}/dinner/
+Authorization: Bearer {{adminbearer}}
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{ 
+  "name" : "FIOISKKSKS",
+  "cost" : 10000
+
+}
 
 ###
+
+
+### PUT (update) a dinner
+PUT {{host}}/dinner/5
+Authorization: Bearer {{adminbearer}}
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+  "name" : "CIIIIDER",
+  "cost" : 666
+}
+###
+
+
+### DELETE a car
+DELETE {{host}}/dinner/5
+Authorization: Bearer {{adminbearer}}
+###
+

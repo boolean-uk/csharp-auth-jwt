@@ -12,7 +12,7 @@ namespace exercise.wwwapi.DTOs
 
             //Dinner:
             CreateMap<InDinnerDTO, Dinner>();
-            CreateMap<OutDinnerDTO, Dinner>();
+            CreateMap<Dinner, OutDinnerDTO>();
 
 
 

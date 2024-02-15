@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using exercise.wwwapi.Helpers;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace exercise.wwwapi.DataModels
@@ -16,6 +17,10 @@ namespace exercise.wwwapi.DataModels
 
         [Column("cost")]
         public int Cost { get; set; }
+
+        [Column("user_id")]
+        public string ? UserId { get; set; } 
+
 
 
         //CAN ADD Chef with many to many relationship:

@@ -56,9 +56,16 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 builder.Services.AddProblemDetails();
-// THIS ONE IS NEED?
-builder.Services.AddApiVersioning();
+// THIS ONE IS NEED?    Need to add APiVersioning?
+//Let’s fix this and be able to call API without specifying the version:
+//builder.Services.AddApiVersioning();
 
+builder.Services.AddApiVersioning(options =>
+{
+    //indicating whether a default version is assumed when a client does
+    // does not provide an API version.
+    options.AssumeDefaultVersionWhenUnspecified = true;
+});
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
@@ -82,6 +89,8 @@ builder.Services.AddControllers().AddJsonOptions(opt =>
     opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+//AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
 
 // Specify identity requirements
 // Must be added before .AddAuthentication otherwise a 404 is thrown on authorized endpoints
@@ -128,8 +137,8 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-//AutoMapper
-builder.Services.AddAutoMapper(typeof(Program));
+
+
 
 var app = builder.Build();
 

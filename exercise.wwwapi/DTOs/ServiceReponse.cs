@@ -2,8 +2,8 @@
 {
     public class ServiceReponse<T> where T : class
     {
-        public T data { get; set; }
         public string status { get; set; }  
+        public T data { get; set; }
 
     }
 }
