@@ -37,7 +37,7 @@ namespace exercise.wwwapi.Endpoints
             var result = await repository.Delete(entity);
             return result != null ? TypedResults.Ok(new { DateTime = DateTime.Now, User = user.Email(), BlogPost = new { Text = result.Text } }) : TypedResults.BadRequest($"Post wasn't deleted");
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "User, Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -48,9 +48,10 @@ namespace exercise.wwwapi.Endpoints
             {
                 return TypedResults.NotFound($"Could not find post with Id:{id}");
             }
-            if(user.IsInRole("User")) { return TypedResults.NotFound($"USer not allowed to update"); }
+            if(user.IsInRole("User") && user.UserId() != entity.AuthorId) { return TypedResults.NotFound($"User not allowed to update"); }
 
             entity.Text = !string.IsNullOrEmpty(model.Text) ? model.Text : entity.Text;
+            entity.AuthorId = !string.IsNullOrEmpty(model.AuthorId) ? model.AuthorId : entity.AuthorId;
 
             var result = await repository.Update(entity);
 
