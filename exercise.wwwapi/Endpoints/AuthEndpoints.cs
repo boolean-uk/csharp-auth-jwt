@@ -59,8 +59,6 @@ namespace exercise.wwwapi.Endpoints
             return TypedResults.Created($"/{entity.id}", new { Text = entity.Text, AuthorId = entity.AuthorId });
         }
 
-
-
         [Authorize(Roles = "User, Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
