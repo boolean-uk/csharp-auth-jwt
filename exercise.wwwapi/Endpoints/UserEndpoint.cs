@@ -18,37 +18,25 @@ namespace exercise.wwwapi.Endpoints
         }
 
         [Authorize(Roles = "Admin")]
-        public static async Task<IResult> Get(IRepository<User> repository, IMapper mapper, string id)
+        public static async Task<IResult> Get(UserService userService, string id)
         {
-            ServiceResponse<GetUserDTO> response = new();
-            try
+            var response = await userService.Get(id);
+            if (!response.Success)
             {
-                User user = await repository.Get(id);
-                response.Data = mapper.Map<GetUserDTO>(user);
-                return TypedResults.Ok(response);
-            } catch (ArgumentException ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-                return TypedResults.NotFound(response);
+                return TypedResults.NotFound(response); 
             }
+            return TypedResults.Ok(response);
         }
 
         [Authorize(Roles = "Admin")]
-        public static async Task<IResult> GetAll(IRepository<User> repository, IMapper mapper)
+        public static async Task<IResult> GetAll(UserService userService)
         {
-            ServiceResponse<List<GetUserDTO>> response = new();
-            try
+            var response = await userService.GetAll();
+            if (!response.Success)
             {
-                List<User> users = await repository.GetAll();
-                response.Data = users.Select(mapper.Map<GetUserDTO>).ToList();
-                return TypedResults.Ok(response);
-            } catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-                return TypedResults.BadRequest(response);
+                return TypedResults.NotFound(response);
             }
+            return TypedResults.Ok(response);
         }
     }
 }
