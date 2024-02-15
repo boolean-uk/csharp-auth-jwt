@@ -1,6 +1,6 @@
 ﻿namespace exercise.wwwapi.Repository
 {
-    public interface IRepository<T> where T : class
+    public interface IRepository<T>: IRepositorySelectFieldCompare<T> where T : class
     {
         /// <summary>
         /// Retrieve all entires from the database
@@ -43,7 +43,5 @@
         /// <param name="entity">T - the entity object to remove from the database. Has to exist as provided in the database to be removed.</param>
         /// <returns>The entity removed</returns>
         Task<T> Delete(T entity);
-
-        Task<IEnumerable<T>> GetAllWithFieldValue(string field, string value);
     }
 }
