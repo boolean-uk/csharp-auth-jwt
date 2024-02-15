@@ -2,6 +2,7 @@ using exercise.wwwapi.Data;
 using exercise.wwwapi.DataModels;
 using exercise.wwwapi.Endpoints;
 using exercise.wwwapi.Repository;
+using exercise.wwwapi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,7 @@ builder.Services.AddDbContext<DataContext>(options =>
                                             .GetConnectionString("DefaultConnectionString")), 
                                             ServiceLifetime.Scoped);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-//builder.Services.AddScoped<TokenService, TokenService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {

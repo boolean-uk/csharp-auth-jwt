@@ -1,5 +1,6 @@
 ﻿using exercise.wwwapi.DataModels;
 using exercise.wwwapi.DTO;
+using exercise.wwwapi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +11,11 @@ namespace exercise.wwwapi.Controllers
     public class UserController : ControllerBase
     {
         private UserManager<ApplicationUser> _userManager;
-        public UserController(UserManager<ApplicationUser> userManager)
+        private readonly ITokenService _tokenService;
+        public UserController(UserManager<ApplicationUser> userManager, ITokenService tokenService)
         {
             _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -33,7 +36,12 @@ namespace exercise.wwwapi.Controllers
                 var createUser = await _userManager.CreateAsync(appUser, regDTO.Password!);
                 if(createUser.Succeeded)
                 {
-                    return CreatedAtAction(nameof(Register), regDTO);
+                    return  Ok(new ResponseDTO
+                    {
+                        Username = appUser.UserName,
+                        Email = appUser.Email,
+                        Token = _tokenService.CreateToken(appUser)
+                    });
                 }
                 else
                 {
