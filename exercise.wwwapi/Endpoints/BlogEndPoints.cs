@@ -27,8 +27,9 @@ namespace exercise.wwwapi.Endpoints
             var res = await repo.GetBlogPosts();
             return TypedResults.Ok(res);
         }
-        public static async Task<IResult> GetSpecificUserPosts(IRepository repo, ClaimsPrincipal user)
+        public static async Task<IResult> GetSpecificUserPosts(IRepository repo, ClaimsPrincipal user, ClaimsIdentity claimsIdentity)
         {
+            
             List<BlogPost> res = await repo.GetBlogPosts();
 
             res = res.Where(b => b.UserId == user.UserId()).ToList();
