@@ -24,12 +24,12 @@ namespace exercise.wwwapi.Repository
         public async Task<T> Delete(int id)
         {
             var entity = _table.Find(id);
-            if (entity != null) 
+            if (entity == null) 
             {
                 throw new InvalidOperationException();
             }
 
-            _table.Remove(entity);
+            _db.Entry(entity).State = EntityState.Deleted;
             await _db.SaveChangesAsync();
             return entity;
         }
