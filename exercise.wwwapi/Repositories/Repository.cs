@@ -82,7 +82,7 @@ namespace exercise.wwwapi.Repositories
 
         public async Task<ResponseObject<GetDataDTO>> CreateData(CreateDataDTO cDTO, string userEmail)
         {
-            ApiUser? dbApiUser = await _dbContext.Users.Where(x => x.Email == userEmail).FirstOrDefaultAsync();
+            ApiUser? dbApiUser = await _userManager.FindByEmailAsync(userEmail);
             if (dbApiUser == null)
             {
                 return new ResponseObject<GetDataDTO>() { Status = ResponseStatus.Failure, ErrorMessage = "Invalid user" };
@@ -98,7 +98,7 @@ namespace exercise.wwwapi.Repositories
         public async Task<ResponseObject<GetDataDTO>> UpdateData(int dbDataId, CreateDataDTO cDTO, string userEmail)
         {
             ResponseObject<GetDataDTO> responseObject = new();
-            ApiUser? dbApiUser = await _dbContext.Users.Where(x => x.Email == userEmail).FirstOrDefaultAsync();
+            ApiUser? dbApiUser = await _userManager.FindByEmailAsync(userEmail);
             if (dbApiUser == null)
             {
                 responseObject.Status = ResponseStatus.Failure;
