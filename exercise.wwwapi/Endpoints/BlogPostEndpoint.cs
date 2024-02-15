@@ -41,13 +41,15 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public static async Task<IResult> Update(IRepository<BlogPost> repository, int id, BlogPostPatchRequest model)
+        public static async Task<IResult> Update(IRepository<BlogPost> repository, ClaimsPrincipal user, int id, BlogPostPatchRequest model)
         {
             var entity = await repository.GetById(id);
             if (entity == null)
             {
                 return TypedResults.NotFound($"Could not find post with Id:{id}");
             }
+            if(user.IsInRole("User")) { return TypedResults.NotFound($"USer not allowed to update"); }
+
             entity.Text = !string.IsNullOrEmpty(model.Text) ? model.Text : entity.Text;
 
             var result = await repository.Update(entity);
@@ -93,6 +95,7 @@ namespace exercise.wwwapi.Endpoints
                 return Results.BadRequest("Blog post with provided name already exists");
             }
 
+            
             var entity = new BlogPost() { Text = model.Text };
             entity.AuthorId = id;
             await repository.Insert(entity);
