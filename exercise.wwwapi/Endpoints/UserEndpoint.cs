@@ -1,5 +1,6 @@
 ﻿using exercise.wwwapi.Data;
 using exercise.wwwapi.Data.DTO;
+using exercise.wwwapi.Data.Enums;
 using exercise.wwwapi.Repositories;
 using Microsoft.AspNetCore.Mvc;
 

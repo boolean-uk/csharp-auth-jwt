@@ -5,6 +5,9 @@ namespace exercise.wwwapi.Data.DTO
     public class CreateUserDTO
     {
         [Required]
+        public bool isAdmin { get; set; }
+
+        [Required]
         public string UserName { get; set; }
 
         [Required]

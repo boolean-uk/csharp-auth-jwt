@@ -1,10 +1,8 @@
-﻿namespace exercise.wwwapi.Data
+﻿using exercise.wwwapi.Data.Enums;
+
+namespace exercise.wwwapi.Data
 {
-    public enum ResponseStatus
-    {
-        Success,
-        Failure
-    }
+
     public class ResponseObject<T>
     {
         public ResponseStatus Status { get; set; } = ResponseStatus.Success;

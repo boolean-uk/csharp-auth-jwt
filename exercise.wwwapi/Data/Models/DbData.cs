@@ -13,5 +13,10 @@ namespace exercise.wwwapi.Data.Models
         [Required]
         [Column("description")]
         public string Description { get; set; }
+
+        [Required]
+        [Column("creator_id")]
+        public string CreatorId { get; set; }
+        public ApiUser Creator { get; set; }
     }
 }
