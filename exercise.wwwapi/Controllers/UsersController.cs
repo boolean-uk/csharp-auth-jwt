@@ -35,16 +35,27 @@ namespace workshop.webapi.Controllers
             {
                 return BadRequest(ModelState);
             }
+            var User = new ApplicationUser { UserName = request.Username, Email = request.Email, Role = request.Role };
 
             var result = await _userManager.CreateAsync(
-                new ApplicationUser { UserName = request.Username, Email = request.Email, Role = request.Role },
+                User,
                 request.Password!
             );
 
             if (result.Succeeded)
             {
                 request.Password = "";
-                return CreatedAtAction(nameof(Register), new { email = request.Email, role = Role.User }, request);
+                var accessToken = _tokenService.CreateToken(User);
+
+                // Include the access token in the response
+                var response = new
+                {
+                    Email = request.Email,
+                    Role = request.Role,
+                    AccessToken = accessToken
+                };
+
+                return CreatedAtAction(nameof(Register), response);
             }
 
             foreach (var error in result.Errors)
