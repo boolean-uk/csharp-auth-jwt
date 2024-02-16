@@ -1,13 +1,11 @@
-﻿using exercise.wwwapi.Enums;
-using exercise.wwwapi.Models;
+﻿using exercise.wwwapi.Models;
 using exercise.wwwapi.Models.InputModels;
 using exercise.wwwapi.Models.OutputModels;
 using exercise.wwwapi.Models.PureModels;
 using exercise.wwwapi.Repository;
+using exercise.wwwapi.Utils;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
 using System.Security.Claims;
 
 namespace exercise.wwwapi.Endpoints
@@ -63,13 +61,9 @@ namespace exercise.wwwapi.Endpoints
         [Authorize(Roles = "User, Administrator")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> CreatePost(IRepository<Entry> repo, UserRepository userRepo, HttpContext httpContext, EntryPost entryPost) 
+        private static async Task<IResult> CreatePost(IRepository<Entry> repo, UserRepository userRepo, ClaimsPrincipal apiUser, EntryPost entryPost) 
         {
-            string? posterId = httpContext.User.Claims
-                .Where(c => c.Type == ClaimTypes.NameIdentifier)
-                .Skip(1) // First is schema id
-                .Select(c => c.Value)
-                .FirstOrDefault(); // Null if not found
+            string? posterId = HttpContextHelper.UserId(apiUser);
 
             if (posterId == null) 
             {
@@ -95,14 +89,15 @@ namespace exercise.wwwapi.Endpoints
 
         [Authorize(Roles = "User, Administrator")]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> UpdatePost(IRepository<Entry> repo, UserRepository userRepo, HttpContext httpContext, int id, EntryPut entryPost) 
+        private static async Task<IResult> UpdatePost(IRepository<Entry> repo, UserRepository userRepo, ClaimsPrincipal apiUser, int id, EntryPut entryPost) 
         {
-            string? userClaimedId = httpContext.User.Claims
-                .Where(c => c.Type == ClaimTypes.NameIdentifier)
-                .Skip(1) // First is schema id
-                .Select(c => c.Value)
-                .FirstOrDefault(); // Null if not found
+            string? userClaimedId = HttpContextHelper.UserId(apiUser);
+            if (userClaimedId == null) 
+            {
+                return TypedResults.BadRequest("Could not identify the request sender.");
+            }
 
             Entry? dbEntry = await repo.Get(id);
             if (dbEntry == null)
@@ -136,13 +131,14 @@ namespace exercise.wwwapi.Endpoints
         [Authorize(Roles = "User, Administrator")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> DeletePost(IRepository<Entry> repo, UserRepository userRepo, HttpContext httpContext, int id) 
+        private static async Task<IResult> DeletePost(IRepository<Entry> repo, UserRepository userRepo, ClaimsPrincipal apiUser, int id) 
         {
-            string? posterId = httpContext.User.Claims
-                .Where(c => c.Type == ClaimTypes.NameIdentifier)
-                .Skip(1) // First is schema id
-                .Select(c => c.Value)
-                .FirstOrDefault(); // Null if not found
+            string? posterId = HttpContextHelper.UserId(apiUser);
+
+            if (posterId == null)
+            {
+                return TypedResults.BadRequest("Could not identify the request sender.");
+            }
 
             Entry? entry = await repo.Get(id);
             if (entry == null) 
@@ -165,17 +161,13 @@ namespace exercise.wwwapi.Endpoints
         [Authorize(Roles = "User")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> GetAllEntriesForCurrentUser(IRepository<Entry> repo, HttpContext httpContext) 
+        private static async Task<IResult> GetAllEntriesForCurrentUser(IRepository<Entry> repo, ClaimsPrincipal apiUser) 
         {
-            string? posterId = httpContext.User.Claims
-                .Where(c => c.Type == ClaimTypes.NameIdentifier)
-                .Skip(1) // First is schema id
-                .Select(c => c.Value)
-                .FirstOrDefault(); // Null if not found
+            string? posterId = HttpContextHelper.UserId(apiUser);
             
             if (posterId == null)
             {
-                return TypedResults.BadRequest("Error retriving ID of submitting user.");
+                return TypedResults.BadRequest("Error retriving ID of submitting apiUser.");
             }
 
             IEnumerable<Entry> userEntries = await repo.GetAllWithFieldValue("AuthorId", posterId);
@@ -188,17 +180,14 @@ namespace exercise.wwwapi.Endpoints
         [Authorize(Roles = "Administrator")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> GetAllEntriesForProvided(IRepository<Entry> repo, UserRepository userRepo, HttpContext httpContext, string email)
+        private static async Task<IResult> GetAllEntriesForProvided(
+            IRepository<Entry> repo, UserRepository userRepo, ClaimsPrincipal apiUser, string email)
         {
-            string? posterId = httpContext.User.Claims
-                .Where(c => c.Type == ClaimTypes.NameIdentifier)
-                .Skip(1) // First is schema id
-                .Select(c => c.Value)
-                .FirstOrDefault(); // Null if not found
+            string? posterId = HttpContextHelper.UserId(apiUser);
 
             if (posterId == null)
             {
-                return TypedResults.BadRequest("Error retriving ID of submitting user.");
+                return TypedResults.BadRequest("Error retriving ID of submitting apiUser.");
             }
 
             if (!(await userRepo.UserIsAdmin(posterId))) 

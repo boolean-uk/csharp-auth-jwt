@@ -8,7 +8,7 @@ namespace exercise.wwwapi.Repository
     public class UserRepository : IRepositorySelectFieldCompare<ApplicationUser>
     {
         DataContext _db;
-        private DbSet<ApplicationUser> _table = null;
+        private DbSet<ApplicationUser>? _table = null;
 
         public UserRepository(DataContext db)
         {
