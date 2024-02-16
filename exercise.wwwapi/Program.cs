@@ -3,6 +3,7 @@ using exercise.Data;
 using exercise.Data.Models;
 using exercise.Infrastructure;
 using exercise.wwwapi.Endpoints;
+using exercise.wwwapi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,8 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
 builder.Services.AddScoped<IRepository<Post>, Repository<Post>>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<PostService>();
 
 builder.Services.AddDbContext<DataContext>(opt =>
 {

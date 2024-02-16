@@ -3,6 +3,7 @@ using exercise.Application;
 using exercise.Data.Models;
 using exercise.Infrastructure;
 using exercise.wwwapi.DTOs;
+using exercise.wwwapi.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
@@ -15,59 +16,47 @@ namespace exercise.wwwapi.Endpoints
             var group = app.MapGroup("/post");
             group.MapGet("/", GetAll);
             group.MapPost("/", Add);
+            group.MapPut("/{postId}", Change);
         }
 
         private static string GetUserId(IHttpContextAccessor contextAccessor) => contextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.Name)!;
 
         [Authorize]
-        public static async Task<IResult> GetAll(IRepository<Post> repository, 
-            IHttpContextAccessor contextAccessor,
-            IMapper mapper)
+        public static async Task<IResult> GetAll(PostService postService, IHttpContextAccessor contextAccessor)
         {
-            ServiceResponse<List<GetPostDTO>> response = new();
-            try
+            var response = await postService.GetAllPostsByUser(GetUserId(contextAccessor));
+            if (!response.Success)
             {
-                List<Post> posts = await repository.GetAll();
-                response.Data = posts.Where(p => p.UserId == GetUserId(contextAccessor))
-                    .Select(mapper.Map<GetPostDTO>)
-                    .ToList();
-                return TypedResults.Ok(response);
-            } catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
                 return TypedResults.BadRequest(response);
             }
+            return TypedResults.Ok(response);
         }
 
         [Authorize]
-        public static async Task<IResult> Add(IRepository<Post> repository,
+        public static async Task<IResult> Add(PostService postService,
             IHttpContextAccessor contextAccessor,
-            IMapper mapper,
             AddPostDTO addPostDTO)
         {
-            ServiceResponse<GetPostDTO> response = new();
-            try
+            var response = await postService.AddPost(GetUserId(contextAccessor), addPostDTO);
+            if (!response.Success)
             {
-                Post post = mapper.Map<Post>(addPostDTO);
-                post.UserId = GetUserId(contextAccessor);
-                // post.PostedAt = DateTime.Now;
-                post = await repository.Add(post);
-                response.Data = mapper.Map<GetPostDTO>(post);
-                return TypedResults.Created(nameof(Add), response);
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
                 return TypedResults.BadRequest(response);
             }
+            return TypedResults.Created(nameof(Add), response);
         }
 
-        //[Authorize]
-        //public static async Task<IResult> Delete(IRepository<Post> repository,
-        //    IHttpContextAccessor,
-        //    IMapper mapper,
-        //    AddPost)
+        [Authorize]
+        public static async Task<IResult> Change(PostService postService,
+            IHttpContextAccessor contextAccessor,
+            AddPostDTO addPostDTO,
+            string postId)
+        {
+            var response = await postService.ChangePost(GetUserId(contextAccessor), addPostDTO, postId);
+            if (!response.Success)
+            {
+                return TypedResults.BadRequest(response);
+            }
+            return TypedResults.Ok(response);
+        }
     }
 }
