@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace exercise.wwwapi.DataTransfer.Response.Entities
 {
-    public class BlogPostDTO(BlogPost blogPost)
+    public class BlogPostResponseDTO(BlogPost blogPost)
     {
         public int Id { get; set; } = blogPost.Id;
         public string Title { get; set; } = blogPost.Title;

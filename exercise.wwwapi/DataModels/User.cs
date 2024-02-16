@@ -5,6 +5,7 @@ namespace exercise.wwwapi.DataModels
 {
     public class User :IdentityUser
     {
+
         public UserRole UserRole { get; set; }
     }
 }

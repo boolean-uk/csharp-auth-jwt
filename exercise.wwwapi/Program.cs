@@ -57,6 +57,7 @@ builder.Services.AddDbContext<DataContext>(opt =>
 
 //ADD SCOPED
 builder.Services.AddScoped<IRepository<BlogPost>, Repository<BlogPost>>();
+builder.Services.AddScoped<IRepository<User>, Repository<User>>();
 builder.Services.AddScoped<TokenService>();
 //
 
@@ -81,6 +82,8 @@ builder.Services
 var validIssuer = builder.Configuration.GetValue<string>("JwtTokenSettings:ValidIssuer");
 var validAudience = builder.Configuration.GetValue<string>("JwtTokenSettings:ValidAudience");
 var symmetricSecurityKey = builder.Configuration.GetValue<string>("JwtTokenSettings:SymmetricSecurityKey");
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddAuthentication(options =>
 {
