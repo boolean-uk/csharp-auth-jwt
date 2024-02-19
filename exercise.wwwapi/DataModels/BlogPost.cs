@@ -12,6 +12,6 @@ namespace exercise.wwwapi.DataModels
         public string Text { get; set; }
 
         [Column("author_id")]
-        public string AuthorId { get; set; }
+        public int AuthorId { get; set; }
     }
 }

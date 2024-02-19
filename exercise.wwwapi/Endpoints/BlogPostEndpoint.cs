@@ -13,10 +13,10 @@ namespace exercise.wwwapi.Endpoints
             blogposts.MapGet("/", GetAllBlogPosts);
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize]
         private static async Task<IResult> GetAllBlogPosts(IRepository<BlogPost> bpRepo)
         {
-            throw new NotImplementedException();
+            return TypedResults.Ok(bpRepo.GetAll());
         }
     }
 }

@@ -27,6 +27,7 @@ builder.Services.AddSwaggerGen(options => {
     });
 });
 builder.Services.AddAuthorization();
+//builder.Services.AddAuthentication();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DataContext>(options => 
                                             options.UseNpgsql(builder.Configuration

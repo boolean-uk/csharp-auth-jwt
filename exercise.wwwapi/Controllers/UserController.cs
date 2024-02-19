@@ -10,12 +10,14 @@ namespace exercise.wwwapi.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signingManager;
         private readonly ITokenService _tokenService;
-        public UserController(UserManager<ApplicationUser> userManager, ITokenService tokenService)
+        public UserController(UserManager<ApplicationUser> userManager, ITokenService tokenService, SignInManager<ApplicationUser> signinManager)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _signingManager = signinManager;
         }
 
         [HttpPost("register")]
@@ -52,8 +54,32 @@ namespace exercise.wwwapi.Controllers
             {
                 return StatusCode(500, ex);
             }
-        }   
+        }
 
+        [HttpPost("login")]
+        public async Task<ActionResult> Login([FromBody] LoginDTO logDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = _userManager.Users.FirstOrDefault(x => x.UserName == logDTO.Username.ToLower());
+            if(user == null)
+            {
+                return Unauthorized("Invalid Username");
+            }
+            var result = await _signingManager.CheckPasswordSignInAsync(user, logDTO.Password, false);
+
+            if (!result.Succeeded) return Unauthorized("Login Failed");
+
+            return Ok(new ResponseDTO
+            {
+                Username = user.UserName,
+                Email = user.Email,
+                Token = _tokenService.CreateToken(user)
+            });
+        }
 
     }
 }
