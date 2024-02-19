@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace exercise.wwwapi.Repo
 {
-    public class Repo<T> : Irepo<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class
     {
         private DataContext _db;
         private DbSet<T> _table = null;
 
-        public Repo(DataContext context) 
+        public Repository(DataContext context) 
         {
             _db = context;
             _table = _db.Set<T>();
