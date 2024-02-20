@@ -57,8 +57,13 @@ builder.Services.AddDbContext<DataContext>(opt =>
     opt.LogTo(message => Debug.WriteLine(message));
 
 });
-builder.Services.AddScoped<IRepository<BlogPost>, Repository<BlogPost>>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<ApplicationUserRepository>();
+//builder.Services.AddScoped<IRepository<BlogPost>, Repository<BlogPost>>();
 builder.Services.AddScoped<TokenService, TokenService>();
+
+//Something for the blog getting the email?
+builder.Services.AddHttpContextAccessor();
 
 // Support string to enum conversions
 builder.Services.AddControllers().AddJsonOptions(opt =>

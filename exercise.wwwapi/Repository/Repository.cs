@@ -1,4 +1,7 @@
 ﻿using exercise.wwwapi.Data;
+using exercise.wwwapi.DataModels;
+using exercise.wwwapi.DataModels.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.wwwapi.Repository
@@ -26,6 +29,7 @@ namespace exercise.wwwapi.Repository
             await _db.SaveChangesAsync();
             return entity;
         }
+
 
         public async Task<T> SelectById(object id)
         {

@@ -13,7 +13,7 @@ namespace exercise.wwwapi.DataTransfer.Requests.User
 
         [Required]
         public string? Password { get; set; }
-
-        public Role Role { get; set; } = Role.User;
+        //Enums has integer values as input, so we can use int here. I have spent too much time figuring out why how I can use string. Now I am just going to use int.
+        public int Role { get; set; }
     }
 }
