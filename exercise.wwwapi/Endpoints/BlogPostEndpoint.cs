@@ -13,7 +13,7 @@ namespace exercise.wwwapi.Endpoints
             blogposts.MapGet("/", GetAllBlogPosts);
         }
 
-        //[Authorize]
+        [Authorize]
         private static async Task<IResult> GetAllBlogPosts(IRepository<BlogPost> bpRepo)
         {
             return TypedResults.Ok(bpRepo.GetAll());
