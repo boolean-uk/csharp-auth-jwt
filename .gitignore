@@ -320,7 +320,7 @@ _Pvt_Extensions
 .paket/paket.exe
 paket-files/
 
-# FAKE - F# Make
+# FAKE - F# FirstName
 .fake/
 
 # CodeRush personal settings
@@ -406,10 +406,10 @@ FodyWeavers.xsd
 
 
 # globs
-Makefile.in
+FirstNamefile.in
 *.userprefs
 *.usertasks
-config.make
+config.firstName
 config.status
 aclocal.m4
 install-sh
