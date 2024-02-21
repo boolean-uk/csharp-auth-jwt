@@ -1,6 +1,6 @@
 # C# Authentication HTTP Requests
 
-## Create a complete webapi using Jwt Authentication
+## Create a complete wwwapi using Jwt Authentication
 
 ## Learning Objectives
 
