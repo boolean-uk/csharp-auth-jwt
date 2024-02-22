@@ -1,6 +1,74 @@
 @exercise.wwwapi_HostAddress = http://localhost:5005
+@adminbearer = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyYnZlZXIzaDU0Nm5uM24zNW55bnk1dW1iYnQiLCJqdGkiOiI3NGJjZmM4Yi0xMDEwLTQ2N2YtOGI4Yy03MTY0YjkyZDkwZDAiLCJpYXQiOiIxNzA4NTQzNzAyIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiI1YWJhYjExNS0xY2M1LTQ5MmItODlhYS0xNWI0M2VlZTA1NzQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoibmlnZWxAbmlnZWwubmlnZWwiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJuaWdlbEBuaWdlbC5uaWdlbCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzA4NTQ3MzAyLCJpc3MiOiJFeGFtcGxlSXNzdWVyIiwiYXVkIjoiRXhhbXBsZUF1ZGllbmNlIn0.19QeIV085bXv77XruSlPLHST0zhOVE0ubyRsAAXNSOo
+@userbearer = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyYnZlZXIzaDU0Nm5uM24zNW55bnk1dW1iYnQiLCJqdGkiOiJiYzZhNWJhNy1kNjQyLTQ0NDQtODZlNS1jNWRhZjIwY2VmZGMiLCJpYXQiOiIxNzA4NTQzNzQ3IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiI3NDA4YTk0MC05ZWQwLTQwMDctOTc3NC1hZjVkMmY0NGE1ZTAiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoic3RpdGNoQHN0aXRjaC5zdGl0Y2giLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJzdGl0Y2hAc3RpdGNoLnN0aXRjaCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3MDg1NDczNDcsImlzcyI6IkV4YW1wbGVJc3N1ZXIiLCJhdWQiOiJFeGFtcGxlQXVkaWVuY2UifQ.PISnBw7wtGr5-n6nCbL6p1Eh8cn63yHohTiUo2y8OGM
+}
 
-GET {{exercise.wwwapi_HostAddress}}/weatherforecast/
+GET {{exercise.wwwapi_HostAddress}}/blog/posts/
 Accept: application/json
 
+###
+
+### POST Register an Admin
+POST {{exercise.wwwapi_HostAddress}}/api/users/register
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+  "email": "nigel@nigel.nigel",
+  "username": "nigel@nigel.nigel",
+  "password": "nigel@nigel.nigel",
+  "role": "Admin"
+}
+
+### POST Register a standard User
+POST {{exercise.wwwapi_HostAddress}}/api/users/register
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+  "email": "stitch@stitch.stitch",
+  "username": "stitch@stitch.stitch",
+  "password": "stitch@stitch.stitch",
+  "role": "User"
+}
+### POST Login nigel Admin User
+POST {{exercise.wwwapi_HostAddress}}/api/users/login
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+  "email": "nigel@nigel.nigel",
+  "password": "nigel@nigel.nigel"
+}
+### POST Login Stitch Standard User
+POST {{exercise.wwwapi_HostAddress}}/api/users/login
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+
+{
+  "email": "stitch@stitch.stitch",
+  "password": "stitch@stitch.stitch"
+}
+
+### GET all BlogPost
+GET {{exercise.wwwapi_HostAddress}}/blog/posts/
+Accept: application/json
+Authorization: Bearer @adminbearer
+###
+### PUT (update) a post
+
+PUT {{exercise.wwwapi_HostAddress}}/blog/posts/2
+Content-Type: application/json
+Accept-Language: en-US,en;q=0.5
+Authorization: Bearer @adminbearer
+
+{
+  "title": "Polo",
+
+}
+
+###
+### DELETE a post
+DELETE {{exercise.wwwapi_HostAddress}}/blog/posts/2
+Authorization: Bearer @adminbearer
 ###
