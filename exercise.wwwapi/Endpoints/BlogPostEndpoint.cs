@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using exercise.wwwapi.DataTransfer.Request;
 using System.Security.Claims;
+using exercise.wwwapi.Helpers;
 
 namespace exercise.wwwapi.Endpoints;
 
@@ -24,24 +25,23 @@ public static class BlogPostEndpoint
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public static async Task<IResult> CreateBlogPost(IRepository<BlogPost> repository, IRepository<User> userRepository, ClaimsPrincipal user1, BlogPostPostRequest postRequest)
+    public static async Task<IResult> CreateBlogPost(IRepository<BlogPost> repository, IRepository<User> userRepository, ClaimsPrincipal userData, BlogPostPostRequest postRequest)
     {
-        //user1.UserId()
-        var user = await userRepository.GetById(postRequest.UserId);
+        //userData.UserId()
+        var user = await userRepository.GetById(userData.UserId());
         if (user == null)
         {
-            return TypedResults.NotFound($"User with the Id: {postRequest.UserId} can be found!");
+            return TypedResults.NotFound($"User with the Id: {userData.UserId()} can be found!");
         }
         var newPost = new BlogPost()
         {
             Text = postRequest.Text,
-            UserId = postRequest.UserId,
+            UserId = userData.UserId(),
         };
         var result = await repository.Add(newPost);
         return TypedResults.Created($"/{result.Id}", new { BlogPost = BlogPostDTO.ToDTO(result) });
     }
 
-    [Authorize(Roles = "User, Admin")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public static async Task<IResult> GetAllBlogPosts(IRepository<BlogPost> repository)
@@ -55,7 +55,6 @@ public static class BlogPostEndpoint
         return TypedResults.Ok(new { BlogPosts=returnList } );
     }
 
-    [Authorize(Roles = "User, Admin")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
