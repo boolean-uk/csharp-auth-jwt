@@ -23,6 +23,7 @@ namespace exercise.wwwapi.EndPoints
             app.MapGet("posts", GetBlogPosts);
             app.MapPost("posts", CreateBlogPost);
             app.MapPut("posts/{id:int}", UpdateBlogPost);
+            app.MapGet("viewall/{id:int}", GetUserWall);
         }
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -30,8 +31,14 @@ namespace exercise.wwwapi.EndPoints
         private static async Task<IResult> GetUsers(IDatabaseRepository<User> service)
         {
             var users = service.GetAll();
-
-            return Results.Ok(users);
+            var userDtos = new List<UserResponseAuthorized>();
+            foreach(User u in users)
+            {
+                var userDto = new UserResponseAuthorized() { Id = u.Id, Username = u.Username };
+                userDto.Follows = u.Follows.Select(item => item.Username).ToList();
+                userDtos.Add(userDto);
+            }
+            return Results.Ok(userDtos);
         }
 
         [Authorize]
@@ -89,15 +96,22 @@ namespace exercise.wwwapi.EndPoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> GetAllFollowers(IDatabaseRepository<User> service, int id)
+        private static async Task<IResult> GetUserWall(IDatabaseRepository<User> service, int id)
         {
-            User user = service.GetAll(u => u.Follows).FirstOrDefault(u => u.Id == id);
-            if (user == null)
+            var user = service.GetById(id);
+            if(user == null)
             {
                 Results.BadRequest("User does not exist");
             }
 
-            return Results.Ok(new Payload<User> { status = "Success", data = user });
+            List<User> followers = service.GetAll(u => u.BlogPosts).Where(u => user.Follows.Contains(u)).ToList();
+
+            var wall = new List<BlogPost>();  
+            foreach(User f in followers)
+            {
+                wall.AddRange(f.BlogPosts);
+            }
+            return Results.Ok(new Payload<ICollection<BlogPost>> { status = "Success", data = wall });
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]

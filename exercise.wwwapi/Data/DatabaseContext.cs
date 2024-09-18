@@ -20,6 +20,11 @@ namespace exercise.wwwapi.Data
             optionsBuilder.UseNpgsql(_connectionString);
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().Navigation(x => x.BlogPosts).AutoInclude();
+            base.OnModelCreating(modelBuilder);
+        }
         public DbSet<User> Users { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }
     }
