@@ -18,7 +18,7 @@ namespace exercise.wwwapi.Data
         {
             //modelBuilder.Entity<User>().HasKey(x => x.Id);
             //modelBuilder.Entity<BlogPost>().HasKey(x => x.Id);
-
+            modelBuilder.Entity<Follow>().HasKey(x => new { x.userThatFollowsId, x.userThatIsFollowedId });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -28,6 +28,7 @@ namespace exercise.wwwapi.Data
         }
         public DbSet<User> Users { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }
+        public DbSet<Follow> Follows { get; set; }
 
     }
 }

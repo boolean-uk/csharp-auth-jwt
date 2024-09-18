@@ -55,6 +55,12 @@ namespace exercise.wwwapi.Repository
             _table.Remove(existing);
         }
 
+        public void Delete(object id1, object id2)
+        {
+            T existing = _table.Find(id1, id2);
+            _table.Remove(existing);
+        }
+
 
         public void Save()
         {

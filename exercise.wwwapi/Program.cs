@@ -13,6 +13,7 @@ var config = new ConfigurationSettings();
 
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
 builder.Services.AddScoped<IRepository<BlogPost>, Repository<BlogPost>>();
+builder.Services.AddScoped<IRepository<Follow>, Repository<Follow>>();
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 
 builder.Services.AddAuthentication(x =>

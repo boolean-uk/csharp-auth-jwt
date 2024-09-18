@@ -11,6 +11,7 @@ namespace exercise.wwwapi.Repository
         void Insert(T obj);
         void Update(T obj);
         void Delete(object id);
+        void Delete(object id1, object id2);
         void Save();
         DbSet<T> Table { get; }
     }

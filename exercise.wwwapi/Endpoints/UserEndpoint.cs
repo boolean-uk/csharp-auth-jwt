@@ -26,9 +26,54 @@ namespace exercise.wwwapi.Endpoints
             user.MapPost("/blogpost", CreateBlogpost);
             user.MapPut("/blogpost", UpdateBlogpost);
             user.MapPut("/update", UpdateUser);
+            user.MapPost("/{thisUser}/follows/{thatUser}", FollowUser);
+            user.MapPost("/{thisUser}/unfollows/{thatUser}", UnfollowUser);
+            user.MapGet("/viewall/{thisUser}", ViewAll);
         }
 
+        private static async Task<IResult> ViewAll(IRepository<Follow> service, ClaimsPrincipal user)
+        {
+            var userId = user.UserRealId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+            return TypedResults.Ok(service.GetAll().Where(x => x.userThatFollowsId == userId));
+        }
 
+        private static async Task<IResult> UnfollowUser(IRepository<Follow> service, ClaimsPrincipal user, int id)
+        {
+
+            var userId = user.UserRealId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+            Follow follow = service.GetAll().FirstOrDefault(x => x.userThatFollowsId == userId && x.userThatIsFollowedId == id);
+
+            service.Delete(follow.userThatFollowsId, follow.userThatIsFollowedId);
+            service.Save();
+            return Results.Ok(new Payload<string>() { data = $"User Id:{userId} does not Follows User Id:{id} Anymore" });
+        }
+
+        private static async Task<IResult> FollowUser(IRepository<Follow> service, ClaimsPrincipal user, int id)
+        {
+            Follow follow = new Follow();
+
+            var userId = user.UserRealId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+
+            follow.userThatFollowsId = (int)userId;
+            follow.userThatIsFollowedId = id;
+
+
+            service.Insert(follow);
+            service.Save();
+            return Results.Ok(new Payload<string>() { data = $"User Id:{userId} now Follows User Id:{id}" });
+        }
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
