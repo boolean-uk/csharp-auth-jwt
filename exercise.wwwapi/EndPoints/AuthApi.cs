@@ -1,4 +1,5 @@
 ﻿using exercise.wwwapi.Configuration;
+using exercise.wwwapi.Helpers;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -19,10 +20,31 @@ namespace exercise.wwwapi.EndPoints
             app.MapGet("users", GetUsers);
             app.MapPost("blogpost", CreateBlogPost);
             app.MapGet("blogposts", GetBlogPosts);
+            app.MapPut("blogposts/{id}", UpdateBlogPost);
 
         }
 
-
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> UpdateBlogPost(IDatabaseRepository<BlogPost> service, BlogPostUpdateRequestDto BPURD)
+        {
+            BlogPost bp = service.GetById(BPURD.Id);
+            if (bp != null)
+            {
+                if (BPURD.Content != null)
+                {
+                    bp.Content = BPURD.Content;
+                }
+                if (BPURD.UserId != null)
+                {
+                    bp.UserId = BPURD.UserId;
+                }
+            }
+            service.Update(bp);
+            service.Save();
+            return Results.Ok(new Payload<string>() { data = "Post updated" });
+        }
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -35,10 +57,9 @@ namespace exercise.wwwapi.EndPoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> CreateBlogPost(IDatabaseRepository<BlogPost> service, BlogPostRequestDto BPRD, HttpContext context)
+        private static async Task<IResult> CreateBlogPost(IDatabaseRepository<BlogPost> service, BlogPostRequestDto BPRD, ClaimsPrincipal user)
         {
-
-            BlogPost bp = new BlogPost() {Id = service.GetAll().Count() +1, Content = BPRD.Content, UserId = context.User.Identity.Sid};
+            BlogPost bp = new BlogPost() {Id = service.GetAll().Count() +1, Content = BPRD.Content, UserId = user.UserRealId().ToString()};
             service.Insert(bp);
             service.Save();
             return Results.Ok(new Payload<string>() { data = "Created BlogPost" });
