@@ -41,7 +41,7 @@ namespace exercise.wwwapi.Endpoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> UpdateBlogpost(IRepository<User> service)
+        private static async Task<IResult> UpdateBlogpost(IRepository<BlogPost> service)
         {
             throw new NotImplementedException();
         }
@@ -49,7 +49,7 @@ namespace exercise.wwwapi.Endpoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> CreateBlogpost(IRepository<BlogPost> service, HttpContext context, BlogPost blogpost, ClaimsPrincipal user)
+        private static async Task<IResult> CreateBlogpost(IRepository<BlogPost> service, string content, ClaimsPrincipal user)
         {
             var newBlogpost = new BlogPost();
             if (service.GetAll().Count() == 0)
@@ -60,38 +60,48 @@ namespace exercise.wwwapi.Endpoints
             {
                 newBlogpost.Id = service.GetAll().Max(x => x.Id) + 1;
             }
-            newBlogpost.Content = blogpost.Content;
+            newBlogpost.Content = content;
             //newBlogpost.authorId = 
-            var name = context.User.Identity.Name;
-
 
             //Check if the user is logged in
             var userId = user.UserRealId();
             if (userId == null)
             {
                 return Results.Unauthorized();
+            } else
+            {
+                newBlogpost.authorId = (int)userId;
             }
 
 
-            service.Insert(blogpost);
+            service.Insert(newBlogpost);
             service.Save();
-            return Results.Ok(new Payload<string>() { data = $"Created Blogpost {name}  {userId}" });
+            return Results.Ok(new Payload<string>() { data = $"Created Blogpost for User Id:{userId}" });
         }
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> GetBlogpost(IRepository<User> service)
+        private static async Task<IResult> GetBlogpost(IRepository<BlogPost> service, ClaimsPrincipal user, int id)
         {
-            throw new NotImplementedException();
+
+            var userId = user.UserRealId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+
+            BlogPost blogpost = service.GetAll().FirstOrDefault(x => x.Id == id && userId == x.authorId);
+
+            return blogpost != null ? TypedResults.Ok(blogpost) : TypedResults.NotFound("Requested Blogpost not found for this user.");
         }
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> GetBlogposts(IRepository<User> service)
+        private static async Task<IResult> GetBlogposts(IRepository<BlogPost> service)
         {
-            throw new NotImplementedException();
+            return TypedResults.Ok(service.GetAll());
         }
 
         [Authorize]
