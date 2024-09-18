@@ -1,8 +1,10 @@
 ﻿using exercise.wwwapi.Configuration;
+using exercise.wwwapi.Helpers;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
 using System.Security.Claims;
 
@@ -15,7 +17,7 @@ namespace exercise.wwwapi.EndPoints
             var posts = app.MapGroup("posts");
             posts.MapGet("/GetAll", GetAllPosts);
             posts.MapPost("/Create", CreatePost);
-            posts.MapGet("/Edit{id}", EditPost);
+            posts.MapPut("/Edit/{id}", EditPost);
         }
 
         [Authorize]
@@ -24,16 +26,32 @@ namespace exercise.wwwapi.EndPoints
         private static async Task<IResult> GetAllPosts(IDatabaseRepository<BlogPost> repository)
         {
             //Get all posts
-            return Results.Ok(repository.GetAll());
+            var blogposts = repository.GetAll();
+
+            //Create responses
+            List<BlogResponseDTO> result = new List<BlogResponseDTO>();
+            foreach (var blogpost in blogposts)
+            {
+                result.Add(new BlogResponseDTO() { PostId = blogpost.Id, Username = blogpost.User.Username, Post = blogpost.Post });
+            }
+
+            //Create payload
+            var payload = new Payload<List<BlogResponseDTO>>()
+            {
+                data = result
+            };
+
+            return Results.Ok(payload);
         }
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> CreatePost(BlogRequestDTO request, IDatabaseRepository<BlogPost> repository, IHttpContextAccessor httpContextAccessor)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private static async Task<IResult> CreatePost(BlogRequestDTO request, IDatabaseRepository<BlogPost> repository, ClaimsPrincipal user)
         {
             //Check if the user is logged in
-            var userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = user.UserRealId();
             if (userId == null)
             {
                 return Results.Unauthorized();
@@ -42,7 +60,7 @@ namespace exercise.wwwapi.EndPoints
             //Create a new blog post
             var blogPost = new BlogPost()
             {
-                UserId = int.Parse(userId),
+                UserId = (int)userId,
                 Post = request.Text
             };
 
@@ -50,24 +68,39 @@ namespace exercise.wwwapi.EndPoints
             repository.Insert(blogPost);
             repository.Save();
 
-            //Create payload
-            var payload = new Payload<BlogPost>()
+            //Get the blogpost from the database
+            var post = repository.GetAll().Where(b => b.UserId == blogPost.UserId).LastOrDefault();
+            if(post == null)
             {
-                data = blogPost
+                return Results.NotFound();
+            }
+
+            //Create blog response
+            var blogresponse = new BlogResponseDTO()
+            {
+                PostId = post.Id,
+                Username = post.User.Username,
+                Post = post.Post
+            };
+
+            //Create payload
+            var payload = new Payload<BlogResponseDTO>()
+            {
+                data = blogresponse
             };
 
             //Response
-            return Results.Created($"https://localhost:5005/posts/{payload.data.Id}", payload);
+            return Results.Created($"https://localhost:5005/posts/{payload.data.PostId}", payload);
         }
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> EditPost(int id, BlogRequestDTO request, IDatabaseRepository<BlogPost> repository, IHttpContextAccessor httpContextAccessor)
+        private static async Task<IResult> EditPost(int id, BlogRequestDTO request, IDatabaseRepository<BlogPost> repository, ClaimsPrincipal user)
         {
             //Check if the user is logged in
-            var userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = user.UserRealId();
             if (userId == null)
             {
                 return Results.Unauthorized();
@@ -81,7 +114,7 @@ namespace exercise.wwwapi.EndPoints
             }
 
             //Check if the userId equals the signed in userId
-            if (blogPost.UserId != int.Parse(userId))
+            if (blogPost.UserId != userId)
             {
                 return Results.Unauthorized();
             }
@@ -91,14 +124,22 @@ namespace exercise.wwwapi.EndPoints
             repository.Update(blogPost);
             repository.Save();
 
-            //Create payload
-            var payload = new Payload<BlogPost>()
+            //Create blog response
+            var blogresponse = new BlogResponseDTO()
             {
-                data = blogPost
+                PostId = blogPost.Id,
+                Username = blogPost.User.Username,
+                Post = blogPost.Post
+            };
+
+            //Create payload
+            var payload = new Payload<BlogResponseDTO>()
+            {
+                data = blogresponse
             };
 
             //Response
-            return Results.Created($"https://localhost:5005/posts/{payload.data.Id}", payload);
+            return Results.Created($"https://localhost:5005/posts/{payload.data.PostId}", payload);
         }
     }
 }

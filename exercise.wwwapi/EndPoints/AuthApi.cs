@@ -82,7 +82,8 @@ namespace exercise.wwwapi.EndPoints
             //Create a list of claims
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username)                
+                new Claim(ClaimTypes.Sid, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username)
             };
             
             //Create the key based on appsettings token information

@@ -18,6 +18,16 @@ namespace exercise.wwwapi.Data
         {
             optionsBuilder.UseNpgsql(_connectionString);
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //Key
+            modelBuilder.Entity<BlogPost>().HasKey(b => new { b.Id });
+            modelBuilder.Entity<User>().HasKey(u => new { u.Id });
+
+            modelBuilder.Entity<BlogPost>().HasOne(b => b.User).WithMany().HasForeignKey(b => b.UserId);
+            modelBuilder.Entity<BlogPost>().Navigation(b => b.User).AutoInclude();
+        }
         public DbSet<User> Users { get; set; }
+        public DbSet<BlogPost> Blogs { get; set; }
     }
 }
