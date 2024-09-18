@@ -126,6 +126,7 @@ namespace exercise.wwwapi.Endpoints
 
             commentrepo.Insert(comment);
             commentrepo.Save();
+            checkBlogPost.Comments.Add(comment);
             
             CommentDTO commentDTO = new CommentDTO();
             commentDTO.Comment = comment.CommentText;
