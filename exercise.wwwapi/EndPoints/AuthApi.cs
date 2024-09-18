@@ -17,8 +17,33 @@ namespace exercise.wwwapi.EndPoints
             app.MapPost("register", Register);
             app.MapPost("login", Login);
             app.MapGet("users", GetUsers);
+            app.MapPost("blogpost", CreateBlogPost);
+            app.MapGet("blogposts", GetBlogPosts);
 
         }
+
+
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> GetBlogPosts(IDatabaseRepository<BlogPost> service)
+        {
+            return Results.Ok(service.GetAll());
+        }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> CreateBlogPost(IDatabaseRepository<BlogPost> service, BlogPostRequestDto BPRD, HttpContext context)
+        {
+
+            BlogPost bp = new BlogPost() {Id = service.GetAll().Count() +1, Content = BPRD.Content, UserId = context.User.Identity.Sid};
+            service.Insert(bp);
+            service.Save();
+            return Results.Ok(new Payload<string>() { data = "Created BlogPost" });
+        }
+
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -69,7 +94,8 @@ namespace exercise.wwwapi.EndPoints
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Sid, user.Id.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetValue("AppSettings:Token")));

@@ -18,5 +18,6 @@ namespace exercise.wwwapi.Data
             optionsBuilder.UseNpgsql(_connectionString);
         }
         public DbSet<User> Users { get; set; }
+        public DbSet<BlogPost> BlogPosts { get; set; }
     }
 }

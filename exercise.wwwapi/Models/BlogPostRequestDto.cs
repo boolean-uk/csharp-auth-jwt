@@ -2,14 +2,12 @@
 
 namespace exercise.wwwapi.Models
 {
-    [Table("blogposts")]
-    public class BlogPost
+    [NotMapped]
+    public class BlogPostRequestDto
     {
-        [Column("id")]
-        public int Id { get; set; }
-        [Column("content")]
+
         public string Content { get; set; }
-        [Column("userid")]
+
         public string UserId { get; set; }
     }
 }
