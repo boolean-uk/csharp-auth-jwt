@@ -33,17 +33,29 @@ namespace exercise.wwwapi.Endpoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> UpdateUser(IRepository<User> service)
+        private static async Task<IResult> UpdateUser(IRepository<User> service, int id, User user)
         {
-            throw new NotImplementedException();
+            User existingUser = service.GetAll().FirstOrDefault(x => x.Id == id);
+            if (existingUser != null)
+            {
+                service.Update(existingUser);
+                return TypedResults.Ok();
+            }
+            return TypedResults.NotFound();
         }
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> UpdateBlogpost(IRepository<BlogPost> service)
+        private static async Task<IResult> UpdateBlogpost(IRepository<BlogPost> service, int id, BlogPost blogPost)
         {
-            throw new NotImplementedException();
+            BlogPost existingBlogpost = service.GetAll().FirstOrDefault(x => x.Id == id);
+            if (existingBlogpost != null)
+            {
+                service.Update(existingBlogpost);
+                return TypedResults.Ok();
+            }
+            return TypedResults.NotFound();
         }
 
         [Authorize]
