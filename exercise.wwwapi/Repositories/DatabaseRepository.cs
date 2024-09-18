@@ -7,7 +7,7 @@ namespace exercise.wwwapi.Repositories
     public class DatabaseRepository<T> : IDatabaseRepository<T> where T : class
     {
         private BlogContext _db;
-        private DbSet<T> _table = null;
+        private DbSet<T> _table;
         public DatabaseRepository(BlogContext db)
         {
             _db = db;

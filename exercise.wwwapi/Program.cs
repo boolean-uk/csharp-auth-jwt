@@ -14,21 +14,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-var app = builder.Build();
+
 
 var config = new ConfigurationSettings();
 
 // Add services to the container.
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
-builder.Services.AddScoped<IDatabaseRepository<Author>, DatabaseRepository<Author>>();
-builder.Services.AddScoped<IDatabaseRepository<BlogPost>, DatabaseRepository<BlogPost>>();
-builder.Services.AddScoped<IDatabaseRepository<UserRelationStatus>, DatabaseRepository<UserRelationStatus>>();
-builder.Services.AddScoped<IDatabaseRepository<BlogComment>, DatabaseRepository<BlogComment>>();
 
-// builder.Services.AddScoped<typeof(IDatabaseRepository<>), typeof(DatabaseRepository<>)>();
-
-builder.Services.AddDbContext<BlogContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ConnectionStrings:DefaultConnectionString")));
+builder.Services.AddScoped(typeof(IDatabaseRepository<>), typeof(DatabaseRepository<>));
+builder.Services.AddDbContext<BlogContext>();
 
 //authentication verifying who they say they are
 //authorization verifying what they have access to
@@ -102,6 +96,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

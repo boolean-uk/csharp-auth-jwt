@@ -5,11 +5,17 @@ namespace exercise.wwwapi.DataContext
 {
     public class BlogContext : DbContext
     {
+
         private string _connectionString;
-
-        public BlogContext(DbContextOptions<BlogContext> options) : base(options)
+        public BlogContext()
         {
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            _connectionString = configuration.GetValue<string>("ConnectionStrings:DefaultConnectionString")!;
+        }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseNpgsql(_connectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

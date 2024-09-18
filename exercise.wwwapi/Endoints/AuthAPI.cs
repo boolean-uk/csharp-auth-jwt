@@ -18,7 +18,6 @@ namespace exercise.wwwapi.Endoints
             app.MapPost("register", Register);
             app.MapPost("login", Login);
             app.MapGet("authors", GetAuthors);
-
         }
 
         [Authorize]
@@ -43,29 +42,30 @@ namespace exercise.wwwapi.Endoints
             var author = new Author();
 
             author.Email = request.Email;
+            author.Name = request.Name;
             author.PasswordHash = passwordHash;
 
-            service.Insert(author);
-            service.Save();
+            await service.Insert(author);
+            await service.Save();
 
             return Results.Ok(new Payload<string>() { data = $"Created Account for Author with id! {author.Id}" });
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> Login(AuthorRequestDTO request, IDatabaseRepository<Author> service, IConfigurationSettings config)
+        private static async Task<IResult> Login(AuthorLoginDTO request, IDatabaseRepository<Author> service, IConfigurationSettings config)
         {
             var target = await service.GetAll();
 
             //user doesn't exist
-            if (!target.Where(u => u.Email == request.Email).Any()) return Results.BadRequest(new Payload<AuthorRequestDTO>() { status = "User does not exist!", data = request });
+            if (!target.Where(u => u.Email == request.Email).Any()) return Results.BadRequest(new Payload<AuthorLoginDTO>() { status = "User does not exist!", data = request });
 
             Author author = target.FirstOrDefault(u => u.Email == request.Email)!;
 
 
             if (!BCrypt.Net.BCrypt.Verify(request.Password, author.PasswordHash))
             {
-                return Results.BadRequest(new Payload<AuthorRequestDTO>() { status = "Wrong Password", data = request });
+                return Results.BadRequest(new Payload<AuthorLoginDTO>() { status = "Wrong Password", data = request });
             }
             string token = CreateToken(author, config);
             return Results.Ok(new Payload<string>() { data = token });
