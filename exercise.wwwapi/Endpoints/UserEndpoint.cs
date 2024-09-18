@@ -18,6 +18,31 @@ namespace exercise.wwwapi.Endpoints
             app.MapPost("register", Register);
             app.MapPost("login", Login);
             app.MapGet("users", GetUsers);
+            var user = app.MapGroup("user");
+            user.MapGet("/blogpost", GetBlogpost);
+            user.MapPost("/blogpost", CreateBlogpost);
+            user.MapPut("/blogpost", UpdateBlogpost);
+            user.MapPut("/update", UpdateUser);
+        }
+
+        private static async Task UpdateUser(HttpContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static async Task UpdateBlogpost(HttpContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static async Task CreateBlogpost(HttpContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static async Task GetBlogpost(HttpContext context)
+        {
+            throw new NotImplementedException();
         }
 
         [Authorize]
