@@ -15,6 +15,8 @@ var config = new ConfigurationSettings();
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 builder.Services.AddScoped<IDatabaseRepository<User>, DatabaseRepository<User>>();
 builder.Services.AddScoped<IDatabaseRepository<BlogPost>, DatabaseRepository<BlogPost>>();
+builder.Services.AddScoped<IDatabaseRepository<Comment>, DatabaseRepository<Comment>>();
+
 
 //authentication verifying who they say they are
 //authorization verifying what they have access to
