@@ -17,7 +17,7 @@ namespace exercise.wwwapi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasKey(x => x.Id);
-            modelBuilder.Entity<BlogPost>().HasKey(x => new {x.Id, x.authorId});
+            modelBuilder.Entity<BlogPost>().HasKey(x => x.Id);
 
         }
 
@@ -27,7 +27,7 @@ namespace exercise.wwwapi.Data
             optionsBuilder.UseNpgsql(_connectionString);
         }
         public DbSet<User> Users { get; set; }
-        public DbSet<User> BlogPosts { get; set; }
+        public DbSet<BlogPost> BlogPosts { get; set; }
 
     }
 }

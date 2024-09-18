@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Xml;
 
 namespace exercise.wwwapi.Endpoints
 {
@@ -19,28 +20,66 @@ namespace exercise.wwwapi.Endpoints
             app.MapPost("login", Login);
             app.MapGet("users", GetUsers);
             var user = app.MapGroup("user");
-            user.MapGet("/blogpost", GetBlogpost);
+            user.MapGet("/blogpost{id}", GetBlogpost);
+            user.MapGet("/blogposts", GetBlogposts);
             user.MapPost("/blogpost", CreateBlogpost);
             user.MapPut("/blogpost", UpdateBlogpost);
             user.MapPut("/update", UpdateUser);
         }
 
-        private static async Task UpdateUser(HttpContext context)
+
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> UpdateUser(IRepository<User> service)
         {
             throw new NotImplementedException();
         }
 
-        private static async Task UpdateBlogpost(HttpContext context)
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> UpdateBlogpost(IRepository<User> service)
         {
             throw new NotImplementedException();
         }
 
-        private static async Task CreateBlogpost(HttpContext context)
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> CreateBlogpost(IRepository<BlogPost> service, HttpContext context, BlogPost blogpost)
+        {
+            var newBlogpost = new BlogPost();
+            if (service.GetAll().Count() == 0)
+            {
+                newBlogpost.Id = 1;
+            }
+            else
+            {
+                newBlogpost.Id = service.GetAll().Max(x => x.Id) + 1;
+            }
+            newBlogpost.Content = blogpost.Content;
+            //newBlogpost.authorId = 
+            var name = context.User.Identity.Name;
+
+            service.Insert(blogpost);
+            service.Save();
+            return Results.Ok(new Payload<string>() { data = $"Created Blogpost {name}" });
+        }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> GetBlogpost(IRepository<User> service)
         {
             throw new NotImplementedException();
         }
 
-        private static async Task GetBlogpost(HttpContext context)
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> GetBlogposts(IRepository<User> service)
         {
             throw new NotImplementedException();
         }
@@ -94,7 +133,8 @@ namespace exercise.wwwapi.Endpoints
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username)
+                        new Claim(ClaimTypes.Sid, user.Id.ToString()),
+                        new Claim(ClaimTypes.Name, user.Username)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetValue("AppSettings:Token")));

@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public string Content { get; set; }
-        public string authorId{ get; set; }
+        public int authorId{ get; set; }
     }
 }

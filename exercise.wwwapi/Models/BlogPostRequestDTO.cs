@@ -3,6 +3,6 @@
     public class BlogPostRequestDTO
     {
         public int BlogPostId { get; set; }
-        public string authorId { get; set; }
+        public int authorId { get; set; }
     }
 }
