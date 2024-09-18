@@ -58,6 +58,7 @@ builder.Services.AddSwaggerGen(s =>
     {
         Description = "Add an Authorization header with a JWT token using the Bearer scheme see the app.http file for an example.)",
         Name = "Authorization",
+        
         Type = SecuritySchemeType.ApiKey,
         In = ParameterLocation.Header,
         Scheme = "Bearer"

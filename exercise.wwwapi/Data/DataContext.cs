@@ -16,8 +16,8 @@ namespace exercise.wwwapi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().HasKey(x => x.Id);
-            modelBuilder.Entity<BlogPost>().HasKey(x => x.Id);
+            //modelBuilder.Entity<User>().HasKey(x => x.Id);
+            //modelBuilder.Entity<BlogPost>().HasKey(x => x.Id);
 
         }
 

@@ -1,4 +1,5 @@
 ﻿using exercise.wwwapi.Configuration;
+using exercise.wwwapi.Data;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -48,7 +49,7 @@ namespace exercise.wwwapi.Endpoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> CreateBlogpost(IRepository<BlogPost> service, HttpContext context, BlogPost blogpost)
+        private static async Task<IResult> CreateBlogpost(IRepository<BlogPost> service, HttpContext context, BlogPost blogpost, ClaimsPrincipal user)
         {
             var newBlogpost = new BlogPost();
             if (service.GetAll().Count() == 0)
@@ -63,9 +64,18 @@ namespace exercise.wwwapi.Endpoints
             //newBlogpost.authorId = 
             var name = context.User.Identity.Name;
 
+
+            //Check if the user is logged in
+            var userId = user.UserRealId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+
+
             service.Insert(blogpost);
             service.Save();
-            return Results.Ok(new Payload<string>() { data = $"Created Blogpost {name}" });
+            return Results.Ok(new Payload<string>() { data = $"Created Blogpost {name}  {userId}" });
         }
 
         [Authorize]
