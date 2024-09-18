@@ -482,3 +482,4 @@ $RECYCLE.BIN/
 */**/obj/Debug   
 */**/obj/Release   
 exercise.wwwapi/Migrations
+/exercise.wwwapi/appsettings.json
