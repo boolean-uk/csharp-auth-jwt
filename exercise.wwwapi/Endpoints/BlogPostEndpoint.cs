@@ -1,8 +1,10 @@
 ﻿using exercise.wwwapi.DTOs;
+using exercise.wwwapi.Helpers;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Claims;
 
 namespace exercise.wwwapi.Endpoints
 {
@@ -20,7 +22,7 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         public static async Task<IResult> GetBlogPosts(IRepository<BlogPost> repository)
         {
-            var resultList = await repository.GetAll(inclusions: ["Course"]);
+            var resultList = await repository.GetAll(inclusions: ["Author"]);
             var resultDTOs = new List<BlogPostResponseDTO>();
             foreach (var result in resultList)
             {
@@ -31,15 +33,22 @@ namespace exercise.wwwapi.Endpoints
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public static async Task<IResult> CreateBlogPost(IRepository<BlogPost> repository, BlogPostPostDTO model)
+        public static async Task<IResult> CreateBlogPost(IRepository<BlogPost> repository, BlogPostPostDTO model, ClaimsPrincipal user)
         {
+            //Check if the user is logged in
+            var userId = user.UserRealId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+
             var result = await repository.Create(
                 inclusions: ["Author"],
                 model: new BlogPost()
                 {
                     Title = model.Title,
                     Content = model.Content,
-                    UserId = model.AuthorId
+                    AuthorId = model.AuthorId
                 });
 
             var resultDTO = new BlogPostResponseDTO(result);
@@ -57,7 +66,7 @@ namespace exercise.wwwapi.Endpoints
                 {
                     Title = model.Title,
                     Content = model.Content,
-                    UserId = model.AuthorId,
+                    AuthorId = model.AuthorId
                 });
 
             var resultDTO = new BlogPostResponseDTO(result);

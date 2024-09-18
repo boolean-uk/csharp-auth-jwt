@@ -17,9 +17,9 @@ namespace exercise.wwwapi.Endpoints
         {
             var authentications = app.MapGroup("auth");
 
-            app.MapPost("register", Register);
-            app.MapPost("login", Login);
-            app.MapGet("users", GetUsers);
+            app.MapPost("/register", Register);
+            app.MapPost("/login", Login);
+            app.MapGet("/users", GetUsers);
         }
 
         [Authorize]
@@ -74,6 +74,7 @@ namespace exercise.wwwapi.Endpoints
         {
             List<Claim> claims = new List<Claim>
             {
+                new Claim(ClaimTypes.Sid, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username)
             };
 

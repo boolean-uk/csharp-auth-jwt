@@ -14,7 +14,7 @@ namespace exercise.wwwapi.DTOs
         {
             Title = model.Title;
             Content = model.Content;
-            AuthorName = model.User.Username;
+            AuthorName = model.Author.Username;
         }
     }
 
@@ -29,7 +29,7 @@ namespace exercise.wwwapi.DTOs
         {
             Title = model.Title;
             Content = model.Content;
-            AuthorId = model.UserId;
+            AuthorId = model.AuthorId;
         }
     }
 
@@ -44,7 +44,7 @@ namespace exercise.wwwapi.DTOs
         {
             Title = model.Title;
             Content = model.Content;
-            AuthorId = model.UserId;
+            AuthorId = model.AuthorId;
         }
     }
 }

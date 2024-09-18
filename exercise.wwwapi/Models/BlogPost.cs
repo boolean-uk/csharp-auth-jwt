@@ -16,8 +16,8 @@ namespace exercise.wwwapi.Models
         [Column("content")]
         public string Content { get; set; }
 
-        [ForeignKey("userFk")]
-        public int UserId { get; set; }
-        public User User { get; set; }
+        [ForeignKey("authorFk")]
+        public int AuthorId { get; set; }
+        public User Author { get; set; }
     }
 }
