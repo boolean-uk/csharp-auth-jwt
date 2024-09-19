@@ -51,4 +51,6 @@ You should complete all of the above plus at least one of the following:
   - unfollow another user e.g. `POST user/1/unfollows/2`
   - endpoint for a user to view all posts for users they are following e.g. `GET /viewall/1`
 - Allow a user to comment on another post and show these in another endpoint like `GET /postswithcomments`
+
 - Explore roles e.g. `[Authorize(Role="Administrator")]` and ensure that the post edit feature (aka. the PUT) can be edited by the author AND administrator.
+
