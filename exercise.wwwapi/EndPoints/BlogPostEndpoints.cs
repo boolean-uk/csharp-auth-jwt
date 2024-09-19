@@ -15,6 +15,7 @@ namespace exercise.wwwapi.EndPoints
             var posts = app.MapGroup("/posts");
             app.MapGet("", GetPosts);
             app.MapPost("", CreatePost);
+            app.MapPut("/{id}", UpdatePost);
         }
 
 
@@ -61,8 +62,7 @@ namespace exercise.wwwapi.EndPoints
                 {
                     Title = newPost.Title,
                     Text = newPost.Text,
-                    UserId = user.UserId(), //not sure abt this one
-                    //User = this??????
+                    UserId = user.UserRealId(), 
                     BlogComments = new List<BlogComment>(),
                     Posted = DateTime.UtcNow
                 };
@@ -79,6 +79,31 @@ namespace exercise.wwwapi.EndPoints
 
         }
 
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+
+        private static async Task<IResult> UpdatePost(IDatabaseRepository<BlogPost> service, ClaimsPrincipal user, NewBlogPostDto updatePost, int id)
+        {
+
+            try
+            {
+                BlogPost post = await service.GetById(id);
+
+                post.Title = updatePost.Title;
+                post.Text = updatePost.Text;
+
+                await service.Update(post);
+                await service.Save();
+
+                return TypedResults.Ok(post);
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.Problem(ex.Message);
+            }
+
+        }
 
     }
 }
