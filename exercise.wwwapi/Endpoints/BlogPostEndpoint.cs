@@ -20,7 +20,7 @@ namespace exercise.wwwapi.Endpoints
             blogposts.MapPut("/", EditBlogPost);
 
             blogposts.MapPost("/comment", AddComment);
-            blogposts.MapGet("/withcomments", GetPostsWithComments);
+            app.MapGet("/postswithcomments", GetPostsWithComments);
         }
 
         [Authorize]
