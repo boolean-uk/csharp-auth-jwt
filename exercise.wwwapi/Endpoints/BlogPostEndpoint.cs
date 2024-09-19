@@ -124,7 +124,7 @@ namespace exercise.wwwapi.Endpoints
                 return TypedResults.NotFound("Blogpost does not exist");
             }
 
-            var comment = new Comment() { CommentText = request.Comment, BlogPostId = checkBlogPost.Id, Userid = userId.Value }; //, BlogPost = checkBlogPost
+            var comment = new Comment() { CommentText = request.Comment, BlogPostId = checkBlogPost.Id, Userid = userId.Value };
 
             commentrepo.Insert(comment);
             commentrepo.Save();
