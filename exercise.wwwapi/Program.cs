@@ -1,4 +1,5 @@
 using exercise.wwwapi.Configuration;
+using exercise.wwwapi.Data;
 using exercise.wwwapi.Endpoints;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
@@ -112,5 +113,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.ConfigureAuthAPI();
+
+app.SeedApi();
 
 app.Run();
