@@ -1,4 +1,5 @@
 ﻿using exercise.wwwapi.Configuration;
+using exercise.wwwapi.Helpers;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -18,12 +19,13 @@ namespace exercise.wwwapi.EndPoints
             app.MapPost("register", Register);
             app.MapPost("login", Login);
             app.MapGet("users", GetUsers);
-            app.MapPost("user/{followerId:int}/follows/{userId:int}", FollowUser);
+            app.MapPost("user/follows/{id:int}", FollowUser);
+            app.MapPut("user/unfollows/{id:int}", UnFollowuser);
 
             app.MapGet("posts", GetBlogPosts);
             app.MapPost("posts", CreateBlogPost);
             app.MapPut("posts/{id:int}", UpdateBlogPost);
-            app.MapGet("viewall/{id:int}", GetUserWall);
+            app.MapGet("viewall", GetUserWall);
         }
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -45,23 +47,23 @@ namespace exercise.wwwapi.EndPoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> FollowUser(IDatabaseRepository<User> service, int userId, int followerId)
+        private static async Task<IResult> FollowUser(IDatabaseRepository<User> service, ClaimsPrincipal user, int id)
         {
-            User follower = service.GetById(followerId);
-            User userToFollow = service.GetById(userId);
+            User userToFollow = service.GetById(id);
+            User loggedInUser = service.GetById(user.UserRealId());
 
-            if(follower == null || userToFollow == null)
+            if(userToFollow == null)
             {
                 return Results.BadRequest(new Payload<string>{ status = "User does not exist", data = "" });
             }
 
-            if (follower.Follows.Contains(userToFollow))
+            if (loggedInUser.Follows.Contains(userToFollow))
             {
                 return Results.BadRequest(new Payload<User> { status = "User is already following", data = userToFollow });
             }
 
-            follower.Follows.Add(userToFollow);
-            service.Update(follower);
+            loggedInUser.Follows.Add(userToFollow);
+            service.Update(loggedInUser);
             service.Save();
 
             return Results.Ok(new Payload<string> { status = "User followed ", data = userToFollow.Username });
@@ -71,22 +73,22 @@ namespace exercise.wwwapi.EndPoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> UnFollowuser(IDatabaseRepository<User> service, int userId, int followerId)
+        private static async Task<IResult> UnFollowuser(IDatabaseRepository<User> service, ClaimsPrincipal user, int id)
         {
-            User follower = service.GetById(followerId);
-            User userToUnFollow = service.GetById(userId);
+            User userToUnFollow = service.GetById(id);
+            User loggedIn = service.GetById(user.UserRealId());
 
-            if (follower == null || userToUnFollow == null)
+            if (loggedIn == null || userToUnFollow == null)
             {
                 return Results.BadRequest(new Payload<string> { status = "User does not exist", data = "" });
             }
-            if (!follower.Follows.Contains(userToUnFollow)) 
+            if (!loggedIn.Follows.Contains(userToUnFollow)) 
             {
                 return Results.BadRequest(new Payload<User> { status = "You are not following this user", data = userToUnFollow });
             }
 
-            follower.Follows.Remove(userToUnFollow);
-            service.Update(follower);
+            loggedIn.Follows.Remove(userToUnFollow);
+            service.Update(loggedIn);
             service.Save();
 
             return Results.Ok(new Payload<string> { status = "User followed ", data = userToUnFollow.Username });
@@ -96,15 +98,11 @@ namespace exercise.wwwapi.EndPoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> GetUserWall(IDatabaseRepository<User> service, int id)
+        private static async Task<IResult> GetUserWall(IDatabaseRepository<User> service, ClaimsPrincipal user)
         {
-            var user = service.GetById(id);
-            if(user == null)
-            {
-                Results.BadRequest("User does not exist");
-            }
+            var loggedIn = service.GetById(user.UserRealId());
 
-            List<User> followers = service.GetAll(u => u.BlogPosts).Where(u => user.Follows.Contains(u)).ToList();
+            List<User> followers = service.GetAll(u => u.BlogPosts).Where(u => loggedIn.Follows.Contains(u)).ToList();
 
             var wall = new List<BlogPost>();  
             foreach(User f in followers)
@@ -198,7 +196,8 @@ namespace exercise.wwwapi.EndPoints
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username)                
+                new Claim(ClaimTypes.Sid, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username)
             };
             
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetValue("AppSettings:Token")));
