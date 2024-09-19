@@ -27,8 +27,15 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         private static async Task<IResult> GetUsers(IRepository<User> service)
         {
-            var result = await service.GetAll();
-            return Results.Ok(result.ToList());
+            List<UserResponseDTO> listResultDTO = new List<UserResponseDTO>();
+            
+            foreach (var result in await service.GetAll())
+            {
+                listResultDTO.Add(new UserResponseDTO(result));
+            }
+
+            var payload = new Payload<List<UserResponseDTO>>() { data = listResultDTO };
+            return TypedResults.Ok(payload);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -68,7 +75,6 @@ namespace exercise.wwwapi.Endpoints
             }
             string token = CreateToken(user, config);
             return Results.Ok(new Payload<string>() { data = token });
-
         }
 
         private static string CreateToken(User user, IConfigurationSettings config)

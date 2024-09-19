@@ -55,5 +55,10 @@ namespace exercise.wwwapi.Repository
             await _db.SaveChangesAsync();
             return model;
         }
+
+        public async void Save()
+        {
+            await _db.SaveChangesAsync();
+        }
     }
 }

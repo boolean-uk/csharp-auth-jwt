@@ -11,11 +11,10 @@ namespace exercise.wwwapi.Models
         [Column("username")]
         public string Username { get; set; }
 
-        [Column("passwordhash")]
+        [Column("password_hash")]
         public string PasswordHash { get; set; }
 
-        [Column("followingUserIds")]
-        public List<int> FollowingUserIds { get; set; } = new List<int>();
-        //public List<User> Following { get; set; } = new List<User>();
+        public List<UserFollow> Following { get; set; } = new List<UserFollow>();
+        public List<UserFollow> Followers { get; set; } = new List<UserFollow>();
     }
 }

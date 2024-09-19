@@ -16,6 +16,7 @@ var config = new ConfigurationSettings();
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 builder.Services.AddScoped<IRepository<BlogPost>, Repository<BlogPost>>();
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
+builder.Services.AddScoped<IRepository<UserFollow>, Repository<UserFollow>>();
 
 
 //authentication verifying who they say they are
@@ -44,18 +45,7 @@ builder.Services.AddSwaggerGen(s =>
     {
         Version = "v1",
         Title = "C# API Authentication",
-        Description = "Demo of an API using JWT as an authentication method",
-        Contact = new OpenApiContact
-        {
-            Name = "Nigel",
-            Email = "nigel@nigel.nigel",
-            Url = new Uri("https://www.boolean.co.uk")
-        },
-        License = new OpenApiLicense
-        {
-            Name = "Boolean",
-            Url = new Uri("https://github.com/boolean-uk/csharp-api-auth")
-        }
+        Description = "Demo of an API using JWT as an authentication method"
 
     });
 

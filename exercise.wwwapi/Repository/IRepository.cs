@@ -9,5 +9,7 @@ namespace exercise.wwwapi.Repository
         public Task<Model> Get(Expression<Func<Model, bool>> predicate);
         public Task<Model> Create(Model model);
         public Task<Model> Update(Model model);
+        public Task<Model> Delete(Model model);
+        public void Save();
     }
 }

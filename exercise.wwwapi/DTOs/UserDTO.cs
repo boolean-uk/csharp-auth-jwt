@@ -12,12 +12,15 @@ namespace exercise.wwwapi.DTOs
         public string Username { get; set; }
         public string PasswordHash { get; set; }
         public List<string> Following { get; set; }
-        public UserResponseDTO(User model, IRepository<User> repository)
+        public List<string> Followers { get; set; }
+        public UserResponseDTO(User model)
         {
             Id = model.Id;
             Username = model.Username;
             PasswordHash = model.PasswordHash;
-            Following = 
+            // Checks if list elements are null, if so, return empty list
+            Following = model.Following.Select(u => u.Followed?.Username ?? string.Empty).ToList() ?? new List<string>();
+            Followers = model.Followers.Select(u => u.Follower?.Username ?? string.Empty).ToList() ?? new List<string>();
         }
     }
 
