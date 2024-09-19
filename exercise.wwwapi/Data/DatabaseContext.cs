@@ -23,9 +23,13 @@ namespace exercise.wwwapi.Data
             //Key
             modelBuilder.Entity<BlogPost>().HasKey(b => new { b.Id });
             modelBuilder.Entity<User>().HasKey(u => new { u.Id });
+            modelBuilder.Entity<Comment>().HasKey(c => new { c.Id });
 
             modelBuilder.Entity<BlogPost>().HasOne(b => b.User).WithMany().HasForeignKey(b => b.UserId);
             modelBuilder.Entity<BlogPost>().Navigation(b => b.User).AutoInclude();
+
+            modelBuilder.Entity<BlogPost>().HasMany(b => b.Comments).WithOne(c => c.BlogPost).HasForeignKey(c => c.BlogPostId);
+            modelBuilder.Entity<BlogPost>().Navigation(b => b.Comments).AutoInclude();
         }
         public DbSet<User> Users { get; set; }
         public DbSet<BlogPost> Blogs { get; set; }

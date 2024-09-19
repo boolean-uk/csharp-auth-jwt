@@ -18,6 +18,8 @@ namespace exercise.wwwapi.EndPoints
             posts.MapGet("/GetAll", GetAllPosts);
             posts.MapPost("/Create", CreatePost);
             posts.MapPut("/Edit/{id}", EditPost);
+            posts.MapPut("/CreateComment{id}", CreateComment);
+            posts.MapGet("/PostsWithComments", GetAllPostsWithComments);
         }
 
         [Authorize]
@@ -140,6 +142,91 @@ namespace exercise.wwwapi.EndPoints
 
             //Response
             return Results.Created($"https://localhost:5005/posts/{payload.data.PostId}", payload);
+        }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private static async Task<IResult> CreateComment(int postId, BlogRequestDTO request, IDatabaseRepository<BlogPost> blogRepository, IDatabaseRepository<User> userRepository, ClaimsPrincipal user)
+        {
+            //Get the blogpost to comment on
+            var blogPost = blogRepository.GetById(postId);
+            if (blogPost == null)
+            {
+                return Results.NotFound();
+            }
+
+            //Get the user's Id
+            var userId = user.UserRealId();
+            if(userId == null)
+            {
+                return Results.Unauthorized();
+            }
+
+            //Get the commenter's name
+            var commenterName = userRepository.GetById(userId).Username;
+
+
+            //Create the comment
+            var comment = new Comment() { Username = commenterName, Text = request.Text };
+
+            //Add the comment to the original post
+            blogPost.Comments.Add(comment);
+
+            //Update the database
+            blogRepository.Update(blogPost);
+            blogRepository.Save();
+
+            //Create blog response
+            var blogresponse = new BlogWithCommentsResponseDTO()
+            {
+                PostId = blogPost.Id,
+                Username = blogPost.User.Username,
+                Post = blogPost.Post
+            };
+            foreach (var com in blogPost.Comments)
+            {
+                blogresponse.Comments.Add(new CommentDTO() { Username = com.Username, Text = com.Text });
+            }
+
+            //Create payload
+            var payload = new Payload<BlogWithCommentsResponseDTO>()
+            {
+                data = blogresponse
+            };
+
+            //Response
+            return Results.Created($"https://localhost:5005/posts/{payload.data.PostId}", payload);
+        }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> GetAllPostsWithComments(IDatabaseRepository<BlogPost> repository)
+        {
+            //Get all posts
+            var blogposts = repository.GetAll();
+
+            //Create responses
+            List<BlogWithCommentsResponseDTO> result = new List<BlogWithCommentsResponseDTO>();
+            foreach (var blogpost in blogposts)
+            {
+                var addition = new BlogWithCommentsResponseDTO() { PostId = blogpost.Id, Username = blogpost.User.Username, Post = blogpost.Post };
+                foreach (var com in blogpost.Comments)
+                {
+                    addition.Comments.Add(new CommentDTO() { Username = com.Username, Text = com.Text });
+                }
+                result.Add(addition);
+            }
+
+            //Create payload
+            var payload = new Payload<List<BlogWithCommentsResponseDTO>>()
+            {
+                data = result
+            };
+
+            return Results.Ok(payload);
         }
     }
 }

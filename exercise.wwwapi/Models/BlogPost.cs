@@ -18,5 +18,7 @@ namespace exercise.wwwapi.Models
 
         [Column("post")]
         public string Post { get; set; }
+        [Column("comments")]
+        public List<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
