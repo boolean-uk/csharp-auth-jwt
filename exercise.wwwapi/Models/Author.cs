@@ -15,6 +15,8 @@
 
         public List<AuthorFollower> Followers { get; set; }
 
+        public ICollection<Comment> Comments { get; set; }    
+
 
 
 

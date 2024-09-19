@@ -23,10 +23,11 @@ namespace exercise.wwwapi.Endpoints
             app.MapPost("register", Register);
             app.MapGet("/posts", GetPosts);
             app.MapPost("/posts", CreatePost);
-            app.MapPut("posts", EditPost);
-            app.MapPost("follow", FollowUser);
-            app.MapPost("unfollow", UnfollowUser);
-            app.MapGet("viewAllPosts", ViewallPosts);
+            app.MapPut("posts/{id}", EditPost);
+            app.MapPost("follow/{followedId}/{followerId}", FollowUser);
+            app.MapPost("unfollow{followedId}/{followerId}", UnfollowUser);
+            app.MapGet("viewAllPosts{followerId}", ViewallPosts);
+            app.MapGet("posts/getwithcomments", GetPostsWithComments);
         }
 
         private static string CreateToken(Author author, IConfigurationSettings config)
@@ -47,7 +48,7 @@ namespace exercise.wwwapi.Endpoints
             return jwt;
         }
 
-        [Authorize]
+        [Authorize("Administrator")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         private static async Task<IResult> GetPosts(IRepository<BlogPost> service)
@@ -55,7 +56,9 @@ namespace exercise.wwwapi.Endpoints
 
             return Results.Ok(service.GetAll());
         }
-        [Authorize]
+
+
+        [Authorize("User")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         private static async Task<IResult> CreatePost(IRepository<BlogPost> repository, CreateBlogPostDTO dto, HttpContext httpContext)
@@ -74,12 +77,8 @@ namespace exercise.wwwapi.Endpoints
             var author = repository.GetAll().FirstOrDefault(a => a.author.userName == username);
             BlogPost blog = new BlogPost()
             {
-
                 authorId = dto.authorId,
                 text = dto.text,
-
-
-
             };
 
             return Results.Ok(blog);
@@ -90,7 +89,8 @@ namespace exercise.wwwapi.Endpoints
         private static async Task<IResult> Register(RegisterDTO request, IRepository<Author> service)
         {
 
-            if (service.GetAll().Where(u => u.userName == request.userName).Any()) return Results.Conflict(new Payload<RegisterDTO>() { status = "Username already exists!", data = request });
+            if (service.GetAll().Where(u => u.userName == request.userName).Any())
+                return Results.Conflict(new Payload<RegisterDTO>() { status = "Username already exists!", data = request });
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
@@ -104,14 +104,15 @@ namespace exercise.wwwapi.Endpoints
             service.Insert(author);
             service.Save();
 
-            return Results.Ok(new Payload<string>() { data = "Created Account" });
+            return Results.Ok(new Payload<Author>() { data = author });
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         private static async Task<IResult> Login(loginDTO loginRequest, IRepository<Author> service, IConfigurationSettings config)
         {
-            if (!service.GetAll().Where(u => u.userName == loginRequest.username).Any()) return Results.BadRequest(new Payload<loginDTO>() { status = "User does not exist", data = loginRequest });
+            if (!service.GetAll().Where(u => u.userName == loginRequest.username).Any())
+                return Results.BadRequest(new Payload<loginDTO>() { status = "User does not exist", data = loginRequest });
 
             Author author = service.GetAll().FirstOrDefault(u => u.userName == loginRequest.username)!;
 
@@ -125,7 +126,7 @@ namespace exercise.wwwapi.Endpoints
 
         }
 
-        public static async Task<IResult> EditPost(IRepository<BlogPost> repository, IRepository<Author> authorService, CreateBlogPostDTO dto, HttpContext context)
+        public static async Task<IResult> EditPost(int id, IRepository<BlogPost> repository, IRepository<Author> authorService, CreateBlogPostDTO dto, HttpContext context)
         {
             var identity = context.User.Identity as ClaimsIdentity;
             if (identity == null)
@@ -154,7 +155,6 @@ namespace exercise.wwwapi.Endpoints
                 return Results.BadRequest(new { message = "You are not the author of this blog" });
             }
         }
-
 
         public static async Task<IResult> FollowUser(string followerId, string followedId, IRepository<AuthorFollower> followerService, IRepository<Author> authorService)
         {
@@ -215,7 +215,6 @@ namespace exercise.wwwapi.Endpoints
                 .Select(af => af.FollowedId)
                 .ToList();
 
-            // Fetch blog posts of followed users asynchronously
             var blogPosts = blogPostService.GetAll()
                 .Where(bp => followedUsersIds.Contains(bp.authorId))
                 .ToList();
@@ -226,6 +225,41 @@ namespace exercise.wwwapi.Endpoints
             }
 
             return Results.Ok(blogPosts);
+        }
+
+        public static async Task<IResult> GetPostsWithComments(IRepository<BlogPost> repository)
+        {
+            var list = repository.GetAll().ToList();
+            var blogPostList = new List<BlogPostWithCommentsDTO>();
+            foreach (var blogPost in list)
+            {
+                if (blogPost.comments.Count > 0)
+                {
+                    var comments = blogPost.comments.Select(c => new CommentDTO
+                    {
+                        postId = c.BlogPostId,
+                        text = c.text,
+                        authorId = c.authorId,
+
+                    }).ToList();
+
+                    var blogPostDTO = new BlogPostWithCommentsDTO
+                    {
+                        Id = blogPost.Id,
+                        text = blogPost.text,
+                        authorId = blogPost.authorId,
+                        comments = comments
+                    };
+
+                    blogPostList.Add(blogPostDTO);
+                }
+                else
+                {
+                    return Results.NotFound(new { message = "No comments found for this post" });
+                }
+            }
+            return Results.Ok(new Payload<List<BlogPostWithCommentsDTO>>() { status = "Data retrieved succesfully", data = blogPostList });
+
         }
     }
 }

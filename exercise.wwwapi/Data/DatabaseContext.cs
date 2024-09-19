@@ -1,5 +1,6 @@
 ﻿using exercise.wwwapi.Configuration;
 using exercise.wwwapi.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.wwwapi.Data
@@ -33,14 +34,28 @@ namespace exercise.wwwapi.Data
                 .WithMany(a => a.Followers)
                 .HasForeignKey(af => af.FollowedId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne<Author>()
+                .WithMany(a => a.Comments)
+                .HasForeignKey(a => a.authorId);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne<BlogPost>()
+                .WithMany(a => a.comments)
+                .HasForeignKey(b => b.BlogPostId);
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseInMemoryDatabase(databaseName: "Database");
             optionsBuilder.UseNpgsql(_connectionString);
             
         }
         public DbSet<Author> Authors { get; set; }
         public DbSet<BlogPost> Posts { get; set; }
+
+        public DbSet<AuthorFollower> Followers { get; set; }
+
+        public DbSet<Comment> Comments { get; set; }
     }
 }

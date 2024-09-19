@@ -2,5 +2,11 @@
 {
     public class BlogPostDTO
     {
+
+        public string authorId { get; set; }
+
+        public string text { get; set; }
+
+        
     }
 }
