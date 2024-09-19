@@ -1,15 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace exercise.wwwapi.Models
+namespace exercise.wwwapi.DataTransferObjects
 {
-    [Table("users")]
-    public class User
+    [NotMapped]
+    public class UserDTO
     {
-        [Column("id")]
         public int Id { get; set; }
-        [Column("username")]
         public string Username { get; set; }
-        [Column("passwordhash")]
         public string PasswordHash { get; set; }
     }
 }
