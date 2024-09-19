@@ -59,6 +59,11 @@ namespace exercise.wwwapi.Repo
         {
             _db.SaveChanges();
         }
+        //for finding and getting followers - Ext.
+        public IEnumerable<T> Find(Expression<Func<T, bool>> predicate) 
+        {
+            return _table.Where(predicate).ToList();
+        }
         public DbSet<T> Table { get { return _table; } }
 
     }

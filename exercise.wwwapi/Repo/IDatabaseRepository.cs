@@ -11,6 +11,7 @@ namespace exercise.wwwapi.Repo
         T GetById(object id);
         void Insert(T obj);
         void Update(T obj);
+        IEnumerable<T> Find(Expression<Func<T, bool>> predicate);
         void Delete(object id);
         void Save();
         DbSet<T> Table { get; }

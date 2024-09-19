@@ -18,8 +18,14 @@ namespace exercise.wwwapi.Endpoints
         {
             app.MapPost("register", Register);
             app.MapPost("login", Login);
-            
+            app.MapPost("post",CreatePost);
+            app.MapGet("posts", GetAllPosts);
+            app.MapPost("user/{followerId}/follows/{followingId}", FollowUser);
+            app.MapPost("user/{followerId}/unfollows/{followingId}", UnfollowUser);
+            app.MapGet("/viewall/{userId}", ViewFollowedPosts);
         }
+
+
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -72,7 +78,7 @@ namespace exercise.wwwapi.Endpoints
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName)
+                new Claim(ClaimTypes.Sid, user.Id)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetValue("AppSettings:Token")));
@@ -84,6 +90,87 @@ namespace exercise.wwwapi.Endpoints
                 );
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
+        }
+        [Authorize]
+        private static async Task<IResult> CreatePost([FromBody] BlogPostReqDTO request, HttpContext context, IDatabaseRepository<BlogPost> postService, IDatabaseRepository<Author> authorService)
+        {
+            var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+            var author = authorService.GetAll().FirstOrDefault(a => a.Id == userId);
+            if (author == null) {
+                return Results.NotFound("User Not found");
+            }
+            var post = new BlogPost
+            {
+                Text = request.Text,
+                authorId = userId,
+                Author = author
+
+            };
+            postService.Insert(post);
+            postService.Save();
+
+            var res = new BlogPostResDTO
+            {
+                Id = post.Id,
+                Text = post.Text,
+                AuthorId = author.Id,
+                AuthorName = author.UserName
+            };
+
+            return Results.Ok(res);
+        }
+        [Authorize]
+        private static async Task<IResult> GetAllPosts(HttpContext context, IDatabaseRepository<BlogPost> postService)
+        {
+            return Results.Ok(postService.GetAll().ToList());
+        }
+        [Authorize]
+        private static async Task<IResult> FollowUser(string followerId, string followingId, IDatabaseRepository<Follow> followService, IDatabaseRepository<Author> authorService)
+        {
+            if (followerId == null || followerId == followerId) {
+                Results.BadRequest("Not valid id");
+            }
+            var follower = authorService.GetById(followerId);
+            var following = authorService.GetById(followingId);
+            if (follower == null || following == null)
+                return Results.NotFound(" not found.");
+
+            var follow = new Follow
+            {
+                FollowerId = followerId,
+                Follower = follower,
+                FollowingId = followingId,
+                Following = following
+            };
+
+            followService.Insert(follow);
+            followService.Save();
+
+            return Results.Ok("You are now following");
+
+        }
+
+        [Authorize]
+        private static async Task ViewFollowedPosts(HttpContext context)
+        {
+            throw new NotImplementedException();
+        }
+        [Authorize]
+        private static async Task<IResult> UnfollowUser(string followerId, string followingId, IDatabaseRepository<Follow> followService)
+        {
+            var follow = followService.GetAll().FirstOrDefault(f => f.FollowerId == followerId && f.FollowingId == followingId);
+
+            if (follow == null)
+                return Results.BadRequest();
+
+            followService.Delete(follow);
+            followService.Save();
+
+            return Results.Ok("User is unfollowed");
         }
 
     }
