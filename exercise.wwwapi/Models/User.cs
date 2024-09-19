@@ -14,6 +14,8 @@ namespace exercise.wwwapi.Models
         [Column("passwordhash")]
         public string PasswordHash { get; set; }
 
-        List<BlogPost> Posts { get; set; } = new List<BlogPost>();
+        [Column("followingUserIds")]
+        public List<int> FollowingUserIds { get; set; } = new List<int>();
+        //public List<User> Following { get; set; } = new List<User>();
     }
 }

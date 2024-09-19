@@ -21,6 +21,7 @@ namespace exercise.wwwapi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BlogPost>().Navigation(x => x.Author).AutoInclude();
+            modelBuilder.Entity<User>().Navigation(x => x.FollowingUsersIds).AutoInclude();
 
             //modelBuilder.Entity<BlogPost>().HasData(new List<BlogPost>
             //{
