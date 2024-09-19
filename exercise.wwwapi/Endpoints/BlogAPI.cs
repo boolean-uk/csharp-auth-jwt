@@ -13,10 +13,10 @@ namespace exercise.wwwapi.Endpoints
     {
         public static void ConfigureBlogAPI(this WebApplication app)
         {
-            var blog = app.MapGroup("blog");
-            blog.MapGet("/GetAllBlogPosts", GetAllPosts);
-            blog.MapPost("/CreateBlogPost", CreatePost);
-            //blog.MapPut("/EditBlogPost", EditBlogPost);
+            var posts = app.MapGroup("posts");
+            posts.MapGet("/", GetAllPosts);
+            posts.MapPost("/", CreatePost);
+            posts.MapPut("/", EditBlogPost);
         }
 
         [Authorize]
@@ -43,13 +43,23 @@ namespace exercise.wwwapi.Endpoints
                 Text = postCreate.Text
             };
             await repository.Insert(post);
-            post = await repository.Reload(post);
 
-            Payload<PostDTO> payload = new() { Status = "success", Data = post.ToDTO() };
-
-
-            return TypedResults.Created("", payload);
+            return TypedResults.Created("Succesfully created blogpost");
         }
+
+        [Authorize]
+        private static async Task<IResult> EditBlogPost(IDatabaseRepository<Post> repository, PostUpdate postUpdate, int postId)
+        {
+            var post = await repository.GetById(postId);
+            if (post is null) return TypedResults.BadRequest("That post doesn't exist");
+
+            post.Update(postUpdate);
+
+            await repository.Update(post);
+
+            return TypedResults.Created("localhost:5005/posts/");
+        }
+
 
     }
 }

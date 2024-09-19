@@ -1,5 +1,7 @@
 ﻿using exercise.wwwapi.DataTransferObjects;
 using exercise.wwwapi.Models;
+using exercise.wwwapi.ViewModels;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 
 namespace exercise.wwwapi.Extensions
 {
@@ -13,6 +15,12 @@ namespace exercise.wwwapi.Extensions
                 Text = post.Text,
                 Author = post.User.Username
             };
+        }
+
+        public static void Update(this Post post, PostUpdate postUpdate)
+        {
+            if(!string.IsNullOrEmpty(postUpdate.Text)) post.Text = postUpdate.Text;
+            if(postUpdate.UserId != post.UserId) post.UserId = postUpdate.UserId;
         }
     }
 }

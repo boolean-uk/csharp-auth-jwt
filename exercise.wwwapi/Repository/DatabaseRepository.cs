@@ -38,7 +38,7 @@ namespace exercise.wwwapi.Repository
             return await _table.ToListAsync();
         }
         public async Task<T> GetById(object id)
-        {
+        { 
             return await _table.FindAsync(id);
         }
 
@@ -54,6 +54,7 @@ namespace exercise.wwwapi.Repository
             await _db.SaveChangesAsync();
             return obj;
         }
+
         public async Task<T> Update(T obj)
         {
             _table.Attach(obj);
