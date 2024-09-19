@@ -5,13 +5,13 @@ namespace exercise.wwwapi.Repository
 {
     public interface IDatabaseRepository<T> where T : class
     {
-        IEnumerable<T> GetAll();
-        IEnumerable<T> GetAll(params Expression<Func<T, object>>[] includeExpressions);
-        T GetById(object id);
-        void Insert(T obj);
-        void Update(T obj);
-        void Delete(object id);
-        void Save();
+        Task<IEnumerable<T>> GetAll();
+        Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] includeExpressions);
+        Task<T> GetById(object id);
+        Task<T> Insert(T obj);
+        Task<T> Reload(T obj);
+        Task<T> Update(T obj);
+        Task<T> Delete(object id);
         DbSet<T> Table { get; }
 
     }

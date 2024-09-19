@@ -27,7 +27,7 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         private static async Task<IResult> GetUsers(IDatabaseRepository<User> repository)
         {
-            var users = repository.GetAll();
+            var users = await repository.GetAll();
             List<UserDTO> userDTOs = (from user in users select user.ToDTO()).ToList();
             var payload = new Payload<IEnumerable<UserDTO>>() { Status = "success", Data = userDTOs};
             return TypedResults.Ok(payload);
@@ -37,9 +37,9 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         private static async Task<IResult> Register(UserCreate userPost, IDatabaseRepository<User> service)
         {
-
+            var users = await service.GetAll();
             //user exists
-            if (service.GetAll().Where(u => u.Username == userPost.Username).Any()) return TypedResults.Conflict(new Payload<UserCreate>() { Status = "Username already exists!", Data = userPost });
+            if (users.Where(u => u.Username == userPost.Username).Any()) return TypedResults.Conflict(new Payload<UserCreate>() { Status = "Username already exists!", Data = userPost });
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(userPost.Password);
 
@@ -48,8 +48,7 @@ namespace exercise.wwwapi.Endpoints
             user.Username = userPost.Username;
             user.PasswordHash = passwordHash;
 
-            service.Insert(user);
-            service.Save();
+            await service.Insert(user);
 
             return TypedResults.Ok(new Payload<string>() {Status = "success", Data = "Created Account" });
         }
@@ -58,10 +57,11 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         private static async Task<IResult> Login(UserCreate userPost, IDatabaseRepository<User> service, IConfigurationSettings config)
         {
+            var users = await service.GetAll();
             //user doesn't exist
-            if (!service.GetAll().Where(u => u.Username == userPost.Username).Any()) return TypedResults.BadRequest(new Payload<UserCreate>() { Status = "User does not exist", Data = userPost });
+            if (!users.Where(u => u.Username == userPost.Username).Any()) return TypedResults.BadRequest(new Payload<UserCreate>() { Status = "User does not exist", Data = userPost });
 
-            User user = service.GetAll().FirstOrDefault(u => u.Username == userPost.Username)!;
+            User user = users.FirstOrDefault(u => u.Username == userPost.Username)!;
 
 
             if (!BCrypt.Net.BCrypt.Verify(userPost.Password, user.PasswordHash))

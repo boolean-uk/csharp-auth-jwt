@@ -1,4 +1,5 @@
 ﻿using exercise.wwwapi.Data;
+using exercise.wwwapi.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -21,7 +22,7 @@ namespace exercise.wwwapi.Repository
             _table = _db.Set<T>();
         }
 
-        public IEnumerable<T> GetAll(params Expression<Func<T, object>>[] includeExpressions)
+        public async Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] includeExpressions)
         {
             if (includeExpressions.Any())
             {
@@ -29,39 +30,46 @@ namespace exercise.wwwapi.Repository
                     .Aggregate<Expression<Func<T, object>>, IQueryable<T>>
                      (_table, (current, expression) => current.Include(expression));
             }
-            return _table.ToList();
+            return await _table.ToListAsync();
         }
 
-        public IEnumerable<T> GetAll()
+        public async Task<IEnumerable<T>> GetAll()
         {
-            return _table.ToList();
+            return await _table.ToListAsync();
         }
-        public T GetById(object id)
+        public async Task<T> GetById(object id)
         {
-            return _table.Find(id);
+            return await _table.FindAsync(id);
         }
 
-        public void Insert(T obj)
+        public async Task<T> Reload(T obj)
+        {
+            await _db.Entry(obj).ReloadAsync();
+            return obj;
+        }
+
+        public async Task<T> Insert(T obj)
         {
             _table.Add(obj);
+            await _db.SaveChangesAsync();
+            return obj;
         }
-        public void Update(T obj)
+        public async Task<T> Update(T obj)
         {
             _table.Attach(obj);
             _db.Entry(obj).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+            return obj;
         }
 
-        public void Delete(object id)
+        public async Task<T> Delete(object id)
         {
             T existing = _table.Find(id);
             _table.Remove(existing);
+            await _db.SaveChangesAsync();
+            return existing;
         }
 
-
-        public void Save()
-        {
-            _db.SaveChanges();
-        }
         public DbSet<T> Table { get { return _table; } }
 
     }

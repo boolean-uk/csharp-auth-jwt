@@ -15,6 +15,7 @@ var config = new ConfigurationSettings();
 // Add services to the container.
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 builder.Services.AddScoped<IDatabaseRepository<User>, DatabaseRepository<User>>();
+builder.Services.AddScoped<IDatabaseRepository<Post>, DatabaseRepository<Post>>();
 
 //authentication verifying who they say they are
 //authorization verifying what they have access to
@@ -113,6 +114,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.ConfigureAuthAPI();
+app.ConfigureBlogAPI();
 
 app.SeedApi();
 

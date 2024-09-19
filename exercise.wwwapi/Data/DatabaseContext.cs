@@ -18,6 +18,10 @@ namespace exercise.wwwapi.Data
         {
             optionsBuilder.UseNpgsql(_connectionString);
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Post>().Navigation(p => p.User).AutoInclude();
+        }
         public DbSet<User> Users { get; set; }
         public DbSet<Post> Posts { get; set; }
     }

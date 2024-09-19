@@ -32,20 +32,20 @@ namespace exercise.wwwapi.Data
 
                 Post agronPost = new()
                 {
-                    AuthorId = agron.Id,
-                    Text = "Muay Thai is more than just a sport—it's a way of life. It teaches you to be disciplined, focused, and punching people in the face"
+                    UserId = agron.Id,
+                    Text = "Muay Thai is more than just a sport—it's a way of life. It teaches you to be disciplined, focused, and kicking people in the face"
                 };
 
                 Post nigelPost = new()
                 {
-                    AuthorId = nigel.Id,
+                    UserId = nigel.Id,
                     Text = "Here we go again, another 'React bro' telling me how it's the ultimate framework, solving all of our problems. Yeah, sure... Meanwhile, back in the real world, people are out here writing fast, simple C#! Keep chasing those JS frameworks, bros."
                 };
 
 
                 Post davePost = new()
                 {
-                    AuthorId = dave.Id,
+                    UserId = dave.Id,
                     Text = "You kids these days think everything is about the latest tech stack. Frameworks come and go, but fundamentals are forever. You can have all the fancy libraries in the world, but if you don’t understand algorithms and data structures, you’re just slapping together someone else’s code. Back in my day, we wrote efficient code because we *had* to. Every byte counted. Remember this: a solid foundation in computer science will always outlast trends in technology."
                 };
 
