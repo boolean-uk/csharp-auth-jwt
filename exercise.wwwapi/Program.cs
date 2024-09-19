@@ -117,5 +117,6 @@ app.MapControllers();
 
 app.AuthEndpointConfiguration();
 app.BlogPostEndpointConfiguration();
+app.SecureEndpointConfiguration();
 
 app.Run();

@@ -27,17 +27,17 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         private static async Task<IResult> GetUsers(IRepository<User> service)
         {
-            return Results.Ok(service.GetAll(inclusions: []));
+            var result = await service.GetAll();
+            return Results.Ok(result.ToList());
         }
 
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         private static async Task<IResult> Register(UserRequestDTO request, IRepository<User> service)
         {
 
             //user exists
-            var result = await service.GetAll(inclusions: [], predicate: u => u.Username == request.Username);
+            var result = await service.GetAll(u => u.Username == request.Username);
             if (result.Any()) return Results.Conflict(new Payload<UserRequestDTO>() { status = "Username already exists!", data = request });
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
@@ -47,7 +47,7 @@ namespace exercise.wwwapi.Endpoints
             user.Username = request.Username;
             user.PasswordHash = passwordHash;
 
-            await service.Create(inclusions: [], user);
+            await service.Create(user);
 
             return Results.Ok(new Payload<string>() { data = "Created Account" });
         }
@@ -57,10 +57,10 @@ namespace exercise.wwwapi.Endpoints
         private static async Task<IResult> Login(UserRequestDTO request, IRepository<User> service, IConfigurationSettings config)
         {
             //user doesn't exist
-            var result = await service.GetAll(inclusions: [], predicate: u => u.Username == request.Username);
+            var result = await service.GetAll(u => u.Username == request.Username);
             if (!result.Any()) return Results.BadRequest(new Payload<UserRequestDTO>() { status = "User does not exist", data = request });
 
-            User user = (User) await service.GetAll(inclusions: [], predicate: u => u.Username == request.Username);
+            User user = result.FirstOrDefault(u => u.Username == request.Username);
 
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
@@ -70,6 +70,7 @@ namespace exercise.wwwapi.Endpoints
             return Results.Ok(new Payload<string>() { data = token });
 
         }
+
         private static string CreateToken(User user, IConfigurationSettings config)
         {
             List<Claim> claims = new List<Claim>

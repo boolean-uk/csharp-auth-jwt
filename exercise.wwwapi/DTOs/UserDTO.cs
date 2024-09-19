@@ -7,11 +7,12 @@ namespace exercise.wwwapi.DTOs
     [NotMapped]
     public class UserResponseDTO
     {
+        public int Id { get; set; }
         public string Username { get; set; }
         public string PasswordHash { get; set; }
-
         public UserResponseDTO(User model)
         {
+            Id = model.Id;
             Username = model.Username;
             PasswordHash = model.PasswordHash;
         }
@@ -22,11 +23,5 @@ namespace exercise.wwwapi.DTOs
     {
         public required string Username { get; set; }
         public required string Password { get; set; }
-
-        public UserRequestDTO(User model)
-        {
-            Username = model.Username;
-            Password = model.PasswordHash;
-        }
     }
 }

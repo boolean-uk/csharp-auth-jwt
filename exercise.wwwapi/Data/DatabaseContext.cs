@@ -20,6 +20,8 @@ namespace exercise.wwwapi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<BlogPost>().Navigation(x => x.Author).AutoInclude();
+
             //modelBuilder.Entity<BlogPost>().HasData(new List<BlogPost>
             //{
             //    new BlogPost() { Id = 1, Title = "Introduction to C#", Content = "Learn the basics of C# programming language and its features.", AuthorId = 1 },

@@ -2,6 +2,7 @@
 using exercise.wwwapi.Helpers;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Claims;
@@ -13,16 +14,24 @@ namespace exercise.wwwapi.Endpoints
         private static string _path = AppContext.BaseDirectory;
         public static void BlogPostEndpointConfiguration(this WebApplication app)
         {
-            var blogPosts = app.MapGroup("blogPosts");
+            var blogPosts = app.MapGroup("posts");
             blogPosts.MapGet("/", GetBlogPosts);
             blogPosts.MapPost("/", CreateBlogPost);
             blogPosts.MapPut("/{id}", UpdateBlogPost);
         }
 
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public static async Task<IResult> GetBlogPosts(IRepository<BlogPost> repository)
+        public static async Task<IResult> GetBlogPosts(IRepository<BlogPost> repository, ClaimsPrincipal user)
         {
-            var resultList = await repository.GetAll(inclusions: ["Author"]);
+            //Check if the user is logged in
+            var userId = user.UserRealId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+
+            var resultList = await repository.GetAll();
             var resultDTOs = new List<BlogPostResponseDTO>();
             foreach (var result in resultList)
             {
@@ -32,6 +41,7 @@ namespace exercise.wwwapi.Endpoints
             return TypedResults.Ok(payload);
         }
 
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public static async Task<IResult> CreateBlogPost(IRepository<BlogPost> repository, BlogPostPostDTO model, ClaimsPrincipal user)
         {
@@ -43,33 +53,44 @@ namespace exercise.wwwapi.Endpoints
             }
 
             var result = await repository.Create(
-                inclusions: ["Author"],
                 model: new BlogPost()
                 {
                     Title = model.Title,
                     Content = model.Content,
-                    AuthorId = model.AuthorId
+                    AuthorId = (int) userId
                 });
 
-            var resultDTO = new BlogPostResponseDTO(result);
+            BlogPost newBlogPost = await repository.Get(x => x.Id == result.Id);
+
+            var resultDTO = new BlogPostResponseDTO(newBlogPost);
 
             var payload = new Payload<BlogPostResponseDTO>() { data = resultDTO };
             return TypedResults.Created(_path, payload);
         }
 
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public static async Task<IResult> UpdateBlogPost(IRepository<BlogPost> repository, int id, BlogPostPutDTO model)
+        public static async Task<IResult> UpdateBlogPost(IRepository<BlogPost> repository, int id, BlogPostPutDTO model, ClaimsPrincipal user)
         {
+            //Check if the user is logged in
+            var userId = user.UserRealId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+
             var result = await repository.Update(
-                inclusions: ["Author"],
                 new BlogPost()
                 {
+                    Id = id,
                     Title = model.Title,
                     Content = model.Content,
                     AuthorId = model.AuthorId
                 });
 
-            var resultDTO = new BlogPostResponseDTO(result);
+            BlogPost updatedBlogPost = await repository.Get(x => x.Id == result.Id);
+
+            var resultDTO = new BlogPostResponseDTO(updatedBlogPost);
 
             var payload = new Payload<BlogPostResponseDTO>() { data = resultDTO };
             return TypedResults.Created(_path, payload);
