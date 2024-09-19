@@ -13,6 +13,10 @@ namespace exercise.wwwapi.Models
         [Column("username")]
         public string Username { get; set; }
         [Column("passwordhash")]
-        public string PasswordHash { get; set; }    
+        public string PasswordHash { get; set; }
+
+        [ForeignKey("Following")]
+        [Column("following")]
+        public List<int> Following { get; set; } = new List<int>();
     }
 }

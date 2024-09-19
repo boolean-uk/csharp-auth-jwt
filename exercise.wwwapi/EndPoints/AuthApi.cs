@@ -33,8 +33,10 @@ namespace exercise.wwwapi.EndPoints
         {
 
             //user exists
-            if (service.GetAll().Where(u => u.Username == request.Username).Any()) return Results.Conflict(new Payload<UserRequestDto>() { status = "Username already exists!", data = request });
-
+            if (service.GetAll().Where(u => u.Username == request.Username).Any())
+            {
+                return Results.Conflict(new Payload<UserRequestDto>() { status = "Username already exists!", data = request });
+            }
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
             var user = new User();
@@ -52,8 +54,11 @@ namespace exercise.wwwapi.EndPoints
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         private static async Task<IResult> Login(UserRequestDto request, IDatabaseRepository<User> service, IConfigurationSettings config)
         {
-            //user doesn't exist
-            if (!service.GetAll().Where(u => u.Username == request.Username).Any()) return Results.BadRequest(new Payload<UserRequestDto>() { status = "User does not exist", data = request });
+            //user does not exist
+            if (!service.GetAll().Where(u => u.Username == request.Username).Any())
+            {
+                return Results.BadRequest(new Payload<UserRequestDto>() { status = "User does not exist", data = request });
+            }
 
             User user = service.GetAll().FirstOrDefault(u => u.Username == request.Username)!;
            

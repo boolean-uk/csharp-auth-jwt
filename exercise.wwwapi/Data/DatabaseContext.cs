@@ -21,11 +21,15 @@ namespace exercise.wwwapi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasKey(x => new { x.Id });
+            
             modelBuilder.Entity<BlogPost>().HasKey(x => new { x.Id });
             modelBuilder.Entity<BlogPost>().HasOne(p => p.User).WithMany().HasForeignKey(p => p.UserId);
             modelBuilder.Entity<BlogPost>().Navigation(p => p.User).AutoInclude();
+
+
         }
         public DbSet<BlogPost> BlogPosts { get; set; }
         public DbSet<User> Users { get; set; }
+
     }
 }

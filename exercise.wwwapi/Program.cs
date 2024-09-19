@@ -116,4 +116,6 @@ app.ConfigureAuthApi();
 
 app.ConfigureBlogEndpoint();
 
+app.ConfigureFollowEndpoint();
+
 app.Run();
