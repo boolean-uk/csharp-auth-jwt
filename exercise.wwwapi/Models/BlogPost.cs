@@ -10,12 +10,12 @@ namespace exercise.wwwapi.Models
         public string Title { get; set; }
 
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public User User { get; set; }
 
-        public ICollection<BlogComment> BlogComments { get; set; }
+        public ICollection<BlogComment> ?BlogComments { get; set; }
 
         public string Text { get; set; }
-        public DateOnly Posted { get; set; }
+        public DateTime Posted { get; set; }
     }
 }

@@ -19,7 +19,6 @@ namespace exercise.wwwapi.DataContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseInMemoryDatabase(databaseName: "Database");
             optionsBuilder.UseNpgsql(_connectionString);
         }
 
@@ -39,6 +38,9 @@ namespace exercise.wwwapi.DataContext
                 .HasOne(u => u.Followed)
                 .WithMany()
                 .HasForeignKey(u => u.FollowedId);
+            modelBuilder.Entity<RelationStatus>()
+                .Navigation(x => x.Follower)
+                .AutoInclude();
 
             modelBuilder.Entity<BlogComment>()
                 .HasOne(bc => bc.BlogPost)
@@ -53,8 +55,11 @@ namespace exercise.wwwapi.DataContext
         }
 
         public DbSet<User> Users { get; set; }
+
         public DbSet<BlogPost> Blogs { get; set; }
 
         public DbSet<RelationStatus> RelationStatuses { get; set; }
+
+        public DbSet<BlogComment> BlogComments { get; set; }
     }
 }
