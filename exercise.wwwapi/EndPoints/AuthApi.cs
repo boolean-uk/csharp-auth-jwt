@@ -91,7 +91,7 @@ namespace exercise.wwwapi.EndPoints
             service.Update(loggedIn);
             service.Save();
 
-            return Results.Ok(new Payload<string> { status = "User followed ", data = userToUnFollow.Username });
+            return Results.Ok(new Payload<string> { status = "User unfollowed ", data = userToUnFollow.Username });
         }
 
         [Authorize]
@@ -163,12 +163,12 @@ namespace exercise.wwwapi.EndPoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> CreateBlogPost(IDatabaseRepository<BlogPost> service, PostBlogPostDto postModel)
+        private static async Task<IResult> CreateBlogPost(IDatabaseRepository<BlogPost> service, ClaimsPrincipal user, PostBlogPostDto postModel)
         {
             var post = new BlogPost();
             post.Title = postModel.Title;
             post.Content = postModel.Content;
-            post.AuthorId = postModel.AuthorId;
+            post.AuthorId = user.UserRealId();
 
             service.Insert(post);
             service.Save();
@@ -185,7 +185,6 @@ namespace exercise.wwwapi.EndPoints
 
             post.Title = postModel.Title;
             post.Content = postModel.Content;
-            post.AuthorId = postModel.AuthorId;
 
             service.Update(post);
             service.Save();
