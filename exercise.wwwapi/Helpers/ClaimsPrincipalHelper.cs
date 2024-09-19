@@ -29,5 +29,11 @@ namespace exercise.wwwapi.Helpers
             return claim?.Value;
         }
 
+        public static string? UserName(this ClaimsPrincipal user)
+        {
+            Claim? claim = user.FindFirst(ClaimTypes.Name);
+            return claim?.Value;
+        }
+
     }
 }

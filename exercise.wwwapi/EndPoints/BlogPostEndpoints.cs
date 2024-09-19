@@ -13,9 +13,9 @@ namespace exercise.wwwapi.EndPoints
         public static void ConfigureBlogPointsApi(this WebApplication app)
         {
             var posts = app.MapGroup("/posts");
-            app.MapGet("", GetPosts);
-            app.MapPost("", CreatePost);
-            app.MapPut("/{id}", UpdatePost);
+            posts.MapGet("", GetPosts);
+            posts.MapPost("", CreatePost);
+            posts.MapPut("/{id}", UpdatePost);
         }
 
 
@@ -37,7 +37,6 @@ namespace exercise.wwwapi.EndPoints
                     {
                         Title = post.Title,
                         Text = post.Text,
-                        AuthorName = post.User.Name
                     };
                     posts.Add(blogPost);
                 }
