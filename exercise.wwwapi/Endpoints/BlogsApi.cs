@@ -155,9 +155,26 @@ namespace exercise.wwwapi.Endpoints
         }
 
         [Authorize]
-        private static async Task ViewFollowedPosts(HttpContext context)
+        private static async Task<IResult> ViewFollowedPosts(string userId, IDatabaseRepository<Follow> followService, IDatabaseRepository<BlogPost> postService)
         {
-            throw new NotImplementedException();
+            var followedUserIds = followService.GetAll()
+                .Where(f => f.FollowerId == userId)
+                .Select(f => f.FollowingId)
+                .ToList();
+
+            var posts = postService.GetAll()
+                .Where(p => followedUserIds.Contains(p.authorId))
+                .Select(post => new BlogPostResDTO
+                {
+                    Id = post.Id,
+                    Text = post.Text,
+                    AuthorId = post.authorId,
+                    AuthorName = post.Author.UserName
+                })
+                .ToList();
+            
+
+            return Results.Ok(posts);
         }
         [Authorize]
         private static async Task<IResult> UnfollowUser(string followerId, string followingId, IDatabaseRepository<Follow> followService)
