@@ -1,4 +1,5 @@
 ﻿using exercise.wwwapi.Configuration;
+using exercise.wwwapi.Helpers;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -18,6 +19,9 @@ namespace exercise.wwwapi.EndPoints
             app.MapPost("register", Register);
             app.MapPost("login", Login);
             app.MapGet("users", GetUsers);
+            app.MapPut("Follows/{id}", FollowUser);
+            app.MapPut("Unfollow/{id}", UnfollowUser);
+            app.MapGet("ViewAllFollowedPosts", GetFollowedPosts);
 
         }
         [Authorize]
@@ -102,6 +106,168 @@ namespace exercise.wwwapi.EndPoints
 
             //Response
             return jwt;
+        }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> FollowUser(int followId, IDatabaseRepository<User> repository, ClaimsPrincipal user)
+        {
+            //Get current user ID
+            var userId = user.UserRealId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+
+            //Check if both users exist
+            var currentUser = repository.GetById(userId);
+            var userToFollow = repository.GetById(followId);
+            if (currentUser == null || userToFollow == null)
+            {
+                return Results.BadRequest();
+            }
+
+            //Check if the current user isn't already following the other user
+            foreach(var follow in currentUser.Following)
+            {
+                if(follow.F_UserId == userToFollow.Id)
+                {
+                    return Results.BadRequest();
+                }
+            }
+
+            //If no checks have failed, update the currentUser following list
+            currentUser.Following.Add(new Follower() { Username = userToFollow.Username, F_UserId = userToFollow.Id });
+
+            //Update the database
+            repository.Update(currentUser);
+            repository.Save();
+
+            //Create the response
+            var userResponse = new UserWithFollowingResponseDTO()
+            {
+                UserId = currentUser.Id,
+                Username = currentUser.Username,
+                PasswordHash = currentUser.PasswordHash
+            };
+            foreach (var fol in currentUser.Following)
+            {
+                userResponse.Following.Add(new FollowerDTO() { Id = fol.F_UserId, Username = fol.Username });
+            }
+
+            //Create payload
+            var payload = new Payload<UserWithFollowingResponseDTO>()
+            {
+                data = userResponse
+            };
+
+            //Response
+            return Results.Created($"https://localhost:5005/users/{payload.data.UserId}", payload);
+        }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> UnfollowUser(int followId, IDatabaseRepository<User> repository, ClaimsPrincipal user)
+        {
+            //Get current user ID
+            var userId = user.UserRealId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+
+            //Check if both users exist
+            var currentUser = repository.GetById(userId);
+            var userToFollow = repository.GetById(followId);
+            if (currentUser == null || userToFollow == null)
+            {
+                return Results.BadRequest();
+            }
+
+            //Check if the current user is already following the other user
+            var follow = currentUser.Following.Where(f => f.F_UserId == userToFollow.Id).FirstOrDefault();
+            if (follow == null)
+            {
+                return Results.BadRequest();
+            }
+
+            //If no checks have failed, update the currentUser following list
+            currentUser.Following.Remove(follow);
+
+            //Update the database
+            repository.Update(currentUser);
+            repository.Save();
+
+            //Create the response
+            var userResponse = new UserWithFollowingResponseDTO()
+            {
+                UserId = currentUser.Id,
+                Username = currentUser.Username,
+                PasswordHash = currentUser.PasswordHash
+            };
+            foreach (var fol in currentUser.Following)
+            {
+                userResponse.Following.Add(new FollowerDTO() { Id = fol.F_UserId, Username = fol.Username });
+            }
+
+            //Create payload
+            var payload = new Payload<UserWithFollowingResponseDTO>()
+            {
+                data = userResponse
+            };
+
+            //Response
+            return Results.Created($"https://localhost:5005/users/{payload.data.UserId}", payload);
+        }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> GetFollowedPosts(IDatabaseRepository<User> userRepository, IDatabaseRepository<BlogPost> blogRepository, ClaimsPrincipal user)
+        {
+            //Get current user ID
+            var userId = user.UserRealId();
+            if (userId == null)
+            {
+                return Results.Unauthorized();
+            }
+
+            //Get all followed IDs
+            List<int> followedIds = new List<int>();
+
+            var following = userRepository.GetById(userId).Following;
+
+            foreach (var follow in following)
+            {
+                followedIds.Add(follow.F_UserId);
+            }
+
+            //Get all posts
+            var blogposts = blogRepository.GetAll().Where(b => followedIds.Contains(b.UserId));
+
+            //Create responses
+            List<BlogWithCommentsResponseDTO> result = new List<BlogWithCommentsResponseDTO>();
+            foreach (var blogpost in blogposts)
+            {
+                var addition = new BlogWithCommentsResponseDTO() { PostId = blogpost.Id, Username = blogpost.User.Username, Post = blogpost.Post };
+                foreach (var com in blogpost.Comments)
+                {
+                    addition.Comments.Add(new CommentDTO() { Username = com.Username, Text = com.Text });
+                }
+                result.Add(addition);
+            }
+
+            //Create payload
+            var payload = new Payload<List<BlogWithCommentsResponseDTO>>()
+            {
+                data = result
+            };
+
+            return Results.Ok(payload);
         }
     }
 }

@@ -201,7 +201,7 @@ namespace exercise.wwwapi.EndPoints
         }
 
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         private static async Task<IResult> GetAllPostsWithComments(IDatabaseRepository<BlogPost> repository)
         {
