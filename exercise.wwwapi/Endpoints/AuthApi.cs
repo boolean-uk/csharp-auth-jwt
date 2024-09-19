@@ -1,5 +1,6 @@
 ﻿using exercise.wwwapi.Configuration;
 using exercise.wwwapi.DTOs;
+using exercise.wwwapi.DTOs.UserDTOs;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;

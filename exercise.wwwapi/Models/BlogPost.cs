@@ -12,7 +12,7 @@ namespace exercise.wwwapi.Models
         [Column("authorId")]
         [ForeignKey("User")]
         public int authorId { get; set; }
-
+        
         public List<Comment> Comments {  get; set; }  
 
     }

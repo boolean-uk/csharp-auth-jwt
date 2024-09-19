@@ -1,4 +1,4 @@
-﻿namespace exercise.wwwapi.DTOs
+﻿namespace exercise.wwwapi.DTOs.CommentDTOs
 {
     public class CommentPostDTO
     {
