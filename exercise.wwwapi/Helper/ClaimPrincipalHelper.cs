@@ -4,6 +4,13 @@ namespace exercise.wwwapi.Helper
 {
     public static class ClaimsPrincipalHelper
     {
+        public static string GetAuthorId(this ClaimsPrincipal principal) 
+            {
+                Claim? claim = principal.FindFirst(ClaimTypes.Sid);
+                return claim.Value;
+
+            }
+
         public static string AuthorId(this ClaimsPrincipal author)
         {
             IEnumerable<Claim> claims = author.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier);

@@ -13,5 +13,9 @@ namespace exercise.wwwapi.Repositories
         Task Delete(object id);
         Task Save();
         DbSet<T> Table { get; }
+        /*
+        public Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> predicate);
+        public Task<T> Get(Expression<Func<T, bool>> predicate);
+        */
     }
 }

@@ -121,5 +121,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.ConfigureAuthApi();
+app.ConfigureBlogPostEndpoints();
 
 app.Run();

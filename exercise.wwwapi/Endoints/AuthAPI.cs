@@ -1,5 +1,5 @@
 ﻿using exercise.wwwapi.Configuration;
-using exercise.wwwapi.DTOs;
+using exercise.wwwapi.DTOs.Auth;
 using exercise.wwwapi.Model;
 using exercise.wwwapi.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -35,12 +35,13 @@ namespace exercise.wwwapi.Endoints
             var target = await service.GetAll();
 
             //user exists
-            if (target.Where(u => u.Email == request.Email).Any()) return Results.Conflict(new Payload<AuthorRequestDTO>() { status = "Username already exists!", data = request });
+            if (target.Where(u => u.Email == request.Email).Any()) return Results.Conflict(new Payload<AuthorRequestDTO>() { status = "Email already exists!", data = request });
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
             var author = new Author();
 
+            author.Id = Guid.NewGuid().ToString();
             author.Email = request.Email;
             author.Name = request.Name;
             author.PasswordHash = passwordHash;
@@ -58,7 +59,7 @@ namespace exercise.wwwapi.Endoints
             var target = await service.GetAll();
 
             //user doesn't exist
-            if (!target.Where(u => u.Email == request.Email).Any()) return Results.BadRequest(new Payload<AuthorLoginDTO>() { status = "User does not exist!", data = request });
+            if (!target.Where(u => u.Email == request.Email).Any()) return Results.BadRequest(new Payload<AuthorLoginDTO>() { status = "Author does not exist!", data = request });
 
             Author author = target.FirstOrDefault(u => u.Email == request.Email)!;
 
@@ -75,7 +76,8 @@ namespace exercise.wwwapi.Endoints
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, author.Email)
+                new Claim(ClaimTypes.Sid, author.Id),
+                new Claim(ClaimTypes.Email, author.Email)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetValue("AppSettings:Token")));

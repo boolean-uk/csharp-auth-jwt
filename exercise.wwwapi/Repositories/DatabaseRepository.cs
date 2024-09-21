@@ -16,13 +16,15 @@ namespace exercise.wwwapi.Repositories
 
         public async Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] includeExpressions)
         {
+            IQueryable<T> query = _table;
+
+            // Apply the includes if any expressions are passed
             if (includeExpressions.Any())
             {
-                var set = includeExpressions
-                    .Aggregate<Expression<Func<T, object>>, IQueryable<T>>
-                     (_table, (current, expression) => current.Include(expression));
+                query = includeExpressions.Aggregate(query, (current, includeExpression) => current.Include(includeExpression));
             }
-            return await _table.ToListAsync();
+
+            return await query.ToListAsync();
         }
 
         public async Task<IEnumerable<T>> GetAll()
@@ -54,6 +56,17 @@ namespace exercise.wwwapi.Repositories
         {
            await _db.SaveChangesAsync();
         }
+        /*
+        public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> predicate)
+        {
+            return await _table.Where(predicate).ToListAsync();
+        }
+
+        public async Task<T> Get(Expression<Func<T, bool>> predicate)
+        {
+            return await _table.FirstOrDefaultAsync(predicate);
+        }
+        */
         public DbSet<T> Table { get { return _table; } }
     }
 }

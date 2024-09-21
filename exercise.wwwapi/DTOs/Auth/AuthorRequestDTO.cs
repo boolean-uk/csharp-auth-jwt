@@ -1,4 +1,4 @@
-﻿namespace exercise.wwwapi.DTOs
+﻿namespace exercise.wwwapi.DTOs.Auth
 {
     public class AuthorRequestDTO
     {
