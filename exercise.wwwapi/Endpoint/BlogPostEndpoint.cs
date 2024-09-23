@@ -88,7 +88,7 @@ namespace exercise.wwwapi.Endpoint
                     {
                         Id = blogpost.Id,
                         Text = blogpost.Text,
-                        AuthorId = (int)userId
+                        AuthorId = blogpost.AuthorID
                     });
                 }
                 payload.status = "success";
