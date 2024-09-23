@@ -16,6 +16,7 @@ namespace exercise.wwwapi.Endpoints
         {
             app.MapPost("create", CreatePost);
             app.MapGet("posts", GetPosts);
+            app.MapPut("edit/{id}", EditPost);
         }
 
         [Authorize]
@@ -64,7 +65,7 @@ namespace exercise.wwwapi.Endpoints
                     {
                         Id = blogpost.Id,
                         Text = blogpost.Text,
-                        AuthorId = (int) userId
+                        AuthorId = blogpost.AuthorId
                     });
                 }
                 payload.status = "success";
@@ -73,6 +74,38 @@ namespace exercise.wwwapi.Endpoints
             else
             {
                 return Results.Unauthorized();
+            }
+        }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> EditPost(IDatabaseRepository<BlogPost> blogservice, ClaimsPrincipal user, BlogPUTModel model, int id)
+        {
+            var userId = user.UserRealId();
+            if (userId != null)
+            {
+                var toChange = blogservice.GetById(id);
+                if (model.Text != "")
+                {
+                    toChange.Text = model.Text;
+                }
+                if (model.AuthorId != 0)
+                {
+                    toChange.AuthorId = model.AuthorId;
+                }
+                blogservice.Update(toChange);
+                blogservice.Save();
+                BlogPostDTO posted = new BlogPostDTO()
+                {
+                    Text = toChange.Text,
+                    AuthorId = toChange.AuthorId
+                };
+                return TypedResults.Created("success!", posted);
+            }
+            else
+            {
+                return TypedResults.Unauthorized();
             }
         }
     }
