@@ -10,6 +10,7 @@ namespace exercise.wwwapi.Data
         private string _connectionString;
 
         public DbSet<User> Users { get; set; }
+        public DbSet<BlogPost> BlogPosts { get; set; }
 
         public DatabaseContext()
         {

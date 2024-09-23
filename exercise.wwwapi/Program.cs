@@ -2,6 +2,7 @@ using exercise.wwwapi.Configuration;
 using exercise.wwwapi.Data;
 using exercise.wwwapi.Endpoint;
 using exercise.wwwapi.Model;
+using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -9,16 +10,16 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
 var config = new ConfigurationSettings();
 
 // Add services to the container.
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 builder.Services.AddScoped<IDatabaseRepository<User>, DatabaseRepository<User>>();
 builder.Services.AddScoped<IDatabaseRepository<BlogPost>, DatabaseRepository<BlogPost>>();
 
-//authentication verifying who they say they are
-//authorization verifying what they have access to
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -28,13 +29,11 @@ builder.Services.AddAuthentication(x =>
 {
     x.TokenValidationParameters = new TokenValidationParameters
     {
-
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetValue("AppSettings:Token"))),
         ValidateIssuer = false,
         ValidateAudience = false,
         ValidateLifetime = false,
         ValidateIssuerSigningKey = false
-
     };
 });
 builder.Services.AddSwaggerGen(s =>
@@ -46,8 +45,8 @@ builder.Services.AddSwaggerGen(s =>
         Description = "Demo of an API using JWT as an authentication method",
         Contact = new OpenApiContact
         {
-            Name = "Nigel",
-            Email = "nigel@nigel.nigel",
+            Name = "Dude",
+            Email = "dude@dude.thedude",
             Url = new Uri("https://www.boolean.co.uk")
         },
         License = new OpenApiLicense
@@ -55,9 +54,7 @@ builder.Services.AddSwaggerGen(s =>
             Name = "Boolean",
             Url = new Uri("https://github.com/boolean-uk/csharp-api-auth")
         }
-
     });
-
     s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "Add an Authorization header with a JWT token using the Bearer scheme see the app.http file for an example.)",
@@ -66,7 +63,6 @@ builder.Services.AddSwaggerGen(s =>
         In = ParameterLocation.Header,
         Scheme = "Bearer"
     });
-
     s.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -81,13 +77,14 @@ builder.Services.AddSwaggerGen(s =>
                     Array.Empty<string>()
                 }
             });
-
 });
 builder.Services.AddAuthorization();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
@@ -105,7 +102,13 @@ app.UseCors(x => x
                   .AllowCredentials()); // allow credentials
 
 app.UseHttpsRedirection();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
+
+app.MapControllers();
+
 app.ConfigureBlogPostEndpoint();
+
 app.Run();

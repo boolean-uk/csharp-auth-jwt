@@ -8,13 +8,13 @@ namespace exercise.wwwapi.Model
     {
         [Key]
         [Column("id")]
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         [Column("text")]
         public string Text { get; set; }
 
         [ForeignKey("users")]
-        public string AuthorID { get; set; }
+        public int AuthorID { get; set; }
         public User Author { get; set; }
     }
 }
