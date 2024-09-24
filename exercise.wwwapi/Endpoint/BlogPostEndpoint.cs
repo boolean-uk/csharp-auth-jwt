@@ -1,10 +1,11 @@
 ﻿using exercise.wwwapi.Configuration;
+using exercise.wwwapi.DTO;
 using exercise.wwwapi.DTOs;
 using exercise.wwwapi.Helpers;
 using exercise.wwwapi.Model;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
-using exercise.wwwapi.ViewModels;
+using exercise.wwwapi.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -22,7 +23,7 @@ namespace exercise.wwwapi.Endpoint
 
             blogpost.MapGet("/posts", GetPosts);
             blogpost.MapPost("/posts", CreatePost);
-            blogpost.MapPut("/posts", UpdatePost);
+            blogpost.MapPut("/posts/{id}", UpdatePost);
             blogpost.MapPost("/register", Register);
             blogpost.MapPost("/login", Login);
             blogpost.MapGet("/users", GetUsers);
@@ -36,20 +37,52 @@ namespace exercise.wwwapi.Endpoint
             return Results.Ok(service.GetAll());
         }
 
-        public static async Task<IResult> UpdatePost(IDatabaseRepository<BlogPost> repository)
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> UpdatePost(IDatabaseRepository<BlogPost> repository, ClaimsPrincipal user, BlogPostModel model, int id)
         {
-            throw new NotImplementedException();
+            var userId = user.UserRealId();
+
+            if (userId != null)
+            {
+                var targetPost = repository.GetById(id);
+
+                if (model.Text != "")
+                {
+                    targetPost.Text = model.Text;
+                }
+                if (model.AuthorID != 0)
+                {
+                    targetPost.AuthorID = model.AuthorID;
+                }
+
+                repository.Update(targetPost);
+
+                BlogPostDTO posted = new BlogPostDTO()
+                {
+                    Text = targetPost.Text,
+                    AuthorID = targetPost.AuthorID
+                };
+
+                return TypedResults.Created("success!", posted);
+            }
+            else
+            {
+                return TypedResults.Unauthorized();
+            }
         }
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> CreatePost(IDatabaseRepository<BlogPost> blogservice, BlogPostModel model, ClaimsPrincipal user)
+        private static async Task<IResult> CreatePost(IDatabaseRepository<BlogPost> repository, BlogPostModel model, ClaimsPrincipal user)
         {
             var userId = user.UserRealId();
+
             if (userId != null)
             {
-                blogservice.Insert(new BlogPost()
+                var inserted = repository.Insert(new BlogPost() 
                 {
                     Text = model.Text,
                     AuthorID = (int) userId
@@ -58,8 +91,8 @@ namespace exercise.wwwapi.Endpoint
                 BlogPostDTO posted = new BlogPostDTO()
                 {
                     Text = model.Text,
-                    AuthorId = (int) userId
-                }; 
+                    AuthorID = model.AuthorID
+                };
 
                 return TypedResults.Created("success!", posted);
             }
@@ -67,28 +100,28 @@ namespace exercise.wwwapi.Endpoint
             {
                 return Results.Unauthorized();
             }
-
         }
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> GetPosts(IDatabaseRepository<BlogPost> blogservice, ClaimsPrincipal user)
+        private static async Task<IResult> GetPosts(IDatabaseRepository<BlogPost> repository, ClaimsPrincipal user)
         {
             var userId = user.UserRealId();
+
             if (userId != null)
             {
-                var found = blogservice.GetAll();
+                var blogposts = repository.GetAll();
                 Payload<List<BlogAllDTO>> payload = new Payload<List<BlogAllDTO>>();
                 payload.data = new List<BlogAllDTO>();
 
-                foreach (var blogpost in found)
+                foreach (var blogpost in blogposts)
                 {
                     payload.data.Add(new BlogAllDTO()
                     {
-                        Id = blogpost.Id,
+                        ID = blogpost.ID,
                         Text = blogpost.Text,
-                        AuthorId = blogpost.AuthorID
+                        AuthorID = blogpost.AuthorID
                     });
                 }
                 payload.status = "success";
@@ -136,6 +169,7 @@ namespace exercise.wwwapi.Endpoint
                 return Results.BadRequest(new Payload<UserRequestDto>() { status = "Wrong Password", data = request });
             }
             string token = CreateToken(user, config);
+
             return Results.Ok(new Payload<string>() { data = token });
         }
 
@@ -143,6 +177,7 @@ namespace exercise.wwwapi.Endpoint
         {
             List<Claim> claims = new List<Claim>
             {
+                new Claim(ClaimTypes.Sid, user.ID.ToString()),
                 new Claim(ClaimTypes.Name, user.Username)
             };
 
@@ -154,6 +189,7 @@ namespace exercise.wwwapi.Endpoint
                 signingCredentials: credentials
                 );
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
             return jwt;
         }
     }

@@ -8,8 +8,8 @@ namespace exercise.wwwapi.Repository
         IEnumerable<T> GetAll();
         IEnumerable<T> GetAll(params Expression<Func<T, object>>[] includeExpressions);
         T GetById(object id);
-        void Insert(T obj);
-        void Update(T obj);
+        T Insert(T obj);
+        T Update(T obj);
         //void Delete(object id);
         //void Save();
         DbSet<T> Table { get; }

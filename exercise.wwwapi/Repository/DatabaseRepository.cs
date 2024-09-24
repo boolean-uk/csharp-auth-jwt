@@ -43,17 +43,21 @@ namespace exercise.wwwapi.Repository
             return _table.Find(id);
         }
 
-        public void Insert(T obj)
+        public T Insert(T obj)
         {
             _table.Add(obj);
             _db.SaveChanges();
+
+            return obj;
         }
 
-        public void Update(T obj)
+        public T Update(T obj)
         {
             _table.Attach(obj);
             _db.Entry(obj).State = EntityState.Modified;
             _db.SaveChanges();
+
+            return obj;
         }
 
         //public void Delete(object id)
