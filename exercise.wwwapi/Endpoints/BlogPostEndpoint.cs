@@ -20,6 +20,10 @@ namespace exercise.wwwapi.Endpoints
             posts.MapPost("/", CreatePost);
             posts.MapPut("/{id}", UpdatePost);
 
+            var follows = app.MapGroup("/author");
+            follows.MapPost("/follows/{id}", FollowAnAuthor);
+            follows.MapPut("/unnfollow/{id}", UnFollowAnAuthor);
+            follows.MapGet("/viewallposts", FollowingAuthorsPosts);
         }
 
         [Authorize]
