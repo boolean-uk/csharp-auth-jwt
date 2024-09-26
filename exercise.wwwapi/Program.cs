@@ -6,6 +6,7 @@ using exercise.wwwapi.Configuration;
 using exercise.wwwapi.Repositories;
 using exercise.wwwapi.Data;
 using exercise.wwwapi.Endpoints;
+using exercise.wwwapi.EndPoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,8 +47,7 @@ builder.Services.AddSwaggerGen(s =>
         Contact = new OpenApiContact
         {
             Name = "Bjorg",
-            Email = "bjorg@authsom.no",
-            //Url = new Uri("https://www.boolean.co.uk")
+            Email = "bjorg@authsom.no"
         },
         License = new OpenApiLicense
         {
@@ -59,7 +59,7 @@ builder.Services.AddSwaggerGen(s =>
 
     s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Not sure what i should write here",
+        Description = "Enter token given when you logged in",
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
         In = ParameterLocation.Header,
@@ -114,6 +114,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.ConfigureBlogEndpoint();
+app.ConfigureSecureEndpoint();
 
 
 app.Run();

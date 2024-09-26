@@ -19,6 +19,7 @@ namespace exercise.wwwapi.Repositories
         {
             await _db.AddAsync(blogPost);
             await _db.SaveChangesAsync();
+            await _db.Entry(blogPost).Reference(b => b.Author).LoadAsync();
             return blogPost;
         }
 
@@ -27,9 +28,5 @@ namespace exercise.wwwapi.Repositories
             return await _db.BlogPosts.Include(b => b.Author).ToListAsync();
         }
 
-        //public async Task<ICollection<BlogPost>> GetByString(string authorId)
-        //{
-            //return await _db.BlogPosts.Where(b => b.authorId.Equals(authorId)).ToListAsync();
-        //}
     }
 }

@@ -10,8 +10,6 @@ namespace exercise.wwwapi.Data
         {
             var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             _connectionString = configuration.GetValue<string>("ConnectionStrings:DefaultConnectionString")!;
-
-
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
