@@ -6,6 +6,8 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using exercise.wwwapi.Repository;
 using exercise.wwwapi.Models;
+using exercise.wwwapi.Endpoints;
+using exercise.wwwapi.EndPoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
 builder.Services.AddScoped<IRepository<BlogPost>, Repository<BlogPost>>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddCors();
 
@@ -94,5 +97,8 @@ app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
+app.ConfigureBlogPostEndpoints();
+app.ConfigureAuthApi();
+app.ConfigureSecureApi();
 
 app.Run();
