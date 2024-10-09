@@ -4,6 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using exercise.wwwapi.Configuration;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using exercise.wwwapi.Repository;
+using exercise.wwwapi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,9 @@ builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DatabaseContext>();
+builder.Services.AddScoped<IRepository<User>, Repository<User>>();
+builder.Services.AddScoped<IRepository<BlogPost>, Repository<BlogPost>>();
+
 builder.Services.AddCors();
 
 builder.Services.AddAuthentication(x =>
