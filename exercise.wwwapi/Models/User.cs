@@ -15,5 +15,8 @@ namespace exercise.wwwapi.Models
 
         [Column("hashed_password")]
         public string HashedPassword { get; set; }
+
+        [Column("role")]
+        public string Role { get; set; }
     }
 }

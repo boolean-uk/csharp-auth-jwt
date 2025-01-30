@@ -18,8 +18,9 @@ namespace exercise.wwwapi.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Email = "user1@example.com", HashedPassword = Util.HashPassword("password1") },
-                new User { Id = 2, Email = "user2@example.com", HashedPassword = Util.HashPassword("password2") }
+                new User { Id = 1, Email = "user1@example.com", HashedPassword = Util.HashPassword("password1"), Role = "User" },
+                new User { Id = 2, Email = "user2@example.com", HashedPassword = Util.HashPassword("password2"), Role = "User" },
+                new User { Id = 3, Email = "admin@example.com", HashedPassword = Util.HashPassword("admin"), Role = "Admin" }
             );
 
             modelBuilder.Entity<BlogPost>().HasData(

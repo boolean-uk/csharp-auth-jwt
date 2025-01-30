@@ -27,6 +27,11 @@ namespace exercise.wwwapi
                 new Claim(ClaimTypes.Email, user.Email),
             };
 
+            if (!string.IsNullOrEmpty(user.Role))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, user.Role));
+            }
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["AppSettings:Token"] ?? throw new InvalidOperationException("Token key is missing")));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
             var token = new JwtSecurityToken(
@@ -37,6 +42,7 @@ namespace exercise.wwwapi
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
         }
+
 
         public static int? GetUserIdFromClaims(HttpContext httpContext)
         {

@@ -3,11 +3,8 @@ using exercise.wwwapi.DTOs;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace exercise.wwwapi.Endpoints
 {
@@ -22,6 +19,7 @@ namespace exercise.wwwapi.Endpoints
             blogGroup.MapGet("/{id}", GetBlogPostById);
             blogGroup.MapPut("/{id}", UpdateBlogPost);
             blogGroup.MapDelete("/{id}", DeleteBlogPost);
+            blogGroup.MapDelete("/deleteall", DeleteAll);
         }
 
         [Authorize]
@@ -95,13 +93,16 @@ namespace exercise.wwwapi.Endpoints
                 return TypedResults.Unauthorized();
             }
 
+            var userRole = httpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var isAdmin = userRole == "Admin";
+
             var post = await blogRepository.GetById(id);
             if (post == null)
             {
                 return TypedResults.BadRequest(new { status = "failure", message = "Blog post not found!" });
             }
 
-            if (post.UserId != userId.Value)
+            if (!isAdmin && post.UserId != userId.Value)
             {
                 return TypedResults.Forbid();
             }
@@ -120,6 +121,7 @@ namespace exercise.wwwapi.Endpoints
             return TypedResults.Ok(new { status = "success", data = updatedPostDto });
         }
 
+
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -133,13 +135,16 @@ namespace exercise.wwwapi.Endpoints
                 return TypedResults.Unauthorized();
             }
 
+            var userRole = httpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            var isAdmin = userRole == "Admin";
+
             var post = await blogRepository.GetById(id);
             if (post == null)
             {
                 return TypedResults.BadRequest(new { status = "failure", message = "Blog post not found!" });
             }
 
-            if (post.UserId != userId.Value)
+            if (!isAdmin && post.UserId != userId.Value)
             {
                 return TypedResults.Forbid();
             }
@@ -147,6 +152,30 @@ namespace exercise.wwwapi.Endpoints
             var deletedPost = await blogRepository.Delete(post.Id);
             var deletedPostDto = mapper.Map<BlogPostDTO>(deletedPost);
             return TypedResults.Ok(new { status = "success", data = deletedPostDto });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public static async Task<IResult> DeleteAll(HttpContext httpContext, IRepository<BlogPost> blogRepository)
+        {
+            var posts = await blogRepository.Get();
+
+            if (posts == null || posts.Count() == 0)
+            {
+                return TypedResults.BadRequest(new { status = "failure", message = "No blog posts found!" });
+            }
+
+            var deletedPosts = new List<BlogPost>();
+            foreach (var post in posts)
+            {
+                var deletedPost = await blogRepository.Delete(post.Id);
+                deletedPosts.Add(deletedPost);
+            }
+
+            return TypedResults.Ok(new { status = "success", message = $"{deletedPosts.Count} blog posts deleted." });
         }
     }
 }

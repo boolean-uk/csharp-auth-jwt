@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using exercise.wwwapi.Data;
-using exercise.wwwapi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.wwwapi.Repositories

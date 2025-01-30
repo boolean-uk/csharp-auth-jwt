@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using exercise.wwwapi.Models;
 
 namespace exercise.wwwapi.Repositories
 {

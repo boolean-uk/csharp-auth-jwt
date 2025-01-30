@@ -16,7 +16,7 @@ namespace exercise.wwwapi.Endpoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public static async Task<IResult> Register(IRepository<User> userRepository, string email, string password)
+        public static async Task<IResult> Register(IRepository<User> userRepository, string email, string password, string role = "User")
         {
             if (email == null || email == "")
             {
@@ -40,13 +40,15 @@ namespace exercise.wwwapi.Endpoints
             var user = new User
             {
                 Email = email,
-                HashedPassword = hashedPassword
+                HashedPassword = hashedPassword,
+                Role = role
             };
 
             var createdUser = await userRepository.Insert(user);
 
             return TypedResults.Ok(new { status = "success", data = createdUser });
         }
+
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -1,13 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using exercise.wwwapi.Configuration;
-using exercise.wwwapi.Models;
+﻿using exercise.wwwapi.Models;
 using exercise.wwwapi.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace exercise.wwwapi.Endpoints
 {

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.DTOs;
-using System.Net.Sockets;
 
 namespace exercise.wwwapi
 {
