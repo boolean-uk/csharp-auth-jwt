@@ -10,7 +10,9 @@ namespace exercise.wwwapi.Helpers
         {
             CreateMap<User, UserResponseDTO>();
 
-            CreateMap<Blog, BlogResponseDTO>();
+            CreateMap<Blog, BlogResponseDTO>()
+                .ForMember(dest => dest.Authour, opt => opt
+                .MapFrom(src => src.User.Username));
             CreateMap<BlogPOST, Blog>();
             CreateMap<BlogPUT, Blog>()
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) =>

@@ -35,19 +35,23 @@ namespace exercise.wwwapi.EndPoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> WriteBlog(IRepository<Blog> service, IMapper mapper, BlogPOST model, ClaimsPrincipal user)
+        private static async Task<IResult> WriteBlog(IRepository<Blog> service, IRepository<User> userRep, IMapper mapper, BlogPOST model, ClaimsPrincipal user)
         {
 
             try
             {
+                int thisUserId = (int)user.UserRealId();
+                var thisUser = await userRep.GetById(thisUserId);
+
                 var blog = mapper.Map<Blog>(model);
-                blog.UserId = (int)user.UserRealId();
+                blog.UserId = thisUserId;
+                blog.User = thisUser;
 
                 service.Insert(blog);
                 service.Save();
 
                 var response = mapper.Map<BlogResponseDTO>(blog);
-                response.Authour = user.UserName();
+                response.Authour = thisUser.Username;
 
                 return TypedResults.Ok(new Payload<BlogResponseDTO>() { Status = "Successfully created", Data = response});
             }
