@@ -5,6 +5,6 @@ namespace exercise.wwwapi.DTO
     public class PostResponseDTO
     {
         public string Text { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

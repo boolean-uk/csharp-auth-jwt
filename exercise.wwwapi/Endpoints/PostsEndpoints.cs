@@ -31,7 +31,7 @@ namespace exercise.wwwapi.Endpoints
                 Post insert = new Post()
                 {
                     Text = post.Text,
-                    UserId = (int)claim.UserRealId()
+                    UserId = claim.UserRealId()
                 };
 
                 await repository.Insert(insert);

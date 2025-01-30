@@ -4,10 +4,10 @@ namespace exercise.wwwapi.Helpers
 {
     public static class ClaimsPrincipalHelper
     {
-        public static int? UserRealId(this ClaimsPrincipal user)
+        public static string? UserRealId(this ClaimsPrincipal user)
         {
             Claim? claim = user.FindFirst(ClaimTypes.Sid);
-            return int.Parse(claim?.Value);
+            return claim?.Value;
         }
         public static string UserId(this ClaimsPrincipal user)
         {
