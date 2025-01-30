@@ -9,7 +9,7 @@ namespace exercise.wwwapi.Helpers
         public static int? UserRealId(this ClaimsPrincipal user)
         {
             Claim? claim = user.FindFirst(ClaimTypes.Sid);
-            return int.Parse(claim?.Value);
+          return int.Parse(claim?.Value);
         }
         public static string UserId(this ClaimsPrincipal user)
         {
