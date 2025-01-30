@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using exercise.wwwapi.Configuration;
 using exercise.wwwapi.DTO;
 using System.Runtime.CompilerServices;
+using exercise.wwwapi.Helper;
 
 namespace exercise.wwwapi.Endpoints
 {
@@ -24,7 +25,8 @@ namespace exercise.wwwapi.Endpoints
             app.MapPost("register", Register);
             app.MapPost("login", Login);
             app.MapGet("users", GetUsers);
-
+            app.MapPost("/posts/comment", CreateComment);
+            app.MapGet("/postswithcomments", GetPostComments);
         }
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -37,21 +39,43 @@ namespace exercise.wwwapi.Endpoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public static async Task<IResult> GetPosts(IRepository<Post> repository, ClaimsPrincipal user)
+        public static async Task<IResult> GetPosts(IRepository<Post> repository, IRepository<Comment> commentRepo, IRepository<User> userRepo,ClaimsPrincipal user)
         {
-            return TypedResults.Ok(repository.GetAll());
+            
+            AllPostCommentsDTO allpostcomments = new AllPostCommentsDTO();
+           
+            foreach(Post post in repository.GetAll())
+            {
+                PostWithCommentDTO postwithcomment = new PostWithCommentDTO();
+                postwithcomment.postUsername = userRepo.GetById(int.Parse(post.AuthorId)).Username;
+                postwithcomment.postText = post.Text;
+                postwithcomment.PostId = post.Id;
+
+                foreach (Comment comment in commentRepo.GetAll())
+                {
+                    
+                    if (post.Id == comment.PostId)
+                    {
+                        
+                        postwithcomment.comments.Add(new CommentWithUser() { comment = comment.Text, username = userRepo.GetById(comment.UserId).Username });
+                    }
+                }
+                allpostcomments.Posts.Add(postwithcomment);
+                
+            }
+            return TypedResults.Ok(allpostcomments);
         }
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public static async Task<IResult> CreatePost(IRepository<Post> repository, IRepository<User> userRepo, PostRequestDTO postDTO)
+        public static async Task<IResult> CreatePost(IRepository<Post> repository, IRepository<User> userRepo, PostRequestDTO postDTO, ClaimsPrincipal user)
         {
-
+            User userr = userRepo.GetById(user.UserRealId());
             Post post = new Post()
             {
                 Text = postDTO.Text,
-                AuthorId = postDTO.AuthorId.ToString()
+                AuthorId = userr.Id.ToString()
             };
 
 
@@ -60,24 +84,47 @@ namespace exercise.wwwapi.Endpoints
 
 
 
-            return TypedResults.Ok(new Payload<string>() { data = $"{post.Text}" });
+            return TypedResults.Ok(new Payload<string>() { data = $"{postDTO.Text}" });
         }
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public static async Task<IResult> EditPost(IRepository<Post> repository, IRepository<User> userRepo, PostRequestDTO postDTO, int PostId)
+        public static async Task<IResult> CreateComment(ClaimsPrincipal user, IRepository<Post> repository, IRepository<User> userRepo, IRepository<Comment> commentRepo, int postId, PostRequestDTO postCommentDTO)
+        {
+            
+
+            Post post = repository.GetById(postId);
+
+
+            User userr = userRepo.GetById(user.UserRealId());
+            
+            
+            Comment comment = new Comment() { PostId = post.Id , UserId = userr.Id, Text = postCommentDTO.Text };
+            
+            commentRepo.Insert(comment);
+            commentRepo.Save();
+
+
+            
+            return TypedResults.Ok(new Payload<string>() { data = $"{userr.Username} commented: {comment.Text}" });
+        }
+
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public static async Task<IResult> EditPost(IRepository<Post> repository, IRepository<User> userRepo, ClaimsPrincipal userr, PostRequestDTO postDTO, int PostId)
         {
             Post post = repository.GetAll().Where(x => x.Id == PostId).FirstOrDefault();
 
-            User? user = userRepo.GetById(int.Parse(post.AuthorId));
+            User user = userRepo.GetById(int.Parse(post.AuthorId));
 
-            if (user == null)
+            if (user.Id != userr.UserRealId())
             {
-                return TypedResults.NotFound();
+                return TypedResults.BadRequest("You cant change someone elses post");
             }
 
-            post.AuthorId = postDTO.AuthorId.ToString();
             post.Text = postDTO.Text;
 
             repository.Update(post);
@@ -86,6 +133,37 @@ namespace exercise.wwwapi.Endpoints
             return TypedResults.Ok(new Payload<string>() { data = $"{postDTO.Text}" });
 
         }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public static async Task<IResult> GetPostComments(IRepository<Post> repo, IRepository<Comment> commentRepo, IRepository<User>userRepo, int postId, ClaimsPrincipal user)
+        {
+            Post post = repo.GetById(postId);
+            
+            PostWithCommentDTO dto = new PostWithCommentDTO();
+            dto.postUsername = userRepo.GetById(int.Parse(post.AuthorId)).Username;
+            dto.PostId = postId;
+            dto.postText = post.Text;
+
+            foreach (Comment comment in commentRepo.GetAll())
+            {
+                if (comment.PostId == post.Id)
+                {
+                    CommentWithUser c = new CommentWithUser()
+                    {
+                        username = userRepo.GetById(comment.UserId).Username,
+                        comment = comment.Text
+                    };
+                    dto.comments.Add(c);
+                }
+            }
+
+            return TypedResults.Ok(dto);
+        }
+        
+
+        
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]

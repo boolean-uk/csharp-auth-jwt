@@ -3,16 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace exercise.wwwapi.Models
 {
-    public class Post
+    public class Comment
     {
-        [Key]
-        public int Id { get; set; }
-
+        public int PostId { get; set; }
+        public int UserId { get; set; }
         [Column("Text")]
         public string Text { get; set; }
 
-        [Column("AuthorId")]
-        public string AuthorId { get; set; }
-        
     }
 }
