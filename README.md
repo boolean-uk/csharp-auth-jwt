@@ -1,5 +1,9 @@
 # C# Authentication HTTP Requests
 
+## Completed
+
+I exported my Postman queries to a JSON file in the same level as this README. If you  want to use it you will need to update the bearer token on the collection itself, and on some of the queries (just check if they inherit or not).
+
 ## Create a complete webapi using Jwt Authentication
 
 ## Learning Objectives
