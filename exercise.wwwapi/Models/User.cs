@@ -11,5 +11,6 @@ namespace exercise.wwwapi.Models
         public List<BlogPost> BlogPosts { get; set; } = [];
         public List<UserRelation> Following { get; set; } = [];
         public List<UserRelation> Followers { get; set; } = [];
+        public List<Comment> Comments { get; set; } = [];
     }
 }

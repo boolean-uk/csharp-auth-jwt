@@ -31,6 +31,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IRepository<BlogPost, int>, Repository<BlogPost, int>>();
 builder.Services.AddScoped<IRepository<User, int>, Repository<User, int>>();
 builder.Services.AddScoped<IRepository<UserRelation, int>, Repository<UserRelation, int>>();
+builder.Services.AddScoped<IRepository<Comment, int>, Repository<Comment, int>>();
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 
 builder.Services.AddAuthentication(x =>
@@ -77,5 +78,6 @@ app.UseAuthorization();
 
 app.ConfigureAuthEndpoints();
 app.ConfigureBlogPostEndpoints();
+app.ConfigureCommentEndpoints();
 
 app.Run();

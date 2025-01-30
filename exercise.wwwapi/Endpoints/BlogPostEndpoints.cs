@@ -136,7 +136,7 @@ namespace exercise.wwwapi.Endpoints
 
                 return TypedResults.Ok(new Payload
                 {
-                    Data = $"You are now following \"{following.UserName}!\""
+                    Data = $"You are now following '{following.UserName}!'"
                 });
             }
             catch (EntityNotFoundException)
@@ -177,7 +177,7 @@ namespace exercise.wwwapi.Endpoints
 
                 return TypedResults.Ok(new Payload
                 {
-                    Data = $"You are no longer following \"{following.UserName}\"!"
+                    Data = $"You are no longer following '{following.UserName}'!"
                 });
             }
             catch (EntityNotFoundException)
