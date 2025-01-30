@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-sing System.ComponentModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace exercise.wwwapi.Models

@@ -8,8 +8,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net" Version="0.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
+    <PackageReference Include="microsoft.entityframeworkcore" Version="9.0.1" />
+    <PackageReference Include="microsoft.entityframeworkcore.tools" Version="9.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="microsoft.identitymodel.tokens" Version="8.3.1" />
+    <PackageReference Include="npgsql" Version="9.0.2" />
+    <PackageReference Include="npgsql.entityframeworkcore.postgresql" Version="9.0.3" />
+    <PackageReference Include="scalar.aspnetcore" Version="2.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+    <PackageReference Include="system.identitymodel.tokens.jwt" Version="8.3.1" />
+    <PackageReference Include="system.security.claims" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

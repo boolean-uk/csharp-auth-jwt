@@ -17,6 +17,7 @@ namespace exercise.wwwapi.Models
         [Column("Email")]
         public string Email { get; set; }
 
+        
 
     }
 }

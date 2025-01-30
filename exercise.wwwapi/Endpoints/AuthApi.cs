@@ -69,36 +69,31 @@ namespace exercise.wwwapi.Endpoints
         public static async Task<IResult> EditPost(IRepository<Post> repository, IRepository<User> userRepo, PostRequestDTO postDTO, int PostId)
         {
             Post post = repository.GetAll().Where(x => x.Id == PostId).FirstOrDefault();
-            if (userRepo.GetAll(x => x.Id == postDTO.AuthorId).FirstOrDefault() == null)
+
+            User? user = userRepo.GetById(int.Parse(post.AuthorId));
+
+            if (user == null)
             {
                 return TypedResults.NotFound();
             }
 
-            if (postDTO.AuthorId != null && postDTO.Text == null)
-            {
-                post.AuthorId = postDTO.AuthorId.ToString();
-                repository.Update(post);
-                repository.Save();
-            }
+            post.AuthorId = postDTO.AuthorId.ToString();
+            post.Text = postDTO.Text;
 
-            else if (postDTO.Text != null && postDTO.AuthorId == null)
-            {
-                post.Text = postDTO.Text;
-                repository.Update(post);
-                repository.Save();
-            }
+            repository.Update(post);
+            repository.Save();
 
-            return TypedResults.Ok(new Payload<string>() { data = $"{post.Text}" });
+            return TypedResults.Ok(new Payload<string>() { data = $"{postDTO.Text}" });
 
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        private static async Task<IResult> Register(SecureApi request, IRepository<User> service)
+        private static async Task<IResult> Register(UserRequestDTO request, IRepository<User> service)
         {
 
 
-            if (service.GetAll().Where(u => u.Username == request.Username).Any()) return Results.Conflict(new Payload<SecureApi>() { status = "Username already exists!", data = request });
+            if (service.GetAll().Where(u => u.Username == request.Username).Any()) return Results.Conflict(new Payload<UserRequestDTO>() { status = "Username already exists!", data = request });
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
@@ -116,17 +111,17 @@ namespace exercise.wwwapi.Endpoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> Login(SecureApi request, IRepository<User> service, IConfigurationSettings config)
+        private static async Task<IResult> Login(UserRequestDTO request, IRepository<User> service, IConfigurationSettings config)
         {
             //user doesn't exist
-            if (!service.GetAll().Where(u => u.Username == request.Username).Any()) return Results.BadRequest(new Payload<SecureApi>() { status = "User does not exist", data = request });
+            if (!service.GetAll().Where(u => u.Username == request.Username).Any()) return Results.BadRequest(new Payload<UserRequestDTO>() { status = "User does not exist", data = request });
 
             User user = service.GetAll().FirstOrDefault(u => u.Username == request.Username)!;
 
 
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
-                return Results.BadRequest(new Payload<SecureApi>() { status = "Wrong Password", data = request });
+                return Results.BadRequest(new Payload<UserRequestDTO>() { status = "Wrong Password", data = request });
             }
             string token = CreateToken(user, config);
             return Results.Ok(new Payload<string>() { data = token });

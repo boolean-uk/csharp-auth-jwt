@@ -13,5 +13,6 @@ namespace exercise.wwwapi.Models
 
         [Column("AuthorId")]
         public string AuthorId { get; set; }
+        public List<string> Comments { get; set; }
     }
 }
