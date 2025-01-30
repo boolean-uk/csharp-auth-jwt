@@ -29,5 +29,6 @@ namespace exercise.wwwapi.Extensions
             return claim?.Value;
         }
 
+       
     }
 }

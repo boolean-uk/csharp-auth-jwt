@@ -32,8 +32,10 @@ namespace exercise.wwwapi.EndPoints
         private static async Task<IResult> Register(UserRequestDto request, IRepository<User> service)
         {
 
-            //user exists
-            if (service.GetAll().Where(u => u.Username == request.Username).Any()) return Results.Conflict(new Payload<UserRequestDto>() { status = "Username already exists!", data = request });
+            
+            var users = await service.FindAll(u => u.Username == request.Username);
+         
+            if (users.Any()) return Results.Conflict(new Payload<UserRequestDto>() { status = "Username already exists!", data = request });
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
@@ -44,20 +46,22 @@ namespace exercise.wwwapi.EndPoints
             user.Email = request.Email;
             user.UpdatedAt = DateTime.UtcNow;
 
-            service.Insert(user);
-            service.Save();
+            await service.Add(user);
+
 
             return Results.Ok(new Payload<string>() { data = "Created Account" });
-        }
+        }   
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         private static async Task<IResult> Login(UserRequestDto request, IRepository<User> service, IConfigurationSettings config)
         {
             //user doesn't exist
-            if (!service.GetAll().Where(u => u.Username == request.Username).Any()) return Results.BadRequest(new Payload<UserRequestDto>() { status = "User does not exist", data = request });
+            var users = await service.FindAll(u => u.Username == request.Username);
 
-            User user = service.GetAll().FirstOrDefault(u => u.Username == request.Username)!;
+            if (!users.Any()) return Results.BadRequest(new Payload<UserRequestDto>() { status = "User does not exist", data = request });
+
+            User user = await service.Get(u => u.Username == request.Username);
            
 
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
@@ -75,7 +79,8 @@ namespace exercise.wwwapi.EndPoints
                 new Claim(ClaimTypes.Sid, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email),
-                
+                new Claim(ClaimTypes.Role, "Admin"),
+
             };
             
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetValue("AppSettings:Token")));

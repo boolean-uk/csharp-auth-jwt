@@ -1,64 +1,110 @@
-﻿using exercise.wwwapi.Data;
+﻿
+using exercise.wwwapi.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace exercise.wwwapi.Repository
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
+        DataContext _context;
 
-
-        private DataContext _db;
-        private DbSet<T> _table = null;
-       
-        public Repository(DataContext db)
+        public Repository(DataContext context)
         {
-            _db = db;
-            _table = _db.Set<T>();
+            _context = context;
         }
 
-        public IEnumerable<T> GetAll(params Expression<Func<T, object>>[] includeExpressions)
+        public async Task<TEntity> Add(TEntity entity)
         {
-            if (includeExpressions.Any())
+            await _context.Set<TEntity>().AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<TEntity> Delete(TEntity entity)
+        {
+            _context.Set<TEntity>().Remove(entity);
+            await _context.SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<IEnumerable<TEntity>> FindAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includeProperties)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (includeProperties != null)
             {
-                var set = includeExpressions
-                    .Aggregate<Expression<Func<T, object>>, IQueryable<T>>
-                     (_table, (current, expression) => current.Include(expression));
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
             }
-            return _table.ToList();
+
+            return await query.Where(predicate).ToListAsync();
         }
 
-        public IEnumerable<T> GetAll()
+        public async Task<TEntity> Get(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            return _table.ToList();
-        }
-        public T GetById(object id)
-        {
-            return _table.Find(id);
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            return await query.FirstOrDefaultAsync(predicate);
         }
 
-        public void Insert(T obj)
+        // For thenincludes
+        public async Task<TEntity> GetWithCustomQuery(Expression<Func<TEntity, bool>> predicate, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {
-            _table.Add(obj);
-        }
-        public void Update(T obj)
-        {
-            _table.Attach(obj);
-            _db.Entry(obj).State = EntityState.Modified;
-        }
+            IQueryable<TEntity> query = _context.Set<TEntity>();
 
-        public void Delete(object id)
-        {
-            T existing = _table.Find(id);
-            _table.Remove(existing);
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            return await query.FirstOrDefaultAsync(predicate);
         }
 
-
-        public void Save()
+        public async Task<IEnumerable<TEntity>> GetAllWithCustomQuery(Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {
-            _db.SaveChanges();
-        }
-        public DbSet<T> Table { get { return _table; } }
+            IQueryable<TEntity> query = _context.Set<TEntity>();
 
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            return await query.ToListAsync();
+        }
+
+
+        public async Task<IEnumerable<TEntity>> GetAll(params Expression<Func<TEntity, object>>[] includeProperties)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            return await query.ToListAsync();
+        }
+
+
+        public async Task<TEntity> Update(TEntity entity)
+        {
+            _context.Set<TEntity>().Update(entity);
+            await _context.SaveChangesAsync();
+            return entity;
+        }
     }
 }

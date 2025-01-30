@@ -15,5 +15,7 @@ namespace exercise.wwwapi.Models
         public Guid AuthorId { get; set; }
 
         public Author Author { get; set; }
+
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

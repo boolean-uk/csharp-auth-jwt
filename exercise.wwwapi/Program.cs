@@ -1,4 +1,5 @@
 using System.Text;
+using exercise.wwwapi.AutoMapperProfile;
 using exercise.wwwapi.Configuration;
 using exercise.wwwapi.Data;
 using exercise.wwwapi.EndPoints;
@@ -16,6 +17,7 @@ var config = new ConfigurationSettings();
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 builder.Services.AddScoped<ILogger, Logger<string>>();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddDbContext<DataContext>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddControllers();
@@ -37,7 +39,7 @@ builder.Services.AddAuthentication(x =>
         ValidateIssuerSigningKey = false
 
     };
-});
+}).AddCookie("Cookies");
 
 builder.Services.AddSwaggerGen(s =>
 {
@@ -115,6 +117,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.ConfigureAuthApi();
+app.ConfigureUserApi();
 
 app.ConfigureSecureApi();
 

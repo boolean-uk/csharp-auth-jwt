@@ -19,5 +19,10 @@ namespace exercise.wwwapi.Models
         public string Email { get; set; }
 
         public Author Author { get; set; }
+
+        public ICollection<UserFollower> Followers { get; set; } = new List<UserFollower>();
+        public ICollection<UserFollower> Followees { get; set; } = new List<UserFollower>();
+
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
