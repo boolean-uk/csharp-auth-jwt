@@ -1,4 +1,5 @@
 ﻿using exercise.wwwapi.Configuration;
+using exercise.wwwapi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.wwwapi.Data
@@ -17,5 +18,7 @@ namespace exercise.wwwapi.Data
             optionsBuilder.UseNpgsql(_conf.GetValue<string>("ConnectionStrings:DefaultConnectionString")!);
             base.OnConfiguring(optionsBuilder); 
         }
+
+        public DbSet<User> Users { get; set; }
     }
 }

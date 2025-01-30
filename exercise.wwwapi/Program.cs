@@ -1,6 +1,9 @@
 using System.Text;
+using api_cinema_challenge.Repository;
 using exercise.wwwapi.Configuration;
 using exercise.wwwapi.Data;
+using exercise.wwwapi.Endpoints;
+using exercise.wwwapi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.IdentityModel.Tokens;
@@ -26,6 +29,7 @@ builder.Services.AddSwaggerGen(setupActions =>
 
 // AddScoped
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
+builder.Services.AddScoped<IRepository<User>, Repository<User>>();
 builder.Services.AddDbContext<DatabaseContext>();
 
 var conf = new ConfigurationSettings();
@@ -70,5 +74,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.ConfigureUserEndpoints();
 
 app.Run();
