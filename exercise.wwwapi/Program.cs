@@ -3,13 +3,25 @@ using exercise.wwwapi.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(setupActions =>
+    {
+        setupActions.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Description = "provide `Bearer <TOKEN>` to authenticate",
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey,
+            In = ParameterLocation.Header,
+            Scheme = "Bearer"
+        });
+
+});
 
 // AddScoped
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
