@@ -13,6 +13,7 @@ namespace api_cinema_challenge.DTO.Interfaces
     {
         public DTO_Response() { }
         public abstract void Initialize(Model_type model);
+        
         public static Payload<DTO_Type,Model_type> toPayload(Model_type model, string status = "success")
         {
             var a = new DTO_Type();

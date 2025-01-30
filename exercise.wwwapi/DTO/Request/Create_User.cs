@@ -8,7 +8,7 @@ namespace exercise.wwwapi.DTO.Request
     public class Create_User : IDTO_Request_create<Create_User, User>
     {
         public string Username { get; set; }
-        public string PasswordHash { get; set; }
+        public string Password { get; set; }
         public string Email { get; set; }
 
         public static Task<User?> create(IRepository<User> repo, Create_User dto, params object[] pathargs)
@@ -16,7 +16,7 @@ namespace exercise.wwwapi.DTO.Request
             User u = new User
             {
                 Username = dto.Username,
-                PasswordHash = dto.PasswordHash,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                 Email = dto.Email
             };
             return repo.CreateEntry(u);
