@@ -24,14 +24,14 @@ namespace exercise.wwwapi.Endpoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> GetUsers(IRepository<User, string> repository, ClaimsPrincipal user)
+        private static async Task<IResult> GetUsers(IRepository<User, int> repository, ClaimsPrincipal user)
         {
             return TypedResults.Ok(await repository.GetAll());
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        private static async Task<IResult> Register(IRepository<User, string> repository, UserRegisterPost entity)
+        private static async Task<IResult> Register(IRepository<User, int> repository, UserRegisterPost entity)
         {
             try
             {
@@ -44,7 +44,6 @@ namespace exercise.wwwapi.Endpoints
 
                 var user = new User
                 {
-                    Id = Guid.NewGuid().ToString(),
                     UserName = entity.Username,
                     PasswordHash = passwordHash,
                     Email = entity.Email,
@@ -58,7 +57,7 @@ namespace exercise.wwwapi.Endpoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> Login(IRepository<User, string> repository, IConfigurationSettings config, UserLoginPost entity)
+        private static async Task<IResult> Login(IRepository<User, int> repository, IConfigurationSettings config, UserLoginPost entity)
         {
             User user;
             try

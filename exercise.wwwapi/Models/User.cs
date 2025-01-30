@@ -4,10 +4,12 @@ namespace exercise.wwwapi.Models
 {
     public class User : IdentityUser
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string PasswordHash { get; set; }
         public string Email { get; set; }
 
         public List<BlogPost> BlogPosts { get; set; } = [];
+        public List<UserRelation> Following { get; set; } = [];
+        public List<UserRelation> Followers { get; set; } = [];
     }
 }

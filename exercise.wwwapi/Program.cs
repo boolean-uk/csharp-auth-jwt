@@ -29,7 +29,8 @@ builder.Services.AddCors();
 
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<IRepository<BlogPost, int>, Repository<BlogPost, int>>();
-builder.Services.AddScoped<IRepository<User, string>, Repository<User, string>>();
+builder.Services.AddScoped<IRepository<User, int>, Repository<User, int>>();
+builder.Services.AddScoped<IRepository<UserRelation, int>, Repository<UserRelation, int>>();
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 
 builder.Services.AddAuthentication(x =>
