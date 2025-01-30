@@ -35,6 +35,7 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors();
 
 var app = builder.Build();
 
