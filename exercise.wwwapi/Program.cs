@@ -1,5 +1,6 @@
 using System.Text;
 using exercise.wwwapi.Configuration;
+using exercise.wwwapi.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.IdentityModel.Tokens;
@@ -25,6 +26,7 @@ builder.Services.AddSwaggerGen(setupActions =>
 
 // AddScoped
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
+builder.Services.AddDbContext<DatabaseContext>();
 
 var conf = new ConfigurationSettings();
 builder.Services.AddAuthentication(x =>
