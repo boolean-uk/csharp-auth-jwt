@@ -7,6 +7,7 @@ namespace exercise.wwwapi.Data;
 public class DataContext : DbContext
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<BlogPost> Posts { get; set; }
     
     private readonly string _connectionString;
 
@@ -24,6 +25,11 @@ public class DataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>().HasKey(u => u.Id);
+        modelBuilder.Entity<BlogPost>().HasKey(p => p.Id);
+        
+        modelBuilder.Entity<User>().HasMany(u => u.BlogPosts).WithOne(p => p.Author);
+        
         modelBuilder.Entity<User>().HasData(
             new User
             {
@@ -32,6 +38,16 @@ public class DataContext : DbContext
                 Username = "j.doe",
                 Email = "john@gmail.com",
                 Password = "password",
+            }
+        );
+        
+        modelBuilder.Entity<BlogPost>().HasData(
+            new BlogPost
+            {
+                Id = 1,
+                Title = "First Post",
+                Content = "Hello World!",
+                AuthorId = 1,
             }
         );
         

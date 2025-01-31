@@ -24,6 +24,7 @@ public class User
         get => _password;
         set => _password = HashPassword(value);
     }
+    public IEnumerable<BlogPost> BlogPosts { get; set; } = new List<BlogPost>();
     
     [NotMapped]
     private string _password;

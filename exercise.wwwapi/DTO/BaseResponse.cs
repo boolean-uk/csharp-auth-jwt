@@ -1,3 +1,5 @@
+using exercise.wwwapi.Enums;
+
 namespace exercise.wwwapi.DTO;
 
 public class BaseResponse<T>
@@ -9,5 +11,11 @@ public class BaseResponse<T>
     {
         Status = status;
         Data = data;
+    }
+    
+    public BaseResponse()
+    {
+        Status = Consts.ErrorStatus;
+        Data = default(T)!;
     }
 }
