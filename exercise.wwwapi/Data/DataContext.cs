@@ -23,6 +23,25 @@ namespace exercise.wwwapi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<User>().ToTable("users");
+            modelBuilder.Entity<BlogPost>().ToTable("blog_posts");
+            modelBuilder.Entity<Comment>().ToTable("comments");
+
+            // Relationships
+            modelBuilder.Entity<BlogPost>()
+                .HasOne<User>(bp => bp.Author)
+                .WithMany(u => u.BlogPosts)
+                .HasForeignKey(bp => bp.AuthorId);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne<BlogPost>(c => c.BlogPost)
+                .WithMany(bp => bp.Comments)
+                .HasForeignKey(c => c.BlogPostId);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne<User>(c => c.Commenter)
+                .WithMany(u => u.Comments)
+                .HasForeignKey(c => c.CommenterId);
 
         }
 

@@ -3,18 +3,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace exercise.wwwapi.Models
 {
-    [Table("blog_posts")]
-    public class BlogPost
+    [Table("comments")]
+    public class Comment
     {
         [Key]
         [Column("id")]
         public int Id { get; set; }
         [Column("text")]
         public string Text { get; set; }
+        [ForeignKey("blog_posts")]
+        public int BlogPostId { get; set; }
+        public BlogPost BlogPost { get; set; }
         [ForeignKey("users")]
-        public string AuthorId { get; set; }
-        public User Author { get; set; }
-
-        public List<Comment> Comments { get; set; }
+        public string CommenterId { get; set; }
+        public User Commenter { get; set; }
     }
 }

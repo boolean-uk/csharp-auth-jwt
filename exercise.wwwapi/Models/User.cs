@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace exercise.wwwapi.Models
 {
-    [Table("user")]
+    [Table("users")]
     public class User
     {
         [Key]
@@ -15,5 +15,9 @@ namespace exercise.wwwapi.Models
 
         [Column("password_hash")]
         public string PasswordHash { get; set; }
+
+        public List<BlogPost> BlogPosts { get; set; }
+        public List<Comment> Comments { get; set; }
+
     }
 }

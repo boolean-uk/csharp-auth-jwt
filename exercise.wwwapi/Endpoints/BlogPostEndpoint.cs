@@ -19,6 +19,8 @@ namespace exercise.wwwapi.Endpoints
             app.MapGet("blogposts/{id}", GetBlogPostById);
             app.MapPost("blogposts", CreateBlogPost);
             app.MapPut("blogposts/{id}", UpdateBlogPost);
+            app.MapGet("blogposts/{id}/comments", GetComments);
+            app.MapPost("blogposts/{id}/comments", CreateComment);
         }
 
         [Authorize]
@@ -99,6 +101,42 @@ namespace exercise.wwwapi.Endpoints
                 return TypedResults.Ok(payload);
             }
             return Results.Unauthorized();
+        }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> GetComments(IRepository<Comment> repo, IMapper mapper, int id)
+        {
+            var comments = repo.GetAll(x => x.Where(c => c.BlogPostId == id));
+            var dto = mapper.Map<List<Comment>>(comments);
+            var payload = new Payload<List<Comment>>
+            {
+                Data = dto
+            };
+            return TypedResults.Ok(payload);
+        }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        private static async Task<IResult> CreateComment(CommentRequestDTO request, IRepository<Comment> repository, IMapper mapper, int id, ClaimsPrincipal user)
+        {
+            var commenterId = user.UserId();
+            var comment = new Comment
+            {
+                Text = request.Text,
+                BlogPostId = id,
+                CommenterId = commenterId
+            };
+            var result = await repository.Insert(comment);
+            var dto = mapper.Map<Comment>(result);
+            var payload = new Payload<Comment>
+            {
+                Status = "Comment Created Successfully",
+                Data = dto
+            };
+            return TypedResults.Ok(payload);
         }
     }
 }
