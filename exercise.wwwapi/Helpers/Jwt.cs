@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using exercise.wwwapi.Config;
+using exercise.wwwapi.Enums;
 using exercise.wwwapi.Models;
 using Microsoft.IdentityModel.Tokens;
 
@@ -25,7 +26,8 @@ public static class Jwt
             new(ClaimTypes.Sid, user.Id.ToString()),
             new(ClaimTypes.Name, user.DisplayName),
             new(ClaimTypeUsername, user.Username),
-            new(ClaimTypes.Email, user.Email)
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, user.Role.ToString())
         ];
         
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetValue("JwtTokenSettings:SymmetricSecurityKey")!));
@@ -59,5 +61,10 @@ public static class Jwt
     public static string Email(this ClaimsPrincipal claims)
     {
         return claims.FindFirst(ClaimTypes.Email)!.Value;
+    }
+    
+    public static UserRole Role(this ClaimsPrincipal claims)
+    {
+        return Enum.Parse<UserRole>(claims.FindFirst(ClaimTypes.Role)!.Value);
     }
 }

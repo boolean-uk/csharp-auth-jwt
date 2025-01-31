@@ -1,3 +1,4 @@
+using exercise.wwwapi.Enums;
 using exercise.wwwapi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -40,6 +41,7 @@ public class DataContext : DbContext
                 Username = "j.doe",
                 Email = "john@gmail.com",
                 Password = "password",
+                Role = UserRole.Admin
             }
         );
         

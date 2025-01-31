@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using exercise.wwwapi.Enums;
 using Sodium;
 
 namespace exercise.wwwapi.Models;
@@ -29,6 +30,9 @@ public class User
         get => _password;
         set => _password = HashPassword(value);
     }
+    
+    [Column("role")]
+    public UserRole Role { get; set; } = UserRole.User;
     public IEnumerable<BlogPost> BlogPosts { get; set; } = new List<BlogPost>();
     
     [NotMapped]

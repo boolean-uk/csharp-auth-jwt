@@ -93,7 +93,7 @@ public static class PostEndpoints
             return TypedResults.NotFound();
         }
         
-        if (post.AuthorId != claims.Id())
+        if (claims.Role() != UserRole.Admin && post.AuthorId != claims.Id())
         {
             return TypedResults.Unauthorized();
         }
