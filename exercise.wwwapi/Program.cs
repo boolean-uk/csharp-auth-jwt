@@ -24,7 +24,20 @@ builder.Services.AddSwaggerGen(setupActions =>
             In = ParameterLocation.Header,
             Scheme = "Bearer"
         });
-
+        setupActions.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
 });
 
 // AddScoped
