@@ -7,7 +7,7 @@ namespace exercise.wwwapi.Models
     [Table("blog_posts")]
     public class BlogPost :ICustomModel
     {
-        [Key]
+        [Key, Column("id")]
         public int Id { get; set; }
         [Column("user_id")]
         public int AuthorId {  get; set; }

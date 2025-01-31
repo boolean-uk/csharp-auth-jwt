@@ -38,11 +38,12 @@ builder.Services.AddSwaggerGen(setupActions =>
                     Array.Empty<string>()
                 }
             });
-});
+    });
 
 // AddScoped
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
+builder.Services.AddScoped<IRepository<BlogPost>, Repository<BlogPost>>();
 builder.Services.AddDbContext<DatabaseContext>();
 
 var conf = new ConfigurationSettings();
@@ -87,6 +88,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.ConfigureUserEndpoints();
+app.ConfigureBlogEndpoints();
+app.ConfigureAuthEndpoints();
 
 app.Run();

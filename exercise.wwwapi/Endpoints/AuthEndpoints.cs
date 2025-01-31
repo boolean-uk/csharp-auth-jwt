@@ -35,9 +35,15 @@ namespace exercise.wwwapi.Endpoints
         private static async Task<IResult> CreateUser(HttpContext context, IRepository<User> repo, Create_User dto)
         {
             if (await repo.GetEntry(x => x.Where(x => x.Username == dto.Username)) != null) return Fail.Payload("user already existed with that name", TypedResults.Conflict);
-            User? user = await Create_User.create(repo, dto);
-            return user == null ? TypedResults.BadRequest() : TypedResults.Ok(Get_User.toPayload(user));
-            
+            try
+            {
+                User user = await dto.Create(repo);
+                return TypedResults.Ok(Get_User.toPayload(user));
+            }
+            catch (HttpRequestException ex)
+            {
+                return Fail.Payload(ex);
+            }
         }
     }
 }

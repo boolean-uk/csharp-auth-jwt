@@ -1,4 +1,4 @@
-﻿namespace api_cinema_challenge.Extensions
+﻿namespace wwwapi.Extensions
 {
     public static class Http_context_extension
     {

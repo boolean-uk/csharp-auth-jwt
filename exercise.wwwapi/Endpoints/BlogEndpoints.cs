@@ -1,4 +1,5 @@
-﻿using api_cinema_challenge.Repository;
+﻿using wwwapi.Extensions;
+using api_cinema_challenge.Repository;
 using exercise.wwwapi.Configuration;
 using exercise.wwwapi.DTO.Request;
 using exercise.wwwapi.DTO.Response;
@@ -19,21 +20,38 @@ namespace exercise.wwwapi.Endpoints
         }
 
         [Authorize]
-        private static async Task<IResult> EditPost(HttpContext context, IRepository<User> repo)
+        private static async Task<IResult> EditPost(HttpContext context, IRepository<BlogPost> repo, Update_BlogPost dto, int id )
         {
-            return TypedResults.Ok();
+            try
+            {
+                var updated = await dto.Update(repo, id);
+                return TypedResults.Created(context.Get_endpointUrl<int>(id),Get_BlogPost.toPayload(updated));
+            }
+            catch (HttpRequestException ex)
+            {
+                return Fail.Payload(ex);
+            }
         }
 
         [Authorize]
-        private static async Task<IResult> GetAllPosts(HttpContext context, IRepository<User> repo)
+        private static async Task<IResult> GetAllPosts(HttpContext context, IRepository<BlogPost> repo)
         {
-            return TypedResults.Ok();
+            
+            return TypedResults.Ok(await Get_BlogPost.toPayload(repo));
         }
 
         [Authorize]
-        private static async Task<IResult> CreatePost(HttpContext context, IRepository<User> repo)
+        private static async Task<IResult> CreatePost(HttpContext context, IRepository<BlogPost> repo, Create_BlogPost dto)
         {
-            return TypedResults.Ok();
+            try
+            {
+                BlogPost post = await dto.Create(repo);
+                return TypedResults.Created(context.Get_endpointUrl<int>(post.Id), Get_BlogPost.toPayload(post));
+            }
+            catch (HttpRequestException ex)
+            {
+                return Fail.Payload(ex);
+            }
 
         }
     }

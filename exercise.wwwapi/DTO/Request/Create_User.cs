@@ -5,23 +5,20 @@ using exercise.wwwapi.Models;
 
 namespace exercise.wwwapi.DTO.Request
 {
-    public class Create_User : IDTO_Request_create<Create_User, User>
+    public class Create_User : DTO_Request_create<User>
     {
         public string Username { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
 
-        public static Task<User?> create(IRepository<User> repo, Create_User dto, params object[] pathargs)
+        public override User returnNewInstanceModel(params object[] pathargs)
         {
-            User u = new User
+            return new User
             {
-                Username = dto.Username,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                Email = dto.Email
+                Username = this.Username,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(this.Password),
+                Email = this.Email
             };
-            return repo.CreateEntry(u);
         }
-
-
     }
 }
