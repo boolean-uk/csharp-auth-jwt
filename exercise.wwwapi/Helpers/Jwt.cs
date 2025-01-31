@@ -41,9 +41,9 @@ public static class Jwt
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
     
-    public static int? Id(this ClaimsPrincipal claims)
+    public static Guid? Id(this ClaimsPrincipal claims)
     {
-        return int.Parse(claims.FindFirst(ClaimTypes.Sid)!.Value);
+        return Guid.Parse(claims.FindFirst(ClaimTypes.Sid)!.Value);
     }
     
     public static string DisplayName(this ClaimsPrincipal claims)

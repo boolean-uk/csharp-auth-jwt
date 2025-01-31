@@ -6,6 +6,7 @@ using exercise.wwwapi.Helpers;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace exercise.wwwapi.Endpoints;
 
@@ -22,6 +23,8 @@ public static class PostEndpoints
     }
 
     [Authorize]
+    [ProducesResponseType(typeof(BaseResponse<IEnumerable<BlogPostResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     private static async Task<IResult> GetPosts(IRepository<BlogPost> repository, IMapper mapper)
     {
         var posts = await repository.GetAll(p => p.Author);
@@ -34,7 +37,10 @@ public static class PostEndpoints
     }
     
     [Authorize]
-    private static async Task<IResult> GetPost(IRepository<BlogPost> repository, IMapper mapper, int id)
+    [ProducesResponseType(typeof(BaseResponse<BlogPostResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    private static async Task<IResult> GetPost(IRepository<BlogPost> repository, IMapper mapper, Guid id)
     {
         var post = await repository.Get(p => p.Id == id, p => p.Author);
         if (post is null)
@@ -51,6 +57,8 @@ public static class PostEndpoints
     }
     
     [Authorize]
+    [ProducesResponseType(typeof(BaseResponse<BlogPostResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     private static async Task<IResult> CreatePost(IRepository<BlogPost> repository, IMapper mapper, ClaimsPrincipal claims, BlogPostPost body)
     {
         var post = mapper.Map<BlogPost>(body);
@@ -74,7 +82,10 @@ public static class PostEndpoints
     }
     
     [Authorize]
-    private static async Task<IResult> UpdatePost(IRepository<BlogPost> repository, IMapper mapper, ClaimsPrincipal claims, int id, BlogPostPost body)
+    [ProducesResponseType(typeof(BaseResponse<BlogPostResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    private static async Task<IResult> UpdatePost(IRepository<BlogPost> repository, IMapper mapper, ClaimsPrincipal claims, Guid id, BlogPostPost body)
     {
         var post = await repository.Get(p => p.Id == id, b => b.Author);
         if (post is null)

@@ -27,13 +27,15 @@ public class DataContext : DbContext
     {
         modelBuilder.Entity<User>().HasKey(u => u.Id);
         modelBuilder.Entity<BlogPost>().HasKey(p => p.Id);
+        modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
+        modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
         
         modelBuilder.Entity<User>().HasMany(u => u.BlogPosts).WithOne(p => p.Author);
         
         modelBuilder.Entity<User>().HasData(
             new User
             {
-                Id = 1,
+                Id = new Guid("00000000-0000-0000-0000-000000000001"),
                 DisplayName = "John Doe",
                 Username = "j.doe",
                 Email = "john@gmail.com",
@@ -44,10 +46,10 @@ public class DataContext : DbContext
         modelBuilder.Entity<BlogPost>().HasData(
             new BlogPost
             {
-                Id = 1,
+                Id = new Guid("00000000-0000-0000-0000-000000000010"),
                 Title = "First Post",
                 Content = "Hello World!",
-                AuthorId = 1,
+                AuthorId = new Guid("00000000-0000-0000-0000-000000000001")
             }
         );
         

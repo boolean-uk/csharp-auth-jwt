@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Sodium;
 
@@ -7,18 +8,22 @@ namespace exercise.wwwapi.Models;
 public class User
 {
     [Column("id")]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     [Column("display_name")]
-    public string DisplayName { get; set; }
+    [MaxLength(63)]
+    public required string DisplayName { get; set; }
 
     [Column("username")]
-    public string Username { get; set; }
+    [MaxLength(63)]
+    public required string Username { get; set; }
 
     [Column("email")]
-    public string Email { get; set; }
+    [MaxLength(255)]
+    public required string Email { get; set; }
     
     [Column("password")]
+    [MaxLength(255)]
     public string Password
     {
         get => _password;
@@ -27,7 +32,7 @@ public class User
     public IEnumerable<BlogPost> BlogPosts { get; set; } = new List<BlogPost>();
     
     [NotMapped]
-    private string _password;
+    private string _password = String.Empty;
 
     private string HashPassword(string password)
     {

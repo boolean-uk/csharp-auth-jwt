@@ -18,12 +18,14 @@ public static class UserEndpoints
         group.MapPost("register", RegisterUser);
     }
 
+    [ProducesResponseType(typeof(BaseResponse<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     private static async Task<IResult> LoginUser(IRepository<User> repository, IMapper mapper,
         [FromBody] LoginPost body)
     {
         var user = await repository.Get(u => u.Username == body.Username);
         if (user == null || !user.ValidatePassword(body.Password))
-            return TypedResults.NotFound(new BaseResponse<object?>(Consts.ErrorStatus, null));
+            return TypedResults.Unauthorized();
 
         var token = Jwt.CreateToken(user);
 
@@ -35,18 +37,20 @@ public static class UserEndpoints
         return TypedResults.Ok(response);
     }
 
+    [ProducesResponseType(typeof(BaseResponse<UserResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     private static async Task<IResult> RegisterUser(IRepository<User> repository, IMapper mapper,
         [FromBody] UserPost body)
     {
-        //var user = mapper.Map<User>(body);
-
-        var user = new User
-        {
-            DisplayName = body.DisplayName,
-            Username = body.Username,
-            Email = body.Email,
-            Password = body.Password
-        };
+        var user = mapper.Map<User>(body);
+        
+        // Check if username or email is taken. No duplicates allowed
+        if (await repository.Get(u => u.Username == user.Username) != null)
+            return TypedResults.Conflict("Username is already registered");
+        if (await repository.Get(u => u.Email == user.Email) != null)
+            return TypedResults.Conflict("Email is already registered");
+        
         await repository.Add(user);
         var response = new BaseResponse<UserResponse>(
             Consts.SuccessStatus,
