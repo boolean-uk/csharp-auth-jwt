@@ -7,14 +7,13 @@ namespace exercise.wwwapi.DTO.Request
 {
     public class Create_BlogPost : DTO_Request_create<BlogPost>
     {
-        public int AuthorId { get; set; }
         public string Text { get; set; }
 
         public override BlogPost returnNewInstanceModel(params object[] pathargs)
         {
             return new BlogPost
             {
-                AuthorId = this.AuthorId,
+                AuthorId = (int)pathargs[0],
                 Text = this.Text
             };
         }

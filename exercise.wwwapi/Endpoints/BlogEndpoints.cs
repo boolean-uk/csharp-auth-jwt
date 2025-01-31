@@ -6,6 +6,7 @@ using exercise.wwwapi.DTO.Response;
 using exercise.wwwapi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using System.Security.Claims;
 
 namespace exercise.wwwapi.Endpoints
 {
@@ -41,11 +42,11 @@ namespace exercise.wwwapi.Endpoints
         }
 
         [Authorize]
-        private static async Task<IResult> CreatePost(HttpContext context, IRepository<BlogPost> repo, Create_BlogPost dto)
+        private static async Task<IResult> CreatePost(HttpContext context, IRepository<BlogPost> repo, ClaimsPrincipal user, Create_BlogPost dto)
         {
             try
             {
-                BlogPost post = await dto.Create(repo);
+                BlogPost post = await dto.Create(repo, int.Parse(user.FindFirst(ClaimTypes.Sid).Value));
                 return TypedResults.Created(context.Get_endpointUrl<int>(post.Id), Get_BlogPost.toPayload(post));
             }
             catch (HttpRequestException ex)

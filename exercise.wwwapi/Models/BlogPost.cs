@@ -13,7 +13,8 @@ namespace exercise.wwwapi.Models
         public int AuthorId {  get; set; }
         [Column("text")]
         public string Text {  get; set; }
-        
 
+        // Navigation properties 
+        public User User { get; set; }
     }
 }

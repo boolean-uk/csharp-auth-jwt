@@ -14,5 +14,8 @@ namespace exercise.wwwapi.Models
         public string PasswordHash { get; set; }
         [Column("email")]
         public string Email { get; set; }
+
+        // Navigation properties 
+        public List<BlogPost> BlogPosts { get; set; }
     }
 }
