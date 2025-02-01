@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Data.SqlClient;
+using System.Reflection.Metadata;
 
 namespace exercise.wwwapi.Data
 {
@@ -20,11 +21,20 @@ namespace exercise.wwwapi.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //optionsBuilder.UseInMemoryDatabase(databaseName: "Database");
-           // optionsBuilder.UseNpgsql(_connectionString);
+           optionsBuilder.UseNpgsql(_connectionString);
             optionsBuilder.UseLazyLoadingProxies();
 
+            
+
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Post>()
+                .HasKey(b => b.postId);
+        
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Post> Posts { get; set; }
     }
 }
