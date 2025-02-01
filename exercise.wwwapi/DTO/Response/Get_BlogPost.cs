@@ -10,7 +10,7 @@ namespace exercise.wwwapi.DTO.Response
         public int AuthorId { get; set; }
         public string Text { get; set; }
 
-        public override void Initialize(BlogPost model)
+        protected override void _Initialize(BlogPost model)
         {
             Id = model.Id;
             AuthorId = model.AuthorId;

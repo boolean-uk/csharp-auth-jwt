@@ -4,18 +4,20 @@ using api_cinema_challenge.Models.Interfaces;
 
 namespace exercise.wwwapi.Models
 {
-    [Table("blog_posts")]
-    public class BlogPost :ICustomModel
+    [Table("comments")]
+    public class Comment : ICustomModel
     {
-        [Key, Column("id")]
+        [Key,Column("id")]
         public int Id { get; set; }
+        [Column("blog_post_id")]
+        public int BlogPostId { get; set; }
         [Column("user_id")]
-        public int AuthorId {  get; set; }
+        public int UserId { get; set; }
         [Column("text")]
-        public string Text {  get; set; }
+        public string Text { get; set; }
 
         // Navigation properties 
+        public BlogPost BlogPost { get; set; }
         public User User { get; set; }
-        public List<Comment> Comments { get; set; }
     }
 }

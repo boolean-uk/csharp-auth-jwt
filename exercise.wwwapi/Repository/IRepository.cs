@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using api_cinema_challenge.Models.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace api_cinema_challenge.Repository
 {

@@ -1,4 +1,5 @@
-﻿using exercise.wwwapi.Data;
+﻿using api_cinema_challenge.Models.Interfaces;
+using exercise.wwwapi.Data;
 using Microsoft.EntityFrameworkCore;
 
 

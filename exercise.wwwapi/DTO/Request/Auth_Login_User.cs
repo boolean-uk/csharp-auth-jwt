@@ -15,13 +15,14 @@ namespace exercise.wwwapi.DTO.Request
         public string Username { get; set; }
         public string Password { get; set; }
 
-        protected override async Task<string> createToken(IRepository<User> repo, User model, IConfigurationSettings conf)
+        protected override async Task<string> CreateAndReturnJWTToken(IRepository<User> repo, User model, IConfigurationSettings conf)
         {
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Sid, model.Id.ToString()),
                 new Claim(ClaimTypes.Name, model.Username),
                 new Claim(ClaimTypes.Email, model.Email),
+                new Claim(ClaimTypes.Role, model.Role), 
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(conf.GetValue<string>("AppSettings:Token")!));
@@ -35,12 +36,12 @@ namespace exercise.wwwapi.DTO.Request
             return jwt;
         }
 
-        protected override async Task<User?> get(IRepository<User> repo)
+        protected override async Task<User?> ReturnCreatedInstanceModel(IRepository<User> repo)
         {
             return await repo.GetEntry(x => x.Where(x => x.Username == this.Username));
         }
 
-        protected override async Task<bool> verify(IRepository<User> repo, User model)
+        protected override async Task<bool> VerifyRequestedModelAgainstDTO(IRepository<User> repo, User model)
         {
             if (!BCrypt.Net.BCrypt.Verify(this.Password, model.PasswordHash))
                 return false;

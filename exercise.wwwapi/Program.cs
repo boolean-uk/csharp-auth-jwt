@@ -5,7 +5,6 @@ using exercise.wwwapi.Data;
 using exercise.wwwapi.Endpoints;
 using exercise.wwwapi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -44,6 +43,8 @@ builder.Services.AddSwaggerGen(setupActions =>
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
 builder.Services.AddScoped<IRepository<BlogPost>, Repository<BlogPost>>();
+builder.Services.AddScoped<IRepository<UserFollows>, Repository<UserFollows>>();
+builder.Services.AddScoped<IRepository<Comment>, Repository<Comment>>();
 builder.Services.AddDbContext<DatabaseContext>();
 
 var conf = new ConfigurationSettings();
@@ -90,5 +91,6 @@ app.UseAuthorization();
 
 app.ConfigureBlogEndpoints();
 app.ConfigureAuthEndpoints();
+app.ConfigureFollowEndpoints();
 
 app.Run();

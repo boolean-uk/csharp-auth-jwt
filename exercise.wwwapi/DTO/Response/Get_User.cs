@@ -11,7 +11,7 @@ namespace exercise.wwwapi.DTO.Response
         public string PasswordHash { get; set; }
         public string Email { get; set; }
 
-        public override void Initialize(User model)
+        protected override void _Initialize(User model)
         {
             Id = model.Id;
             Username = model.Username;

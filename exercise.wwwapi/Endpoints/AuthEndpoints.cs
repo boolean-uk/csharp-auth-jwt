@@ -1,4 +1,5 @@
 ﻿
+using System.Security.Claims;
 using api_cinema_challenge.DTO;
 using api_cinema_challenge.DTO.Interfaces;
 using api_cinema_challenge.Repository;
@@ -6,6 +7,7 @@ using exercise.wwwapi.Configuration;
 using exercise.wwwapi.DTO.Request;
 using exercise.wwwapi.DTO.Response;
 using exercise.wwwapi.Models;
+using exercise.wwwapi.Payload;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace exercise.wwwapi.Endpoints
@@ -32,13 +34,13 @@ namespace exercise.wwwapi.Endpoints
             }
         }
 
-        private static async Task<IResult> CreateUser(HttpContext context, IRepository<User> repo, Create_User dto)
+        private static async Task<IResult> CreateUser(HttpContext context, IRepository<User> repo, ClaimsPrincipal user,Create_User dto)
         {
             if (await repo.GetEntry(x => x.Where(x => x.Username == dto.Username)) != null) return Fail.Payload("user already existed with that name", TypedResults.Conflict);
             try
             {
-                User user = await dto.Create(repo);
-                return TypedResults.Ok(Get_User.toPayload(user));
+                User createduser = await dto.Create(repo, user);
+                return TypedResults.Ok(Get_User.toPayload(createduser));
             }
             catch (HttpRequestException ex)
             {

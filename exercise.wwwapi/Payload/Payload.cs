@@ -1,12 +1,12 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace api_cinema_challenge.DTO
+namespace exercise.wwwapi.Payload
 {
 
-    public class Payload<T,Y>
+    public class Payload<T, Y>
     {
-        public Payload(){}
+        public Payload() { }
         public string Status { get; set; }
         public T Data { get; set; }
     }

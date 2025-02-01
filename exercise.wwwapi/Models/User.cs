@@ -14,8 +14,13 @@ namespace exercise.wwwapi.Models
         public string PasswordHash { get; set; }
         [Column("email")]
         public string Email { get; set; }
+        [Column("role")]
+        public string Role { get; set; }
 
         // Navigation properties 
         public List<BlogPost> BlogPosts { get; set; }
+        public List<UserFollows> Followers{ get; set; }
+        public List<UserFollows> Followings { get; set; }
+        public List<Comment> Comments { get; set; }
     }
 }
