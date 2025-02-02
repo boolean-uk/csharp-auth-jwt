@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace exercise.wwwapi.Models
+namespace exercise.wwwapi.DTO
 {
     [NotMapped]
     public class UserRequestDto

@@ -7,15 +7,19 @@ namespace exercise.wwwapi.Data
 {
     public class DataContext : DbContext
     {
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
-        {
+        private string connectionString;
+        public DataContext(DbContextOptions<DataContext> options) : base(options) { 
+        
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            connectionString = configuration.GetValue<string>("ConnectionStrings:DefaultConnectionString");
 
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseInMemoryDatabase(databaseName: "Database");
+            optionsBuilder.UseNpgsql(connectionString);
         }
    
         public DbSet<User> Users { get; set; }
+        public DbSet<Blog> Blogs { get; set; } 
     }
 }

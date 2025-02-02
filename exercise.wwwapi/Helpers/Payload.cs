@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace exercise.wwwapi.Models
+namespace exercise.wwwapi.Helpers
 {
     [NotMapped]
     public class Payload<T> where T : class

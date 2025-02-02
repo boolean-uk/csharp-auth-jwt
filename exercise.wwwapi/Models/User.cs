@@ -13,5 +13,7 @@ namespace exercise.wwwapi.Models
         public string PasswordHash { get; set; }
         [Column("email")]
         public string Email { get; set; }
+
+        public List<Blog> Blogs { get; set; } = new List<Blog>();
     }
 }

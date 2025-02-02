@@ -1,4 +1,5 @@
 ﻿using exercise.wwwapi.Configuration;
+using exercise.wwwapi.DTO;
 using exercise.wwwapi.Helpers;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
