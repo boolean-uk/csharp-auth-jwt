@@ -14,5 +14,9 @@ public class Mappers : Profile
         CreateMap<Blog, GetBlogDTO>();
         CreateMap<User, GetUserFromBlogBTO>();
         CreateMap<Blog, GetBlogFromUserDTO>();
+        CreateMap<CreateBlogDTO, Blog>();
+        CreateMap<UpdateBlogDTO, Blog>();
+        
+
     }
 }

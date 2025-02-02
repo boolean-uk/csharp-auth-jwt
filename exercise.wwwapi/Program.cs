@@ -23,6 +23,7 @@ var config = new ConfigurationSettings();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
+builder.Services.AddScoped<IRepository<Blog>, Repository<Blog>>();
 builder.Services.AddScoped<ILogger, Logger<string>>();
 builder.Services.AddDbContext<DataContext>(options => {
     

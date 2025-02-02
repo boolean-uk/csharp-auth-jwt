@@ -18,14 +18,10 @@ public class Blog : IBlogEntity
     {
         if (entity is Blog blog)
         {
-            if (blog.Title != null)
+            if (blog.Title != "")
                 Title = blog.Title;
-            if (blog.Content != null)
+            if (blog.Content != "")
                 Content = blog.Content;
-            if (blog.CreatedAt != null)
-                CreatedAt = blog.CreatedAt;
-            if (blog.UpdatedAt != null)
-                UpdatedAt = blog.UpdatedAt;
         }
     }
 }

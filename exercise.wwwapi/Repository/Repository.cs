@@ -19,14 +19,20 @@ public class Repository<T> : IRepository<T> where T : class, IBlogEntity
    
     public async Task<T> CreateEntity(T entity)
     {
-        if (_table.Count() == 0)entity.Id = 1;
-        else entity.Id = _table.Max(e => e.Id) + 1;
         
+        if (_table.Count() == 0)
+        {
+            entity.Id = 1;
+        }
+        else
+        {
+            entity.Id = _table.Max(e => e.Id) + 1;
+        }
         entity.CreatedAt = DateTime.Now.ToUniversalTime();
         entity.UpdatedAt = DateTime.Now.ToUniversalTime();
         await _table.AddAsync(entity);
-        await _db.SaveChangesAsync();
-        return await GetEntityById(entity.Id); //Ensures related objects are returned aswell
+        await _db.SaveChangesAsync(); 
+        return entity;
        
     }
 
