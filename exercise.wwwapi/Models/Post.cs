@@ -11,6 +11,10 @@ namespace exercise.wwwapi.Models
         public int postId { get; set; }
         [Column("postTitle")]
         public string postTitle { get; set; }
+        [Column("userId")]
+        public int? userId { get; set; }
+        [Column("user")]
+        public virtual User user { get; set; }
         [Column("content")]
         public string content { get; set; }
     }

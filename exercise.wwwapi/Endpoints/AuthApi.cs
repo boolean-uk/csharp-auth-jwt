@@ -57,7 +57,7 @@ namespace exercise.wwwapi.EndPoints
             if (!service.GetAll().Where(u => u.Username == request.Username).Any()) return Results.BadRequest(new Payload<UserRequestDto>() { status = "User does not exist", data = request });
 
             User user = service.GetAll().FirstOrDefault(u => u.Username == request.Username)!;
-
+            
 
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
@@ -71,7 +71,7 @@ namespace exercise.wwwapi.EndPoints
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Sid, user.Id.ToString()),
+                new Claim(ClaimTypes.Sid, user.userId.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email),
 

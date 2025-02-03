@@ -31,7 +31,20 @@ namespace exercise.wwwapi.Data
         {
             modelBuilder.Entity<Post>()
                 .HasKey(b => b.postId);
-        
+            modelBuilder.Entity<User>()
+                .HasKey(b => b.userId);
+
+            modelBuilder.Entity<Post>()
+                 .HasOne(b => b.user)
+                 .WithMany(b => b.Posts)
+                 .HasForeignKey(b => b.userId);
+
+            modelBuilder.Entity<User>()
+                .HasMany(b => b.Posts)
+                .WithOne(b => b.user);
+                
+                
+
         }
 
         public DbSet<User> Users { get; set; }

@@ -2,16 +2,18 @@
 
 namespace exercise.wwwapi.Models
 {
-    [Table("users")]
+    [Table("User")]
     public class User
     {
-        [Column("id")]
-        public int Id { get; set; }
+        [Column("userid")]
+        public int userId { get; set; }
         [Column("username")]
         public string Username { get; set; }
         [Column("passwordhash")]
         public string PasswordHash { get; set; }
         [Column("email")]
         public string Email { get; set; }
+        [NotMapped]
+        public virtual List<Post> Posts { get; set; }
     }
 }

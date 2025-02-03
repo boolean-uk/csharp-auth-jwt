@@ -4,6 +4,7 @@ using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Win32;
+using System.Diagnostics.Eventing.Reader;
 using System.Security.Claims;
 
 
@@ -31,29 +32,42 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         private static async Task<IResult> GetPosts(IRepository<Post> service) 
         {
-            return TypedResults.Ok(service.GetAll());
+            List<PostDTO> posts = new List<PostDTO>();
+            service.GetAll().ToList().ForEach(post => posts.Add(new PostDTO(post)));// convert all posts to postDTO
+
+            return TypedResults.Ok(posts);
         }
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> MakePost(IRepository<Post> service, string title, string content )
+        private static async Task<IResult> MakePost(IRepository<Post> service,ClaimsPrincipal user,  string title, string content )
         {
-            Post post = new Post { postTitle = title, content = content };
+            Post post = new Post { postTitle = title, content = content, userId=ClaimsPrincipalHelper.UserRealId(user) };
             service.Insert(post);
             service.Save();
-            return TypedResults.Ok(service.GetAll());
+            return TypedResults.Ok(new PostDTO(post));
         }
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> UpdatePost(IRepository<Post> service, int id, string title, string content)
+       
+        private static async Task<IResult> UpdatePost(IRepository<Post> service, int postId, ClaimsPrincipal user,  string title, string content)
         {
- 
-            Post post = service.GetById(id);
-            post.postTitle = title;
-            post.content = content;
-            service.Save();
-            return TypedResults.Ok(service.GetAll());
+
+            Post post = service.GetById(postId);
+            if (post.userId != ClaimsPrincipalHelper.UserRealId(user))
+            {
+                return TypedResults.Unauthorized();
+            }
+
+            else
+            {
+                post.postTitle = title;
+                post.content = content;
+                service.Save();
+                return TypedResults.Ok();
+            }
+
         }
     }
 }
