@@ -3,7 +3,7 @@
 namespace exercise.wwwapi.Models
 {
 
-    [Table ("post")]
+    [Table("post")]
     public class BlogPost
     {
 
@@ -16,6 +16,7 @@ namespace exercise.wwwapi.Models
         [Column("author_id")]
         [ForeignKey("User")]
         public string AuthorId { get; set; }
+        public string UserName {get; set;} 
 
     }
 }

@@ -1,9 +1,11 @@
 ﻿using exercise.wwwapi.Helpers;
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,39 +56,39 @@ namespace exercise.wwwapi.Endpoints
 
             if (post == null)
                 return TypedResults.NotFound();
+             
+            var mapster = post.Adapt<BlogResponseDTO>();
 
 
-            var postDTO = new BlogResponseDTO
-            {
-                Id = post.Id,
-                Text = post.Text,
-                AuthorId = post.AuthorId,
-
-            };
-
-            var response = new Payload<BlogResponseDTO> { data = postDTO };
+            var response = new Payload<BlogResponseDTO> { data = mapster };
 
             return TypedResults.Ok(response);
 
-        }
+        } 
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> CreateBlogPost(IRepository<BlogPost> repository, BlogPostDTO blogPostDTO)
+        private static async Task<IResult> CreateBlogPost(IRepository<BlogPost> repository, BlogPostDTO blogPostDTO, ClaimsPrincipal user)
         {
-           
-            BlogPost blogpost = new BlogPost
+            var userId = user.UserRealId();
+            var userName = user.FindFirstValue(ClaimTypes.Name);
+
+            var post = new BlogPost
             {
-                Id = blogPostDTO.Id,
                 Text = blogPostDTO.Text,
-                AuthorId = blogPostDTO.AuthorId
+                AuthorId = userId.ToString(),
+                UserName = userName
 
             };
 
-            var createdPost = repository.Add(blogpost);
 
-            return Results.Ok(createdPost);
+
+            var createdPost = repository.Add(post);
+
+            var response = createdPost.Adapt<BlogResponseDTO>();
+
+            return Results.Ok(response);
         }
 
         [Authorize]
@@ -94,10 +96,14 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         private static async Task<IResult> UpdateBlogPost(IRepository<BlogPost> repository, int id, BlogPostUpdateDTO blogPostUpdateDTO, ClaimsPrincipal user)
         {
-            var userId = user.UserId();
+            var userId = user.UserRealId();
+            var userName = user.FindFirstValue(ClaimTypes.Name);
+
+            Console.WriteLine("HHHHHER:"+userId);
 
             if (userId == null)
             {
+                Console.WriteLine("HHHHHER:" + userId);
                 return Results.Unauthorized();
 
             }
@@ -105,18 +111,27 @@ namespace exercise.wwwapi.Endpoints
             var postToUpdate = repository.GetById(id);
 
 
-            if (postToUpdate.AuthorId == userId)
+            if (postToUpdate.AuthorId == userId.ToString())
             {
 
                 postToUpdate.Text = blogPostUpdateDTO.Text;
                 postToUpdate.AuthorId = blogPostUpdateDTO.AuthorId;
+                postToUpdate.UserName = blogPostUpdateDTO.UserName;
+
+                
+                repository.Update(postToUpdate);
+                repository.Save();
 
                 var response = new BlogPostUpdateDTO
                 { 
                     Text = postToUpdate.Text,
                     AuthorId = postToUpdate.AuthorId,
+                    UserName = postToUpdate.UserName,
                 
                 };
+
+                
+
                 return TypedResults.Ok(response);
             }
 

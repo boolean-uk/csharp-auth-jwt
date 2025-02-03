@@ -28,6 +28,8 @@ namespace exercise.wwwapi.EndPoints
         {
             return TypedResults.Ok(repository.GetAll());
         }
+
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         private static async Task<IResult> Register(UserRequestDto request, IRepository<User> service)
@@ -45,7 +47,7 @@ namespace exercise.wwwapi.EndPoints
             user.PasswordHash = passwordHash;
             user.Email = request.Email;
 
-            service.Insert(user);
+            service.Add(user);
             service.Save();
 
             return Results.Ok(new Payload<string>() { data = "Created Account" });
