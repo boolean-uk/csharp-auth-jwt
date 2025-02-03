@@ -34,15 +34,15 @@ namespace exercise.wwwapi.Endpoints
 
            
             var posts = repository.GetAll();
-            var postsDTO = posts.Select(p => new BlogResponseDTO
+            var postsDTO = posts.Select(p => new BlogGetAllDTO
 
             {
                 Id = p.Id,
                 Text = p.Text,
-                AuthorId = p.AuthorId
-
+                AuthorId = p.AuthorId,
+                UserName = p.UserName,
             });
-            var response = new Payload<IEnumerable<BlogResponseDTO>> { data = postsDTO };
+            var response = new Payload<IEnumerable<BlogGetAllDTO>> { data = postsDTO };
 
             return Results.Ok(response);
         }
