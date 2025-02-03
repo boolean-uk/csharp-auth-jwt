@@ -14,6 +14,7 @@ namespace exercise.wwwapi.Models
         public int? postId { get; set; }
       
         public string content { get; set; }
+        public List<CommentDTO> comments { get; set; } = new List<CommentDTO>();
 
         public PostDTO(Post post)
         {
@@ -21,6 +22,11 @@ namespace exercise.wwwapi.Models
             userId = post.userId;
             postId = post.postId;
             content = post.content;
+            if (post.comments.Any())
+            {
+                post.comments.ForEach(x => comments.Add(new CommentDTO(x)));
+            }
+ 
         }
     
 }

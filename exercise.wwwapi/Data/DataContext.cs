@@ -33,21 +33,42 @@ namespace exercise.wwwapi.Data
                 .HasKey(b => b.postId);
             modelBuilder.Entity<User>()
                 .HasKey(b => b.userId);
+            modelBuilder.Entity<Comment>()
+                .HasKey(b => b.commentId);
 
             modelBuilder.Entity<Post>()
                  .HasOne(b => b.user)
                  .WithMany(b => b.Posts)
                  .HasForeignKey(b => b.userId);
 
+            modelBuilder.Entity<Post>()
+                 .HasMany(b => b.comments)
+                 .WithOne(b => b.post);
+        
+
             modelBuilder.Entity<User>()
                 .HasMany(b => b.Posts)
                 .WithOne(b => b.user);
-                
-                
+
+            modelBuilder.Entity<User>()
+                 .HasMany(b => b.Comments)
+                 .WithOne(b => b.user);
+
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(b => b.user)
+                .WithMany(c => c.Comments)
+                .HasForeignKey(b => b.userId);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(b => b.post)
+                .WithMany(c => c.comments)
+                .HasForeignKey(b => b.postId);
 
         }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Comment> Comments { get; set; }
     }
 }

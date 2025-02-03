@@ -17,5 +17,7 @@ namespace exercise.wwwapi.Models
         public virtual User user { get; set; }
         [Column("content")]
         public string content { get; set; }
+        [NotMapped]
+        public virtual List<Comment> comments { get; set; } = new List<Comment>();
     }
 }

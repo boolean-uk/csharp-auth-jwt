@@ -15,5 +15,7 @@ namespace exercise.wwwapi.Models
         public string Email { get; set; }
         [NotMapped]
         public virtual List<Post> Posts { get; set; }
+        [NotMapped]
+        public virtual List<Comment> Comments { get; set; }
     }
 }

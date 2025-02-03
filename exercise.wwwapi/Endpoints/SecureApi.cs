@@ -18,7 +18,41 @@ namespace exercise.wwwapi.Endpoints
             app.MapGet("posts", GetPosts);
             app.MapPost("newpost", MakePost);
             app.MapPut("updatepost", UpdatePost);
+            app.MapGet("postswithcomments", GetPostsWithComments);
+            app.MapPost("Post{postId}/comment{content}", CommentOnPost);
+
         }
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public static async Task<IResult> CommentOnPost(IRepository<Post> postRepo, IRepository<Comment> commentRepo, int postId, ClaimsPrincipal user, string content )
+        {
+            Post post = postRepo.GetById(postId);
+            Comment comment = new Comment
+            {
+                userId = ClaimsPrincipalHelper.UserRealId(user),
+                postId = postId,
+                content = content
+            };
+            commentRepo.Insert(comment);    
+            post.comments.Add(comment);
+            commentRepo.Save();
+            postRepo.Save();
+            return TypedResults.Ok(new CommentDTO(comment));
+        }
+
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public static async Task<IResult> GetPostsWithComments(IRepository<Post> repo)
+        {
+            List<Post> posts = repo.GetAll().ToList();
+            List<PostDTO> postDTOs = new List<PostDTO>();
+            posts.ForEach(x => postDTOs.Add(new PostDTO(x)));
+            return TypedResults.Ok(postDTOs);
+        }
+
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
