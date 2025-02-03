@@ -19,4 +19,10 @@ public class User
 
     [NotMapped]
     public virtual IEnumerable<BlogPost>? Posts { get; set; }
+
+    [NotMapped]
+    public virtual IEnumerable<UserFollow>? Following { get; set; }
+
+    [NotMapped]
+    public virtual IEnumerable<UserFollow>? FollowedBy { get; set; }
 }

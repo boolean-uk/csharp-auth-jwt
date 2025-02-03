@@ -19,6 +19,7 @@ var config = new ConfigurationSettings();
 // Add services to the container.
 builder.Services.AddScoped<IConfigurationSettings, ConfigurationSettings>();
 builder.Services.AddScoped<IRepository<User>, Repository<User>>();
+builder.Services.AddScoped<IRepository<UserFollow>, Repository<UserFollow>>();
 builder.Services.AddScoped<ILogger, Logger<string>>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<DataContext>(options =>
@@ -47,6 +48,14 @@ builder
             ValidateAudience = false,
             ValidateLifetime = false,
             ValidateIssuerSigningKey = false,
+        };
+        x.Events = new JwtBearerEvents()
+        {
+            OnAuthenticationFailed = context =>
+            {
+                var err = context.Exception.ToString();
+                return context.Response.WriteAsync(err);
+            },
         };
     });
 
@@ -90,6 +99,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IRepository<BlogPost>, Repository<BlogPost>>();
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -118,7 +128,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapControllers();
+//app.MapControllers();
 
 app.ConfigureAuthApi();
 

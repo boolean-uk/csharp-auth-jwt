@@ -29,10 +29,20 @@ public class DataContext : DbContext
     {
         m.Entity<User>().HasKey(c => c.Id);
         m.Entity<User>().HasMany(c => c.Posts).WithOne().HasForeignKey(t => t.AuthorId);
+        m.Entity<User>()
+            .HasMany(u => u.Following)
+            .WithOne(f => f.Follower)
+            .HasForeignKey(f => f.FollowerId);
+
+        m.Entity<User>()
+            .HasMany(u => u.FollowedBy)
+            .WithOne(f => f.Followee)
+            .HasForeignKey(f => f.FolloweeId);
 
         m.Entity<BlogPost>().HasKey(c => c.Id);
     }
 
     public DbSet<BlogPost> Blogs { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<UserFollow> UserFollows { get; set; }
 }

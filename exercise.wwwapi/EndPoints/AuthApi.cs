@@ -94,7 +94,7 @@ public static class AuthApi
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.Now.AddDays(5),
+            expires: DateTime.Now.AddDays(1),
             signingCredentials: credentials
         );
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
