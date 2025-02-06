@@ -15,5 +15,7 @@ public class Blogpost
     [Column("text")]
     public string Text { get; set; }
     [Column("authorId")]
-    public string AuthorId { get; set; }
+    public int AuthorId { get; set; }
+    [ForeignKey("AuthorId")]
+    public User User { get; set; } // Rename to follow C# naming conventions
 }
