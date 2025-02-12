@@ -23,15 +23,15 @@ namespace exercise.wwwapi.Endpoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> GetBlogs(IRepository<Blog> service, ClaimsPrincipal user, ILogger logger, IMapper mapper)
+        private static async Task<IResult> GetBlogs(IRepository<Blog> service, ClaimsPrincipal user)
         {
             var blogs = service.GetAll(b => b.User);
 
             var result = blogs.Select(b => new BlogDTO
             {
+                Id = b.Id,
                 Header = b.Header,
-                Text = b.Text,
-                Username = b.User.Username
+                Text = b.Text
             }).ToList();
             return TypedResults.Ok(new Payload<List<BlogDTO>>{ data = result });
         }
@@ -39,7 +39,7 @@ namespace exercise.wwwapi.Endpoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> CreateBlog(IRepository<Blog> service, BlogPost model, ClaimsPrincipal user, ILogger logger, IMapper mapper)
+        private static async Task<IResult> CreateBlog(IRepository<Blog> service, [FromBody] BlogPost model, ClaimsPrincipal user)
         {
             Blog blog = new Blog()
             {
@@ -54,7 +54,6 @@ namespace exercise.wwwapi.Endpoints
             {
                 Header = blog.Header,
                 Text = blog.Text,
-                Username = blog.User.Username
             };
             return Results.Created($"/blogs/{blog.Id}", new Payload<BlogDTO> { data = result });
         }
@@ -62,7 +61,7 @@ namespace exercise.wwwapi.Endpoints
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        private static async Task<IResult> UpdateBlog(IRepository<Blog> service, int id, BlogPut model, ClaimsPrincipal user, ILogger logger, IMapper mapper)
+        private static async Task<IResult> UpdateBlog(IRepository<Blog> service, int id, [FromBody] BlogPut model, ClaimsPrincipal user)
         {
             Blog blog = service.GetById(id);
             if (blog == null) return Results.NotFound("Screening not found");
@@ -74,9 +73,9 @@ namespace exercise.wwwapi.Endpoints
 
             var result = new BlogDTO
             {
+                Id = id,
                 Header = blog.Header,
                 Text = blog.Text,
-                Username = blog.User.Username
             };
             return Results.Created($"/blogs/{id}", new Payload<BlogDTO> { data = result });
         }
